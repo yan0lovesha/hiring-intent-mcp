@@ -1,17 +1,35 @@
 {
-  "name": "hiring-intent-autopilot-mcp",
+  "name": "b2b-hiring-intent-mcp",
   "version": "1.0.0",
   "type": "module",
-  "description": "Zero-dependency MCP Server & CLI for European B2B Hiring Intent Intelligence (Personio & Teamtailor — Local HTTP + Apify Cloud PPE).",
+  "description": "Zero-dependency Open-Core MCP Server & CLI for B2B Hiring Intent, Tech-Stack Signals, Disclosed Salaries & US Regulatory Leads (Ashby, Personio, Teamtailor, SmartRecruiters, Workable, Recruitee, Pinpoint, CMS NPI & FDA 510k).",
   "bin": {
-    "hiring-intent-mcp": "./bin/hiring-intent-mcp.mjs"
+    "b2b-hiring-intent-mcp": "./bin/b2b-hiring-intent-mcp.mjs"
   },
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "b2b-leads",
+    "hiring-intent",
+    "tech-stack",
+    "cold-email",
+    "clay",
+    "n8n",
+    "apify",
+    "ashby",
+    "personio",
+    "teamtailor",
+    "fda-510k",
+    "npi-registry"
+  ],
   "engines": {
     "node": ">=20.0.0"
   },
   "scripts": {
-    "start": "node ./bin/hiring-intent-mcp.mjs",
-    "cli:demo": "node ./bin/hiring-intent-mcp.mjs --cli --platform personio --target adsquare --max 5",
-    "test": "node ./test-mcp.mjs"
-  }
+    "start": "node ./bin/b2b-hiring-intent-mcp.mjs",
+    "demo:ashby": "node ./bin/b2b-hiring-intent-mcp.mjs --cli --platform ashby --target ramp --max 4",
+    "demo:personio": "node ./bin/b2b-hiring-intent-mcp.mjs --cli --platform personio --target adsquare --max 4",
+    "test": "node ./test/smoke.test.mjs"
+  },
+  "license": "MIT"
 }

@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>European B2B Hiring Intent Autopilot — Live Personio & Teamtailor Signal Radar</title>
+<style>
+  :root {
+    --bg: #090d16;
+    --panel: #101726;
+    --panel-elevated: #151e31;
+    --border: #1f2b42;
+    --border-bright: #2e4063;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --subtle: #64748b;
+    --emerald: #10b981;
+    --emerald-bg: rgba(16, 185, 129, 0.12);
+    --amber: #f59e0b;
+    --amber-bg: rgba(245, 158, 11, 0.12);
+    --sky: #38bdf8;
+    --sky-bg: rgba(56, 189, 248, 0.12);
+    --rose: #fb7185;
+    --rose-bg: rgba(251, 113, 133, 0.14);
+    --mono: ui-monospace, 'Cascadia Code', 'JetBrains Mono', Consolas, monospace;
+    --sans: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .shell {
+    max-width: 1480px;
+    margin: 0 auto;
+    padding: 24px 28px 48px;
+  }
+  body.cover-mode .shell {
+    max-width: 1440px;
+    padding: 20px 28px;
+  }
+  .topbar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+  }
+  .brand-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--emerald);
+    background: var(--emerald-bg);
+    border: 1px solid rgba(16, 185, 129, 0.28);
+    padding: 4px 10px;
+    border-radius: 999px;
+    margin-bottom: 8px;
+  }
+  .pulse-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--emerald);
+    box-shadow: 0 0 8px var(--emerald);
+  }
+  h1 {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #ffffff;
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 13.5px;
+    margin-top: 3px;
+  }
+  .top-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .btn {
+    cursor: pointer;
+    font-family: var(--sans);
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 8px 14px;
+    border-radius: 7px;
+    border: 1px solid var(--border-bright);
+    background: var(--panel-elevated);
+    color: var(--text);
+    transition: all 0.15s ease;
+  }
+  .btn:hover { border-color: var(--sky); color: #fff; }
+  .btn-primary {
+    background: var(--emerald);
+    border-color: var(--emerald);
+    color: #04130d;
+  }
+  .btn-primary:hover { background: #34d399; border-color: #34d399; color: #04130d; }
+
+  .kpi-strip {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+  }
+  @media (max-width: 1100px) { .kpi-strip { grid-template-columns: repeat(3, 1fr); } }
+  .kpi-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .kpi-label {
+    font-size: 11.5px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .kpi-value {
+    font-family: var(--mono);
+    font-size: 22px;
+    font-weight: 700;
+    margin-top: 4px;
+    color: #fff;
+  }
+  .kpi-sub {
+    font-size: 11.5px;
+    color: var(--subtle);
+    margin-top: 2px;
+  }
+
+  .controls-bar {
+    margin-top: 18px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .controls-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .seg-group {
+    display: inline-flex;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 3px;
+    gap: 3px;
+  }
+  .seg-btn {
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 6px 11px;
+    border-radius: 6px;
+  }
+  .seg-btn.active {
+    background: var(--panel-elevated);
+    color: #fff;
+    box-shadow: inset 0 0 0 1px var(--border-bright);
+  }
+  .search-input {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 7px 12px;
+    border-radius: 7px;
+    font-size: 12.5px;
+    min-width: 250px;
+  }
+  .search-input:focus { outline: none; border-color: var(--sky); }
+  .chip-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+  }
+  .chip-label {
+    font-size: 11.5px;
+    color: var(--subtle);
+    margin-right: 4px;
+    font-family: var(--mono);
+  }
+  .tech-filter-chip {
+    cursor: pointer;
+    font-family: var(--mono);
+    font-size: 11.5px;
+    padding: 4px 9px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--muted);
+  }
+  .tech-filter-chip.active {
+    border-color: var(--sky);
+    background: var(--sky-bg);
+    color: var(--sky);
+  }
+
+  .workspace-grid {
+    display: grid;
+    grid-template-columns: 1.45fr 1fr;
+    gap: 18px;
+    margin-top: 18px;
+    align-items: start;
+  }
+  @media (max-width: 1080px) { .workspace-grid { grid-template-columns: 1fr; } }
+
+  .feed-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .signal-card {
+    cursor: pointer;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 15px 17px;
+    transition: border-color 0.14s ease, transform 0.14s ease;
+  }
+  .signal-card:hover { border-color: var(--border-bright); }
+  .signal-card.selected {
+    border-color: var(--emerald);
+    background: linear-gradient(180deg, rgba(16, 185, 129, 0.05) 0%, var(--panel) 100%);
+  }
+  .card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .meta-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 7px;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 5px;
+  }
+  .ats-badge {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 4px;
+    letter-spacing: 0.04em;
+  }
+  .ats-personio { background: rgba(56, 189, 248, 0.14); color: var(--sky); }
+  .ats-teamtailor { background: rgba(245, 158, 11, 0.14); color: var(--amber); }
+  .ats-smartrecruiters { background: rgba(16, 185, 129, 0.14); color: var(--emerald); }
+  .ats-workable { background: rgba(167, 139, 250, 0.15); color: #c4b5fd; }
+  .ats-recruitee { background: rgba(251, 113, 133, 0.14); color: var(--rose); }
+
+  .role-title {
+    font-size: 15.5px;
+    font-weight: 600;
+    color: #fff;
+  }
+  .score-box {
+    text-align: right;
+    min-width: 72px;
+    padding: 5px 9px;
+    border-radius: 8px;
+    font-family: var(--mono);
+  }
+  .score-HOT { background: var(--rose-bg); color: var(--rose); border: 1px solid rgba(251, 113, 133, 0.3); }
+  .score-WARM { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(245, 158, 11, 0.3); }
+  .score-MONITOR { background: rgba(148, 163, 184, 0.12); color: var(--muted); border: 1px solid var(--border); }
+  .score-num { font-size: 17px; font-weight: 700; display: block; line-height: 1.1; }
+  .score-tier { font-size: 10px; letter-spacing: 0.06em; }
+
+  .tag-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 10px;
+  }
+  .stack-pill {
+    font-family: var(--mono);
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 5px;
+    background: var(--panel-elevated);
+    border: 1px solid var(--border-bright);
+    color: #e2e8f0;
+  }
+  .sig-pill {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    padding: 2px 8px;
+    border-radius: 5px;
+    background: var(--emerald-bg);
+    color: var(--emerald);
+    border: 1px solid rgba(16, 185, 129, 0.25);
+  }
+  .salary-pill {
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 5px;
+    background: rgba(56, 189, 248, 0.15);
+    color: #7dd3fc;
+    border: 1px solid rgba(56, 189, 248, 0.32);
+  }
+
+  .composer-panel {
+    position: sticky;
+    top: 20px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .composer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+  .composer-title {
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--emerald);
+    font-family: var(--mono);
+  }
+  .field-label {
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 5px;
+    display: block;
+  }
+  .pitch-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 7px;
+    padding: 8px 10px;
+    font-size: 12.5px;
+    font-family: var(--sans);
+  }
+  .email-preview {
+    background: var(--bg);
+    border: 1px solid var(--border-bright);
+    border-radius: 8px;
+    padding: 14px;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    color: #e2e8f0;
+  }
+  .persona-box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--panel-elevated);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 9px 12px;
+    font-size: 12px;
+  }
+  .ext-link {
+    color: var(--sky);
+    text-decoration: none;
+    font-size: 12px;
+    font-family: var(--mono);
+  }
+  .ext-link:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="shell">
+  <header class="topbar">
+    <div>
+      <div class="brand-eyebrow"><span class="pulse-dot"></span> Live Scraped 5-ATS Public Feeds • Zero Mock Data (2026-11-15)</div>
+      <h1>Global & European B2B Hiring Intent Autopilot (5-ATS Matrix)</h1>
+      <p class="subtitle">Real-time buying signals, 125+ enterprise tools & 2026 disclosed salary bands across Personio, Teamtailor, SmartRecruiters, Workable & Recruitee.</p>
+    </div>
+    <div class="top-actions">
+      <button class="btn" id="btnCoverMode">Cover Shot Mode</button>
+      <button class="btn" id="btnExportCsv">Export Filtered CSV</button>
+      <button class="btn btn-primary" id="btnCopyEmail">Copy Cold Email</button>
+    </div>
+  </header>
+
+  <section class="kpi-strip">
+    <div class="kpi-card">
+      <div class="kpi-label">Live Jobs Enriched</div>
+      <div class="kpi-value">210</div>
+      <div class="kpi-sub">5 Major ATS Platforms</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Companies Scanned</div>
+      <div class="kpi-value">25</div>
+      <div class="kpi-sub">DACH, UK, Nordics & Global</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">HOT Intent Signals</div>
+      <div class="kpi-value" style="color: var(--rose);">40</div>
+      <div class="kpi-sub">Score 70–100 (Immediate Window)</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Disclosed Salaries</div>
+      <div class="kpi-value" style="color: var(--sky);">46</div>
+      <div class="kpi-sub">2026 Pay Transparency</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Zero-Browser Speed</div>
+      <div class="kpi-value" style="color: var(--emerald);">&lt; 2.0s</div>
+      <div class="kpi-sub">Avg 5-Board Run Duration</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Apify PPE Unit Cost</div>
+      <div class="kpi-value">$0.0035</div>
+      <div class="kpi-sub">vs $600+/mo Legacy Intent SaaS</div>
+    </div>
+  </section>
+
+  <section class="controls-bar">
+    <div class="controls-row">
+      <div style="display:flex; flex-wrap:wrap; gap:10px; align-items:center;">
+        <div class="seg-group" id="viewModeGroup">
+          <button class="seg-btn active" data-view="jobs">Role-Level Signals (50)</button>
+          <button class="seg-btn" data-view="dossiers">Executive Account Dossiers (25)</button>
+        </div>
+        <div class="seg-group" id="atsFilterGroup">
+          <button class="seg-btn active" data-ats="all">All 5 ATS</button>
+          <button class="seg-btn" data-ats="personio">Personio</button>
+          <button class="seg-btn" data-ats="teamtailor">Teamtailor</button>
+          <button class="seg-btn" data-ats="smartrecruiters">SmartRecruiters</button>
+          <button class="seg-btn" data-ats="workable">Workable</button>
+          <button class="seg-btn" data-ats="recruitee">Recruitee</button>
+        </div>
+        <div class="seg-group" id="signalFilterGroup">
+          <button class="seg-btn active" data-sig="all">All Tiers</button>
+          <button class="seg-btn" data-sig="hot">HOT 70+</button>
+          <button class="seg-btn" data-sig="dm">Decision-Makers</button>
+          <button class="seg-btn" data-sig="salary">Salary Disclosed</button>
+        </div>
+      </div>
+      <input type="text" id="searchInput" class="search-input" placeholder="Search company, role, city, or tool..." />
+    </div>
+    <div class="chip-row" id="techChipsRow">
+      <span class="chip-label">FILTER BY TECH STACK:</span>
+    </div>
+  </section>
+
+  <main class="workspace-grid">
+    <div class="feed-list" id="feedContainer"></div>
+
+    <aside class="composer-panel">
+      <div class="composer-header">
+        <span class="composer-title">Outbound Autopilot Composer</span>
+        <a id="liveJobLink" class="ext-link" href="#" target="_blank" rel="noopener">Open Live ATS Post ↗</a>
+      </div>
+
+      <div class="persona-box">
+        <div>
+          <span style="color:var(--muted);">Recommended Buyer Persona:</span><br/>
+          <strong id="buyerPersonaText" style="color:#fff;">CTO / VP Engineering</strong>
+        </div>
+        <span id="selectedCompanyBadge" class="ats-badge ats-personio">PERSONIO</span>
+      </div>
+
+      <div>
+        <label class="field-label" for="valuePropInput">Your 1-Line Product Value Proposition (Live Merge):</label>
+        <input id="valuePropInput" class="pitch-input" value="we help fast-scaling European engineering & data teams ship cloud and AI pipelines 40% faster without adding DevOps headcount" />
+      </div>
+
+      <div class="seg-group" id="toneGroup">
+        <button class="seg-btn active" data-tone="founder">Founder-to-VP (65w)</button>
+        <button class="seg-btn" data-tone="technical">Tech Architecture Hook</button>
+        <button class="seg-btn" data-tone="json">Clay / Instantly JSON</button>
+      </div>
+
+      <div class="email-preview" id="emailPreviewBox"></div>
+    </aside>
+  </main>
+</div>
+
+<script>
+const JOBS = [{"atsPlatform":"personio","companySlug":"adsquare","companyName":"adsquare GmbH","jobId":"2869172","title":"Staff Data Platform Engineer (m/f/d)","department":"Data","location":"Berlin","country":"Germany","workplaceType":"hybrid","publishedAt":"2026-10-30T11:36:22.000Z","daysSincePosted":16,"jobUrl":"https://adsquare.jobs.personio.de/job/2869172?language=en","intent":{"techStackAll":["AWS","Kubernetes","Terraform","Datadog","Redshift","dbt","Apache Airflow","Dagster","RAG / Agentic AI","Python","GitLab CI"],"techStackByCategory":{"cloud_infra":["AWS","Kubernetes","Terraform","Datadog"],"data_analytics":["Redshift","dbt","Apache Airflow","Dagster"],"ai_llm":["RAG / Agentic AI"],"devtools_engineering":["Python","GitLab CI"]},"techStackCount":11,"buyingSignals":[{"code":"NEW_LEADERSHIP_DECISION_MAKER","label":"New Technical / Commercial Decision-Maker Hire","weight":20,"evidence":"Hiring leadership role: \"Staff Data Platform Engineer (m/f/d)\""},{"code":"TECH_MIGRATION_MODERNIZATION","label":"Architecture Migration / Greenfield Build","weight":26,"evidence":"form Engineer to build and own the shared data platform that the Data team and the rest of Adsquare"}],"signalCodes":["NEW_LEADERSHIP_DECISION_MAKER","TECH_MIGRATION_MODERNIZATION"],"seniorityNormalized":"lead_principal","isDecisionMakerHire":true,"intentScore":100,"intentTier":"HOT","targetBuyerPersona":"VP Data / Head of Data & AI / CTO","outreachHook":"Noticed adsquare GmbH is hiring a Staff Data Platform Engineer (m/f/d) in Berlin working across AWS, Kubernetes, Terraform (New Technical / Commercial Decision-Maker Hire) [Disclosed band: EUR 90,000-105,000].","disclosedSalary":{"min":90000,"max":105000,"currency":"EUR","period":"yearly","rawText":"EUR 90000-105000 (yearly)","source":"structured_feed"}}},{"atsPlatform":"smartrecruiters","companySlug":"ServiceNow","companyName":"ServiceNow","jobId":"744000161596329","title":"Staff Software Engineer – Compute Engineering","department":"Engineering, Infrastructure and Operations","location":"Santa Clara, CALIFORNIA, United States","country":"US","workplaceType":"hybrid","publishedAt":"2026-11-14T00:08:50.721Z","daysSincePosted":1,"jobUrl":"https://jobs.smartrecruiters.com/ServiceNow/744000161596329-staff-software-engineer-compute-engineering","intent":{"techStackAll":["AWS","Microsoft Azure","Google Cloud (GCP)","Kubernetes","Terraform","Ansible","Python","Go (Golang)","Java"],"techStackByCategory":{"cloud_infra":["AWS","Microsoft Azure","Google Cloud (GCP)","Kubernetes","Terraform","Ansible"],"devtools_engineering":["Python","Go (Golang)","Java"]},"techStackCount":9,"buyingSignals":[{"code":"NEW_LEADERSHIP_DECISION_MAKER","label":"New Technical / Commercial Decision-Maker Hire","weight":20,"evidence":"Hiring leadership role: \"Staff Software Engineer – Compute Engineering\""},{"code":"AI_TRANSFORMATION_INITIATIVE","label":"Active GenAI / Agentic AI Rollout","weight":22,"evidence":"ter, and better. We're building an AI-native culture where technology and talent are unst"}],"signalCodes":["NEW_LEADERSHIP_DECISION_MAKER","AI_TRANSFORMATION_INITIATIVE"],"seniorityNormalized":"lead_principal","isDecisionMakerHire":true,"intentScore":100,"intentTier":"HOT","targetBuyerPersona":"VP Engineering / Head of Platform / CISO","outreachHook":"Noticed ServiceNow is hiring a Staff Software Engineer – Compute Engineering in Santa Clara, CALIFORNIA, United States working across AWS, Microsoft Azure, Google Cloud (GCP) (New Technical / Commercial Decision-Maker Hire) [Disclosed band: USD 166,500-291,400].","disclosedSalary":{"min":166500,"max":291400,"currency":"USD","period":"yearly","rawText":"$166,500 - $291,400","source":"jd_parsed"}}},{"atsPlatform":"smartrecruiters","companySlug":"ServiceNow","companyName":"ServiceNow","jobId":"744000161596279","title":"Staff Software Engineer – Compute Engineering","department":"Engineering, Infrastructure and Operations","location":"Santa Clara, CALIFORNIA, United States","country":"US","workplaceType":"hybrid","publishedAt":"2026-11-14T00:07:57.952Z","daysSincePosted":1,"jobUrl":"https://jobs.smartrecruiters.com/ServiceNow/744000161596279-staff-software-engineer-compute-engineering","intent":{"techStackAll":["AWS","Microsoft Azure","Google Cloud (GCP)","Kubernetes","Terraform","Ansible","Python","Go (Golang)","Java"],"techStackByCategory":{"cloud_infra":["AWS","Microsoft Azure","Google Cloud (GCP)","Kubernetes","Terraform","Ansible"],"devtools_engineering":["Python","Go (Golang)","Java"]},"techStackCount":9,"buyingSignals":[{"code":"NEW_LEADERSHIP_DECISION_MAKER","label":"New Technical / Commercial Decision-Maker Hire","weight":20,"evidence":"Hiring leadership role: \"Staff Software Engineer – Compute Engineering\""},{"code":"AI_TRANSFORMATION_INITIATIVE","label":"Active GenAI / Agentic AI Rollout","weight":22,"evidence":"ter, and better. We're building an AI-native culture where technology and talent are unst"}],"signalCodes":["NEW_LEADERSHIP_DECISION_MAKER","AI_TRANSFORMATION_INITIATIVE"],"seniorityNormalized":"lead_principal","isDecisionMakerHire":true,"intentScore":100,"intentTier":"HOT","targetBuyerPersona":"VP Engineering / Head of Platform / CISO","outreachHook":"Noticed ServiceNow is hiring a Staff Software Engineer – Compute Engineering in Santa Clara, CALIFORNIA, United States working across AWS, Microsoft Azure, Google Cloud (GCP) (New Technical / Commercial Decision-Maker Hire) [Disclosed band: USD 166,500-291,400].","disclosedSalary":{"min":166500,"max":291400,"currency":"USD","period":"yearly","rawText":"$166,500 - $291,400","source":"jd_parsed"}}},{"atsPlatform":"smartrecruiters","companySlug":"ServiceNow","companyName":"ServiceNow","jobId":"744000161595010","title":"Senior Staff Software Engineer – Compute Engineering","department":"Engineering, Infrastructure and Operations","location":"Santa Clara, CALIFORNIA, United States","country":"US","workplaceType":"hybrid","publishedAt":"2026-11-14T00:07:18.388Z","daysSincePosted":1,"jobUrl":"https://jobs.smartrecruiters.com/ServiceNow/744000161595010-senior-staff-software-engineer-compute-engineering","intent":{"techStackAll":["AWS","Microsoft Azure","Google Cloud (GCP)","Kubernetes","Terraform","Ansible","Python","Go (Golang)","Java"],"techStackByCategory":{"cloud_infra":["AWS","Microsoft Azure","Google Cloud (GCP)","Kubernetes","Terraform","Ansible"],"devtools_engineering":["Python","Go (Golang)","Java"]},"techStackCount":9,"buyingSignals":[{"code":"NEW_LEADERSHIP_DECISION_MAKER","label":"New Technical / Commercial Decision-Maker Hire","weight":20,"evidence":"Hiring leadership role: \"Senior Staff Software Engineer – Compute Engineering\""},{"code":"AI_TRANSFORMATION_INITIATIVE","label":"Active GenAI / Agentic AI Rollout","weight":22,"evidence":"ter, and better. We're building an AI-native culture where technology and talent are unst"}],"signalCodes":["NEW_LEADERSHIP_DECISION_MAKER","AI_TRANSFORMATION_INITIATIVE"],"seniorityNormalized":"lead_principal","isDecisionMakerHire":true,"intentScore":100,"intentTier":"HOT","targetBuyerPersona":"VP Engineering / Head of Platform / CISO","outreachHook":"Noticed ServiceNow is hiring a Senior Staff Software Engineer – Compute Engineering in Santa Clara, CALIFORNIA, United States working across AWS, Microsoft Azure, Google Cloud (GCP) (New Technical / Commercial Decision-Maker Hire) [Disclosed band: USD 190,900-334,100].","disclosedSalary":{"min":190900,"max":334100,"currency":"USD","period":"yearly","rawText":"$190,900 - $334,100","source":"jd_parsed"}}},{"atsPlatform":"teamtailor","companySlug":"puzzel","companyName":"Puzzel","jobId":"8644680","title":"Account Executive - Denmark","department":"Commercial","location":"Copenhagen, Denmark","country":"Denmark","workplaceType":"onsite","publishedAt":"2026-10-30T15:22:19.000Z","daysSincePosted":16,"jobUrl":"https://puzzel.teamtailor.com/jobs/8644680-account-executive-denmark","intent":{"techStackAll":["Salesforce"],"techStackByCategory":{"crm_sales":["Salesforce"]},"techStackCount":1,"buyingSignals":[{"code":"BUDGET_EXPANSION","label":"Headcount & Budget Expansion","weight":22,"evidence":"Norway, trusted across Europe, and growing fast. For 25 years we've helped contact centres d"},{"code":"TECH_MIGRATION_MODERNIZATION","label":"Architecture Migration / Greenfield Build","weight":26,"evidence":"or creating business opportunities from scratch - it's important to highlight that you'll be"},{"code":"AI_TRANSFORMATION_INITIATIVE","label":"Active GenAI / Agentic AI Rollout","weight":22,"evidence":"hagen About Puzzel 🔍 We're the AI-native customer experience platform built in Norway"}],"signalCodes":["BUDGET_EXPANSION","TECH_MIGRATION_MODERNIZATION","AI_TRANSFORMATION_INITIATIVE"],"seniorityNormalized":"mid_regular","isDecisionMakerHire":false,"intentScore":98,"intentTier":"HOT","targetBuyerPersona":"CRO / VP Sales / Head of RevOps","outreachHook":"Noticed Puzzel is hiring a Account Executive - Denmark in Copenhagen, Denmark working across Salesforce (Headcount & Budget Expansion).","disclosedSalary":null}},{"atsPlatform":"teamtailor","companySlug":"puzzel","companyName":"Puzzel","jobId":"8644498","title":"Account Executive - Norway","department":"Commercial","location":"Oslo, Norway","country":"Norway","workplaceType":"hybrid","publishedAt":"2026-10-30T15:01:59.000Z","daysSincePosted":16,"jobUrl":"https://puzzel.teamtailor.com/jobs/8644498-account-executive-norway","intent":{"techStackAll":["Salesforce"],"techStackByCategory":{"crm_sales":["Salesforce"]},"techStackCount":1,"buyingSignals":[{"code":"BUDGET_EXPANSION","label":"Headcount & Budget Expansion","weight":22,"evidence":"Norway, trusted across Europe, and growing fast. For 25 years we've helped contact centres d"},{"code":"TECH_MIGRATION_MODERNIZATION","label":"Architecture Migration / Greenfield Build","weight":26,"evidence":"or creating business opportunities from scratch - it's important to highlight that you'll be"},{"code":"AI_TRANSFORMATION_INITIATIVE","label":"Active GenAI / Agentic AI Rollout","weight":22,"evidence":"Oslo About Puzzel 🔍 We're the AI-native customer experience platform built in Norway"}],"signalCodes":["BUDGET_EXPANSION","TECH_MIGRATION_MODERNIZATION","AI_TRANSFORMATION_INITIATIVE"],"seniorityNormalized":"mid_regular","isDecisionMakerHire":false,"intentScore":98,"intentTier":"HOT","targetBuyerPersona":"CRO / VP Sales / Head of RevOps","outreachHook":"Noticed Puzzel is hiring a Account Executive - Norway in Oslo, Norway working across Salesforce (Headcount & Budget Expansion).","disclosedSalary":null}},{"atsPlatform":"teamtailor","companySlug":"puzzel","companyName":"Puzzel","jobId":"8642913","title":"Account Executive - Sweden","department":"Commercial","location":"Stockholm, Sweden","country":"Sweden","workplaceType":"hybrid","publishedAt":"2026-10-30T11:51:07.000Z","daysSincePosted":16,"jobUrl":"https://puzzel.teamtailor.com/jobs/8642913-account-executive-sweden","intent":{"techStackAll":["Salesforce"],"techStackByCategory":{"crm_sales":["Salesforce"]},"techStackCount":1,"buyingSignals":[{"code":"BUDGET_EXPANSION","label":"Headcount & Budget Expansion","weight":22,"evidence":"Norway, trusted across Europe, and growing fast. For 25 years we've helped contact centres d"},{"code":"TECH_MIGRATION_MODERNIZATION","label":"Architecture Migration / Greenfield Build","weight":26,"evidence":"or creating business opportunities from scratch - it's important to highlight that you'll be"},{"code":"AI_TRANSFORMATION_INITIATIVE","label":"Active GenAI / Agentic AI Rollout","weight":22,"evidence":"weden About Puzzel 🔍 We're the AI-native customer experience platform built in Norway"}],"signalCodes":["BUDGET_EXPANSION","TECH_MIGRATION_MODERNIZATION","AI_TRANSFORMATION_INITIATIVE"],"seniorityNormalized":"mid_regular","isDecisionMakerHire":false,"intentScore":98,"intentTier":"HOT","targetBuyerPersona":"CRO / VP Sales / Head of RevOps","outreachHook":"Noticed Puzzel is hiring a Account Executive - Sweden in Stockholm, Sweden working across Salesforce (Headcount & Budget Expansion).","disclosedSalary":null}},{"atsPlatform":"teamtailor","companySlug":"rebtel","companyName":"Rebtel","jobId":"8699117","title":"Senior Web Developer","department":"Tech","location":"Stockholm","country":"Sweden","workplaceType":"unspecified","publishedAt":"2026-11-10T14:33:15.000Z","daysSincePosted":5,"jobUrl":"https://rebtel.teamtailor.com/jobs/8699117-senior-web-developer","intent":{"techStackAll":["Anthropic / Claude","TypeScript","React","Next.js","Vue.js","GraphQL"],"techStackByCategory":{"ai_llm":["Anthropic / Claude"],"devtools_engineering":["TypeScript","React","Next.js","Vue.js","GraphQL"]},"techStackCount":6,"buyingSignals":[{"code":"TECH_MIGRATION_MODERNIZATION","label":"Architecture Migration / Greenfield Build","weight":26,"evidence":"g from developing new features and modernizing legacy systems to prototyping innovative product id"}],"signalCodes":["TECH_MIGRATION_MODERNIZATION"],"seniorityNormalized":"senior","isDecisionMakerHire":false,"intentScore":82,"intentTier":"HOT","targetBuyerPersona":"CTO / VP Engineering","outreachHook":"Noticed Rebtel is hiring a Senior Web Developer in Stockholm working across Anthropic / Claude, TypeScript, React (Architecture Migration / Greenfield Build).","disclosedSalary":null}},{"atsPlatform":"smartrecruiters","companySlug":"DeliveryHero","companyName":"Delivery Hero","jobId":"744000161676919","title":"Logistics Optimization Manager","department":"General Business","location":"Riyadh, , Saudi Arabia","country":"SA","workplaceType":"onsite","publishedAt":"2026-11-15T11:45:27.524Z","daysSincePosted":0,"jobUrl":"https://jobs.smartrecruiters.com/DeliveryHero/744000161676919-logistics-optimization-manager","intent":{"techStackAll":["BigQuery","Looker","Tableau","Python","Jira / Confluence","Notion"],"techStackByCategory":{"data_analytics":["BigQuery","Looker","Tableau"],"devtools_engineering":["Python"],"marketing_product":["Jira / Confluence","Notion"]},"techStackCount":6,"buyingSignals":[{"code":"TECH_MIGRATION_MODERNIZATION","label":"Architecture Migration / Greenfield Build","weight":26,"evidence":"iciency, can write complex queries from scratch and independently pull your own data. - Str"}],"signalCodes":["TECH_MIGRATION_MODERNIZATION"],"seniorityNormalized":"senior","isDecisionMakerHire":false,"intentScore":82,"intentTier":"HOT","targetBuyerPersona":"VP Data / Head of Data & AI / CTO","outreachHook":"Noticed Delivery Hero is hiring a Logistics Optimization Manager in Riyadh, , Saudi Arabia working across BigQuery, Looker, Tableau (Architecture Migration / Greenfield Build).","disclosedSalary":null}},{"atsPlatform":"recruitee","companySlug":"fastned","companyName":"Fastned","jobId":"2818749","title":"Chief Financial Officer","department":"Finance & Funding","location":"Amsterdam, Noord-Holland, Netherlands","country":"Netherlands","workplaceType":"onsite","publishedAt":"2026-11-06T14:26:30.000Z","daysSincePosted":9,"jobUrl":"https://fastned.recruitee.com/o/chief-financial-officer-3","intent":{"techStackAll":[],"techStackByCategory":{},"techStackCount":0,"buyingSignals":[{"code":"NEW_LEADERSHIP_DECISION_MAKER","label":"New Technical / Commercial Decision-Maker Hire","weight":30,"evidence":"Hiring leadership role: \"Chief Financial Officer\""},{"code":"BUDGET_EXPANSION","label":"Headcount & Budget Expansion","weight":22,"evidence":"have been building and operating a rapidly growing network of iconic fast-charging stations acr"}],"signalCodes":["NEW_LEADERSHIP_DECISION_MAKER","BUDGET_EXPANSION"],"seniorityNormalized":"c_level_vp","isDecisionMakerHire":true,"intentScore":80,"intentTier":"HOT","targetBuyerPersona":"CFO / VP Finance / General Counsel","outreachHook":"Noticed Fastned is hiring a Chief Financial Officer in Amsterdam, Noord-Holland, Netherlands (New Technical / Commercial Decision-Maker Hire).","disclosedSalary":null}},{"atsPlatform":"smartrecruiters","companySlug":"DeliveryHero","companyName":"Delivery Hero","jobId":"744000161678649","title":"Data Science Manager - Applied AI","department":"Information Technology","location":"Dubai, Dubai, United Arab Emirates","country":"AE","workplaceType":"onsite","publishedAt":"2026-11-15T13:41:43.860Z","daysSincePosted":0,"jobUrl":"https://jobs.smartrecruiters.com/DeliveryHero/744000161678649-data-science-manager-applied-ai","intent":{"techStackAll":["Google Cloud (GCP)","BigQuery","Apache Airflow","OpenAI / GPT","LangChain / LangGraph","PyTorch","TensorFlow","Hugging Face","RAG / Agentic AI","MLOps","Python"],"techStackByCategory":{"cloud_infra":["Google Cloud (GCP)"],"data_analytics":["BigQuery","Apache Airflow"],"ai_llm":["OpenAI / GPT","LangChain / LangGraph","PyTorch","TensorFlow","Hugging Face","RAG / Agentic AI","MLOps"],"devtools_engineering":["Python"]},"techStackCount":11,"buyingSignals":[{"code":"AI_TRANSFORMATION_INITIATIVE","label":"Active GenAI / Agentic AI Rollout","weight":22,"evidence":"s building and shipping the ML and generative AI systems that power decisions across talabat'"}],"signalCodes":["AI_TRANSFORMATION_INITIATIVE"],"seniorityNormalized":"senior","isDecisionMakerHire":false,"intentScore":78,"intentTier":"HOT","targetBuyerPersona":"VP Data / Head of Data & AI / CTO","outreachHook":"Noticed Delivery Hero is hiring a Data Science Manager - Applied AI in Dubai, Dubai, United Arab Emirates working across Google Cloud (GCP), BigQuery, Apache Airflow (Active GenAI / Agentic AI Rollout).","disclosedSalary":null}},{"atsPlatform":"smartrecruiters","companySlug":"BoschGroup","companyName":"Bosch Group","jobId":"744000161679769","title":"AI Architect","department":"Information Technology","location":"bengaluru, , India","country":"IN","workplaceType":"onsite","publishedAt":"2026-11-15T15:45:31.363Z","daysSincePosted":0,"jobUrl":"https://jobs.smartrecruiters.com/BoschGroup/744000161679769-ai-architect","intent":{"techStackAll":["AWS","Microsoft Azure","Google Cloud (GCP)","Kubernetes","Docker","Apache Airflow","MongoDB","PyTorch","TensorFlow","MLOps","Python"],"techStackByCategory":{"cloud_infra":["AWS","Microsoft Azure","Google Cloud (GCP)","Kubernetes","Docker"],"data_analytics":["Apache Airflow","MongoDB"],"ai_llm":["PyTorch","TensorFlow","MLOps"],"devtools_engineering":["Python"]},"techStackCount":11,"buyingSignals":[{"code":"AI_TRANSFORMATION_INITIATIVE","label":"Active GenAI / Agentic AI Rollout","weight":22,"evidence":"/ NLP / Computer Vision and AIOps/MLOps solutions across team of Data Scientists, Da"}],"signalCodes":["AI_TRANSFORMATION_INITIATIVE"],"seniorityNormalized":"senior","isDecisionMakerHire":false,"intentScore":78,"intentTier":"HOT","targetBuyerPersona":"VP Data / Head of Data & AI / CTO","outreachHook":"Noticed Bosch Group is hiring a AI Architect in bengaluru, , India working across AWS, Microsoft Azure, Google Cloud (GCP) (Active GenAI / Agentic AI Rollout).","disclosedSalary":null}},{"atsPlatform":"smartrecruiters","companySlug":"BoschGroup","companyName":"Bosch Group","jobId":"744000161679729","title":"GenAI/Agentic AI specialists","department":"Information Technology","location":"bengaluru, , India","country":"IN","workplaceType":"onsite","publishedAt":"2026-11-15T15:42:05.707Z","daysSincePosted":0,"jobUrl":"https://jobs.smartrecruiters.com/BoschGroup/744000161679729-genai-agentic-ai-specialists","intent":{"techStackAll":["AWS","Microsoft Azure","Google Cloud (GCP)","OpenAI / GPT","LangChain / LangGraph","LlamaIndex","Vector DB (Pinecone/Qdrant/Weaviate)","PyTorch","TensorFlow","RAG / Agentic AI","Python"],"techStackByCategory":{"cloud_infra":["AWS","Microsoft Azure","Google Cloud (GCP)"],"ai_llm":["OpenAI / GPT","LangChain / LangGraph","LlamaIndex","Vector DB (Pinecone/Qdrant/Weaviate)","PyTorch","TensorFlow","RAG / Agentic AI"],"devtools_engineering":["Python"]},"techStackCount":11,"buyingSignals":[{"code":"AI_TRANSFORMATION_INITIATIVE","label":"Active GenAI / Agentic AI Rollout","weight":22,"evidence":"GenAI/Agentic AI specialists Information Technolog"}],"signalCodes":["AI_TRANSFORMATION_INITIATIVE"],"seniorityNormalized":"mid_regular","isDecisionMakerHire":false,"intentScore":78,"intentTier":"HOT","targetBuyerPersona":"VP Data / Head of Data & AI / CTO","outreachHook":"Noticed Bosch Group is hiring a GenAI/Agentic AI specialists in bengaluru, , India working across AWS, Microsoft Azure, Google Cloud (GCP) (Active GenAI / Agentic AI Rollout).","disclosedSalary":null}},{"atsPlatform":"smartrecruiters","companySlug":"BoschGroup","companyName":"Bosch Group","jobId":"744000161679689","title":"GenAI/Agentic AI specialists","department":"Information Technology","location":"bengaluru, , India","country":"IN","workplaceType":"onsite","publishedAt":"2026-11-15T15:41:38.733Z","daysSincePosted":0,"jobUrl":"https://jobs.smartrecruiters.com/BoschGroup/744000161679689-genai-agentic-ai-specialists","intent":{"techStackAll":["AWS","Microsoft Azure","Google Cloud (GCP)","OpenAI / GPT","LangChain / LangGraph","LlamaIndex","Vector DB (Pinecone/Qdrant/Weaviate)","PyTorch","TensorFlow","RAG / Agentic AI","Python"],"techStackByCategory":{"cloud_infra":["AWS","Microsoft Azure","Google Cloud (GCP)"],"ai_llm":["OpenAI / GPT","LangChain / LangGraph","LlamaIndex","Vector DB (Pinecone/Qdrant/Weaviate)","PyTorch","TensorFlow","RAG / Agentic AI"],"devtools_engineering":["Python"]},"techStackCount":11,"buyingSignals":[{"code":"AI_TRANSFORMATION_INITIATIVE","label":"Active GenAI / Agentic AI Rollout","weight":22,"evidence":"GenAI/Agentic AI specialists Information Technolog"}],"signalCodes":["AI_TRANSFORMATION_INITIATIVE"],"seniorityNormalized":"mid_regular","isDecisionMakerHire":false,"intentScore":78,"intentTier":"HOT","targetBuyerPersona":"VP Data / Head of Data & AI / CTO","outreachHook":"Noticed Bosch Group is hiring a GenAI/Agentic AI specialists in bengaluru, , India working across AWS, Microsoft Azure, Google Cloud (GCP) (Active GenAI / Agentic AI Rollout).","disclosedSalary":null}},{"atsPlatform":"personio","companySlug":"adsquare","companyName":"adsquare GmbH","jobId":"2865259","title":"Staff Data Scientist (m/f/d)","department":"Data","location":"Berlin","country":"Germany","workplaceType":"hybrid","publishedAt":"2026-10-28T14:18:54.000Z","daysSincePosted":18,"jobUrl":"https://adsquare.jobs.personio.de/job/2865259?language=en","intent":{"techStackAll":["AWS","Kubernetes","Docker","Terraform","Snowflake","BigQuery","dbt","Anthropic / Claude","PyTorch","TensorFlow","RAG / Agentic AI","Python","FastAPI / Django"],"techStackByCategory":{"cloud_infra":["AWS","Kubernetes","Docker","Terraform"],"data_analytics":["Snowflake","BigQuery","dbt"],"ai_llm":["Anthropic / Claude","PyTorch","TensorFlow","RAG / Agentic AI"],"devtools_engineering":["Python","FastAPI / Django"]},"techStackCount":13,"buyingSignals":[{"code":"NEW_LEADERSHIP_DECISION_MAKER","label":"New Technical / Commercial Decision-Maker Hire","weight":20,"evidence":"Hiring leadership role: \"Staff Data Scientist (m/f/d)\""}],"signalCodes":["NEW_LEADERSHIP_DECISION_MAKER"],"seniorityNormalized":"lead_principal","isDecisionMakerHire":true,"intentScore":77,"intentTier":"HOT","targetBuyerPersona":"VP Data / Head of Data & AI / CTO","outreachHook":"Noticed adsquare GmbH is hiring a Staff Data Scientist (m/f/d) in Berlin working across AWS, Kubernetes, Docker (New Technical / Commercial Decision-Maker Hire) [Disclosed band: EUR 92,000-107,000].","disclosedSalary":{"min":92000,"max":107000,"currency":"EUR","period":"yearly","rawText":"EUR 92000-107000 (yearly)","source":"structured_feed"}}},{"atsPlatform":"teamtailor","companySlug":"nextlane","companyName":"Nextlane","jobId":"8679362","title":"Senior/Staff Platform Software Engineer","department":"General","location":"Portugal - Sintra","country":"Portugal","workplaceType":"hybrid","publishedAt":"2026-11-06T09:58:11.000Z","daysSincePosted":9,"jobUrl":"https://nextlane.teamtailor.com/jobs/8679362-senior-staff-platform-software-engineer","intent":{"techStackAll":["AWS","Microsoft Azure","Kubernetes","Anthropic / Claude","Java","GitHub Actions"],"techStackByCategory":{"cloud_infra":["AWS","Microsoft Azure","Kubernetes"],"ai_llm":["Anthropic / Claude"],"devtools_engineering":["Java","GitHub Actions"]},"techStackCount":6,"buyingSignals":[{"code":"NEW_LEADERSHIP_DECISION_MAKER","label":"New Technical / Commercial Decision-Maker Hire","weight":20,"evidence":"Hiring leadership role: \"Senior/Staff Platform Software Engineer\""}],"signalCodes":["NEW_LEADERSHIP_DECISION_MAKER"],"seniorityNormalized":"lead_principal","isDecisionMakerHire":true,"intentScore":76,"intentTier":"HOT","targetBuyerPersona":"VP Engineering / Head of Platform / CISO","outreachHook":"Noticed Nextlane is hiring a Senior/Staff Platform Software Engineer in Portugal - Sintra working across AWS, Microsoft Azure, Kubernetes (New Technical / Commercial Decision-Maker Hire).","disclosedSalary":null}},{"atsPlatform":"smartrecruiters","companySlug":"Canva","companyName":"Canva","jobId":"6000000001554836","title":"Enterprise Security Manager ","department":"Information Technology","location":"Brisbane, QLD, Australia","country":"AU","workplaceType":"remote","publishedAt":"2026-11-05T23:50:44.137Z","daysSincePosted":9,"jobUrl":"https://jobs.smartrecruiters.com/Canva/6000000001554836-enterprise-security-manager-","intent":{"techStackAll":["Terraform","Python","Go (Golang)","Java","Okta / Auth0","ISO 27001","SOC 2"],"techStackByCategory":{"cloud_infra":["Terraform"],"devtools_engineering":["Python","Go (Golang)","Java"],"security_compliance":["Okta / Auth0","ISO 27001","SOC 2"]},"techStackCount":7,"buyingSignals":[{"code":"COMPLIANCE_SECURITY_MANDATE","label":"Security, ESG or EU Regulatory Mandate","weight":20,"evidence":"common compliance frameworks like SOC2, ISO27001, GDPR etc. Additional Informatio"}],"signalCodes":["COMPLIANCE_SECURITY_MANDATE"],"seniorityNormalized":"mid_regular","isDecisionMakerHire":false,"intentScore":76,"intentTier":"HOT","targetBuyerPersona":"VP Engineering / Head of Platform / CISO","outreachHook":"Noticed Canva is hiring a Enterprise Security Manager  in Brisbane, QLD, Australia working across Terraform, Python, Go (Golang) (Security, ESG or EU Regulatory Mandate).","disclosedSalary":null}},{"atsPlatform":"smartrecruiters","companySlug":"Canva","companyName":"Canva","jobId":"6000000001554834","title":"Enterprise Security Manager ","department":"Information Technology","location":"Canberra, ACT, Australia","country":"AU","workplaceType":"hybrid","publishedAt":"2026-11-05T23:50:38.953Z","daysSincePosted":9,"jobUrl":"https://jobs.smartrecruiters.com/Canva/6000000001554834-enterprise-security-manager-","intent":{"techStackAll":["Terraform","Python","Go (Golang)","Java","Okta / Auth0","ISO 27001","SOC 2"],"techStackByCategory":{"cloud_infra":["Terraform"],"devtools_engineering":["Python","Go (Golang)","Java"],"security_compliance":["Okta / Auth0","ISO 27001","SOC 2"]},"techStackCount":7,"buyingSignals":[{"code":"COMPLIANCE_SECURITY_MANDATE","label":"Security, ESG or EU Regulatory Mandate","weight":20,"evidence":"common compliance frameworks like SOC2, ISO27001, GDPR etc. Additional Informatio"}],"signalCodes":["COMPLIANCE_SECURITY_MANDATE"],"seniorityNormalized":"mid_regular","isDecisionMakerHire":false,"intentScore":76,"intentTier":"HOT","targetBuyerPersona":"VP Engineering / Head of Platform / CISO","outreachHook":"Noticed Canva is hiring a Enterprise Security Manager  in Canberra, ACT, Australia working across Terraform, Python, Go (Golang) (Security, ESG or EU Regulatory Mandate).","disclosedSalary":null}},{"atsPlatform":"smartrecruiters","companySlug":"Canva","companyName":"Canva","jobId":"6000000001554832","title":"Enterprise Security Manager ","department":"Information Technology","location":"Perth, WA, Australia","country":"AU","workplaceType":"remote","publishedAt":"2026-11-05T23:50:33.423Z","daysSincePosted":9,"jobUrl":"https://jobs.smartrecruiters.com/Canva/6000000001554832-enterprise-security-manager-","intent":{"techStackAll":["Terraform","Python","Go (Golang)","Java","Okta / Auth0","ISO 27001","SOC 2"],"techStackByCategory":{"cloud_infra":["Terraform"],"devtools_engineering":["Python","Go (Golang)","Java"],"security_compliance":["Okta / Auth0","ISO 27001","SOC 2"]},"techStackCount":7,"buyingSignals":[{"code":"COMPLIANCE_SECURITY_MANDATE","label":"Security, ESG or EU Regulatory Mandate","weight":20,"evidence":"common compliance frameworks like SOC2, ISO27001, GDPR etc. Additional Informatio"}],"signalCodes":["COMPLIANCE_SECURITY_MANDATE"],"seniorityNormalized":"mid_regular","isDecisionMakerHire":false,"intentScore":76,"intentTier":"HOT","targetBuyerPersona":"VP Engineering / Head of Platform / CISO","outreachHook":"Noticed Canva is hiring a Enterprise Security Manager  in Perth, WA, Australia working across Terraform, Python, Go (Golang) (Security, ESG or EU Regulatory Mandate).","disclosedSalary":null}},{"atsPlatform":"recruitee","companySlug":"fastned","companyName":"Fastned","jobId":"2817076","title":"Head of Expansion South-West Europe","department":"Network Development","location":"Paris, Île-de-France, France","country":"France","workplaceType":"hybrid","publishedAt":"2026-11-05T13:41:46.000Z","daysSincePosted":10,"jobUrl":"https://fastned.recruitee.com/o/head-of-expansion-south-west-europe","intent":{"techStackAll":[],"techStackByCategory":{},"techStackCount":0,"buyingSignals":[{"code":"NEW_LEADERSHIP_DECISION_MAKER","label":"New Technical / Commercial Decision-Maker Hire","weight":26,"evidence":"Hiring leadership role: \"Head of Expansion South-West Europe\""},{"code":"BUDGET_EXPANSION","label":"Headcount & Budget Expansion","weight":22,"evidence":"have been building and operating a rapidly growing network of iconic fast-charging stations acr"}],"signalCodes":["NEW_LEADERSHIP_DECISION_MAKER","BUDGET_EXPANSION"],"seniorityNormalized":"director_head","isDecisionMakerHire":true,"intentScore":76,"intentTier":"HOT","targetBuyerPersona":"CTO / VP Engineering","outreachHook":"Noticed Fastned is hiring a Head of Expansion South-West Europe in Paris, Île-de-France, France (New Technical / Commercial Decision-Maker Hire).","disclosedSalary":null}},{"atsPlatform":"smartrecruiters","companySlug":"Devoteam","companyName":"Devoteam","jobId":"744000161521640","title":"Sales Manager / Directeur d'Agence - Cloud","department":"Sales & Pre-Sales","location":"Levallois-Perret, IDF, France","country":"FR","workplaceType":"onsite","publishedAt":"2026-11-13T15:54:31.471Z","daysSincePosted":2,"jobUrl":"https://jobs.smartrecruiters.com/Devoteam/744000161521640-sales-manager-directeur-d-agence-cloud","intent":{"techStackAll":["Salesforce","AWS","Microsoft Azure","Google Cloud (GCP)","Snowflake"],"techStackByCategory":{"crm_sales":["Salesforce"],"cloud_infra":["AWS","Microsoft Azure","Google Cloud (GCP)"],"data_analytics":["Snowflake"]},"techStackCount":5,"buyingSignals":[{"code":"AI_TRANSFORMATION_INITIATIVE","label":"Active GenAI / Agentic AI Rollout","weight":22,"evidence":"nos collaborateurs sont certifiés GenAI. Rejoindre Devoteam, c’est apprendre en cont"}],"signalCodes":["AI_TRANSFORMATION_INITIATIVE"],"seniorityNormalized":"mid_regular","isDecisionMakerHire":false,"intentScore":75,"intentTier":"HOT","targetBuyerPersona":"VP Engineering / Head of Platform / CISO","outreachHook":"Noticed Devoteam is hiring a Sales Manager / Directeur d'Agence - Cloud in Levallois-Perret, IDF, France working across Salesforce, AWS, Microsoft Azure (Active GenAI / Agentic AI Rollout).","disclosedSalary":null}},{"atsPlatform":"personio","companySlug":"hometogo","companyName":"HomeToGo Group Talent Acquisition","jobId":"2794729","title":"Director Pricing, Revenue & Distribution Management - Interhome (m/f/d)","department":"Level 7 and up","location":"Zurich,Berlin","country":"Germany","workplaceType":"unspecified","publishedAt":"2026-09-15T00:00:00.000Z","daysSincePosted":61,"jobUrl":"https://hometogo.jobs.personio.de/job/2794729?language=en","intent":{"techStackAll":[],"techStackByCategory":{},"techStackCount":0,"buyingSignals":[{"code":"NEW_LEADERSHIP_DECISION_MAKER","label":"New Technical / Commercial Decision-Maker Hire","weight":30,"evidence":"Hiring leadership role: \"Director Pricing, Revenue & Distribution Management - Interhome (m/f/d)\""},{"code":"TECH_MIGRATION_MODERNIZATION","label":"Architecture Migration / Greenfield Build","weight":26,"evidence":"a yield team of two to three hires from scratch. You'll set direction for both, not just rev"}],"signalCodes":["NEW_LEADERSHIP_DECISION_MAKER","TECH_MIGRATION_MODERNIZATION"],"seniorityNormalized":"c_level_vp","isDecisionMakerHire":true,"intentScore":74,"intentTier":"HOT","targetBuyerPersona":"CRO / VP Sales / Head of RevOps","outreachHook":"Noticed HomeToGo Group Talent Acquisition is hiring a Director Pricing, Revenue & Distribution Management - Interhome (m/f/d) in Zurich,Berlin (New Technical / Commercial Decision-Maker Hire).","disclosedSalary":null}},{"atsPlatform":"teamtailor","companySlug":"career","companyName":"Teamtailor","jobId":"8724398","title":"Data Analyst","department":"Data","location":"Stockholm","country":"Sweden","workplaceType":"hybrid","publishedAt":"2026-11-13T06:10:18.000Z","daysSincePosted":2,"jobUrl":"https://career.teamtailor.com/jobs/8724398-data-analyst","intent":{"techStackAll":["Snowflake","BigQuery","dbt","Teamtailor"],"techStackByCategory":{"data_analytics":["Snowflake","BigQuery","dbt"],"hr_people":["Teamtailor"]},"techStackCount":4,"buyingSignals":[{"code":"TECH_MIGRATION_MODERNIZATION","label":"Architecture Migration / Greenfield Build","weight":26,"evidence":"tent and trusted numbers. - Help modernize our BI environment, including migrating existing"}],"signalCodes":["TECH_MIGRATION_MODERNIZATION"],"seniorityNormalized":"mid_regular","isDecisionMakerHire":false,"intentScore":74,"intentTier":"HOT","targetBuyerPersona":"VP Data / Head of Data & AI / CTO","outreachHook":"Noticed Teamtailor is hiring a Data Analyst in Stockholm working across Snowflake, BigQuery, dbt (Architecture Migration / Greenfield Build).","disclosedSalary":null}},{"atsPlatform":"workable","companySlug":"learnworlds","companyName":"LearnWorlds","jobId":"18DF59AA89","title":"Full Stack Software Engineer - Authoring Tools (Remote, Greece or Cyprus)","department":"Engineering","location":"Athens, Attica, Greece","country":"Greece","workplaceType":"remote","publishedAt":"2026-09-24T00:00:00.000Z","daysSincePosted":52,"jobUrl":"https://apply.workable.com/j/18DF59AA89","intent":{"techStackAll":["Kubernetes","Docker","PostgreSQL","MySQL / MariaDB","MongoDB","OpenAI / GPT","PHP","Vue.js"],"techStackByCategory":{"cloud_infra":["Kubernetes","Docker"],"data_analytics":["PostgreSQL","MySQL / MariaDB","MongoDB"],"ai_llm":["OpenAI / GPT"],"devtools_engineering":["PHP","Vue.js"]},"techStackCount":8,"buyingSignals":[{"code":"TECH_MIGRATION_MODERNIZATION","label":"Architecture Migration / Greenfield Build","weight":26,"evidence":"de—you don’t need everything to be greenfield to do great work. - Give thoughtful, constr"}],"signalCodes":["TECH_MIGRATION_MODERNIZATION"],"seniorityNormalized":"senior","isDecisionMakerHire":false,"intentScore":72,"intentTier":"HOT","targetBuyerPersona":"VP Data / Head of Data & AI / CTO","outreachHook":"Noticed LearnWorlds is hiring a Full Stack Software Engineer - Authoring Tools (Remote, Greece or Cyprus) in Athens, Attica, Greece working across Kubernetes, Docker, PostgreSQL (Architecture Migration / Greenfield Build).","disclosedSalary":null}},{"atsPlatform":"workable","companySlug":"learnworlds","companyName":"LearnWorlds","jobId":"18DF59AA89","title":"Full Stack Software Engineer - Authoring Tools (Remote, Greece or Cyprus)","department":"Engineering","location":"Thessaloniki, Central Macedonia, Greece","country":"Greece","workplaceType":"remote","publishedAt":"2026-09-24T00:00:00.000Z","daysSincePosted":52,"jobUrl":"https://apply.workable.com/j/18DF59AA89","intent":{"techStackAll":["Kubernetes","Docker","PostgreSQL","MySQL / MariaDB","MongoDB","OpenAI / GPT","PHP","Vue.js"],"techStackByCategory":{"cloud_infra":["Kubernetes","Docker"],"data_analytics":["PostgreSQL","MySQL / MariaDB","MongoDB"],"ai_llm":["OpenAI / GPT"],"devtools_engineering":["PHP","Vue.js"]},"techStackCount":8,"buyingSignals":[{"code":"TECH_MIGRATION_MODERNIZATION","label":"Architecture Migration / Greenfield Build","weight":26,"evidence":"de—you don’t need everything to be greenfield to do great work. - Give thoughtful, constr"}],"signalCodes":["TECH_MIGRATION_MODERNIZATION"],"seniorityNormalized":"senior","isDecisionMakerHire":false,"intentScore":72,"intentTier":"HOT","targetBuyerPersona":"VP Data / Head of Data & AI / CTO","outreachHook":"Noticed LearnWorlds is hiring a Full Stack Software Engineer - Authoring Tools (Remote, Greece or Cyprus) in Thessaloniki, Central Macedonia, Greece working across Kubernetes, Docker, PostgreSQL (Architecture Migration / Greenfield Build).","disclosedSalary":null}},{"atsPlatform":"workable","companySlug":"learnworlds","companyName":"LearnWorlds","jobId":"18DF59AA89","title":"Full Stack Software Engineer - Authoring Tools (Remote, Greece or Cyprus)","department":"Engineering","location":"Patras, Western Greece, Greece","country":"Greece","workplaceType":"remote","publishedAt":"2026-09-24T00:00:00.000Z","daysSincePosted":52,"jobUrl":"https://apply.workable.com/j/18DF59AA89","intent":{"techStackAll":["Kubernetes","Docker","PostgreSQL","MySQL / MariaDB","MongoDB","OpenAI / GPT","PHP","Vue.js"],"techStackByCategory":{"cloud_infra":["Kubernetes","Docker"],"data_analytics":["PostgreSQL","MySQL / MariaDB","MongoDB"],"ai_llm":["OpenAI / GPT"],"devtools_engineering":["PHP","Vue.js"]},"techStackCount":8,"buyingSignals":[{"code":"TECH_MIGRATION_MODERNIZATION","label":"Architecture Migration / Greenfield Build","weight":26,"evidence":"de—you don’t need everything to be greenfield to do great work. - Give thoughtful, constr"}],"signalCodes":["TECH_MIGRATION_MODERNIZATION"],"seniorityNormalized":"senior","isDecisionMakerHire":false,"intentScore":72,"intentTier":"HOT","targetBuyerPersona":"VP Data / Head of Data & AI / CTO","outreachHook":"Noticed LearnWorlds is hiring a Full Stack Software Engineer - Authoring Tools (Remote, Greece or Cyprus) in Patras, Western Greece, Greece working across Kubernetes, Docker, PostgreSQL (Architecture Migration / Greenfield Build).","disclosedSalary":null}},{"atsPlatform":"personio","companySlug":"ommax","companyName":"OMMAX","jobId":"2579359","title":"AI Platform / MLOps Engineer (m/f/d)","department":"Data & AI","location":"München","country":"Germany","workplaceType":"unspecified","publishedAt":"2026-03-27T16:51:59.000Z","daysSincePosted":233,"jobUrl":"https://ommax.jobs.personio.de/job/2579359?language=en","intent":{"techStackAll":["AWS","Microsoft Azure","Kubernetes","Docker","Terraform","MLOps"],"techStackByCategory":{"cloud_infra":["AWS","Microsoft Azure","Kubernetes","Docker","Terraform"],"ai_llm":["MLOps"]},"techStackCount":6,"buyingSignals":[{"code":"AI_TRANSFORMATION_INITIATIVE","label":"Active GenAI / Agentic AI Rollout","weight":22,"evidence":"AI Platform / MLOps Engineer (m/f/d) Data & AI What we look for"}],"signalCodes":["AI_TRANSFORMATION_INITIATIVE"],"seniorityNormalized":"mid_regular","isDecisionMakerHire":false,"intentScore":68,"intentTier":"WARM","targetBuyerPersona":"VP Data / Head of Data & AI / CTO","outreachHook":"Noticed OMMAX is hiring a AI Platform / MLOps Engineer (m/f/d) in München working across AWS, Microsoft Azure, Kubernetes (Active GenAI / Agentic AI Rollout).","disclosedSalary":null}},{"atsPlatform":"teamtailor","companySlug":"rebtel","companyName":"Rebtel","jobId":"7805704","title":"Senior Machine Learning Engineer","department":"Data","location":"Stockholm","country":"Sweden","workplaceType":"hybrid","publishedAt":"2026-05-27T12:17:12.000Z","daysSincePosted":172,"jobUrl":"https://rebtel.teamtailor.com/jobs/7805704-senior-machine-learning-engineer","intent":{"techStackAll":["AWS","Microsoft Azure","Google Cloud (GCP)","Kubernetes","Apache Airflow","LangChain / LangGraph","LlamaIndex","MLOps","Python"],"techStackByCategory":{"cloud_infra":["AWS","Microsoft Azure","Google Cloud (GCP)","Kubernetes"],"data_analytics":["Apache Airflow"],"ai_llm":["LangChain / LangGraph","LlamaIndex","MLOps"],"devtools_engineering":["Python"]},"techStackCount":9,"buyingSignals":[{"code":"AI_TRANSFORMATION_INITIATIVE","label":"Active GenAI / Agentic AI Rollout","weight":22,"evidence":"modern data stack - Experience in MLOps tooling: MLflow, Airflow, Kubernetes and fea"}],"signalCodes":["AI_TRANSFORMATION_INITIATIVE"],"seniorityNormalized":"senior","isDecisionMakerHire":false,"intentScore":68,"intentTier":"WARM","targetBuyerPersona":"VP Data / Head of Data & AI / CTO","outreachHook":"Noticed Rebtel is hiring a Senior Machine Learning Engineer in Stockholm working across AWS, Microsoft Azure, Google Cloud (GCP) (Active GenAI / Agentic AI Rollout).","disclosedSalary":null}},{"atsPlatform":"workable","companySlug":"viva","companyName":"Viva.com","jobId":"1CF9C621B6","title":"BI Engineer (Hybrid or Onsite)","department":"Technology","location":"Marousi, Attica, Greece","country":"Greece","workplaceType":"hybrid","publishedAt":"2025-12-08T00:00:00.000Z","daysSincePosted":342,"jobUrl":"https://apply.workable.com/j/1CF9C621B6","intent":{"techStackAll":["AWS","Microsoft Azure","Google Cloud (GCP)","Tableau","Power BI","MySQL / MariaDB","MongoDB","Python"],"techStackByCategory":{"cloud_infra":["AWS","Microsoft Azure","Google Cloud (GCP)"],"data_analytics":["Tableau","Power BI","MySQL / MariaDB","MongoDB"],"devtools_engineering":["Python"]},"techStackCount":8,"buyingSignals":[{"code":"AI_TRANSFORMATION_INITIATIVE","label":"Active GenAI / Agentic AI Rollout","weight":22,"evidence":"atasets for advanced analytics and generative AI use cases. - Perform tasks efficiently and"}],"signalCodes":["AI_TRANSFORMATION_INITIATIVE"],"seniorityNormalized":"mid_regular","isDecisionMakerHire":false,"intentScore":68,"intentTier":"WARM","targetBuyerPersona":"VP Data / Head of Data & AI / CTO","outreachHook":"Noticed Viva.com is hiring a BI Engineer (Hybrid or Onsite) in Marousi, Attica, Greece working across AWS, Microsoft Azure, Google Cloud (GCP) (Active GenAI / Agentic AI Rollout).","disclosedSalary":null}},{"atsPlatform":"personio","companySlug":"hometogo","companyName":"HomeToGo Group Talent Acquisition","jobId":"2578538","title":"Senior Software Engineer & Team Lead","department":"NFQ","location":"Kaunas/Vilnius","country":"Lithuania","workplaceType":"unspecified","publishedAt":"2026-03-27T00:00:00.000Z","daysSincePosted":233,"jobUrl":"https://hometogo.jobs.personio.de/job/2578538?language=en","intent":{"techStackAll":["Kubernetes","Docker","Snowflake","Apache Kafka","PostgreSQL","MySQL / MariaDB","Redis","Elasticsearch","PHP","Symfony / Laravel","RabbitMQ"],"techStackByCategory":{"cloud_infra":["Kubernetes","Docker"],"data_analytics":["Snowflake","Apache Kafka","PostgreSQL","MySQL / MariaDB","Redis","Elasticsearch"],"devtools_engineering":["PHP","Symfony / Laravel","RabbitMQ"]},"techStackCount":11,"buyingSignals":[{"code":"NEW_LEADERSHIP_DECISION_MAKER","label":"New Technical / Commercial Decision-Maker Hire","weight":20,"evidence":"Hiring leadership role: \"Senior Software Engineer & Team Lead\""}],"signalCodes":["NEW_LEADERSHIP_DECISION_MAKER"],"seniorityNormalized":"lead_principal","isDecisionMakerHire":true,"intentScore":66,"intentTier":"WARM","targetBuyerPersona":"VP Data / Head of Data & AI / CTO","outreachHook":"Noticed HomeToGo Group Talent Acquisition is hiring a Senior Software Engineer & Team Lead in Kaunas/Vilnius working across Kubernetes, Docker, Snowflake (New Technical / Commercial Decision-Maker Hire).","disclosedSalary":null}},{"atsPlatform":"personio","companySlug":"ommax","companyName":"OMMAX","jobId":"2579097","title":"(Senior) AI Engineer (m/f/d)","department":"Data & AI","location":"München","country":"Germany","workplaceType":"unspecified","publishedAt":"2026-03-27T14:26:18.000Z","daysSincePosted":233,"jobUrl":"https://ommax.jobs.personio.de/job/2579097?language=en","intent":{"techStackAll":["Kubernetes","Docker","LangChain / LangGraph","PyTorch","Python"],"techStackByCategory":{"cloud_infra":["Kubernetes","Docker"],"ai_llm":["LangChain / LangGraph","PyTorch"],"devtools_engineering":["Python"]},"techStackCount":5,"buyingSignals":[{"code":"AI_TRANSFORMATION_INITIATIVE","label":"Active GenAI / Agentic AI Rollout","weight":22,"evidence":"development, including exposure to Generative AI. - You have strong programming skills in la"}],"signalCodes":["AI_TRANSFORMATION_INITIATIVE"],"seniorityNormalized":"senior","isDecisionMakerHire":false,"intentScore":65,"intentTier":"WARM","targetBuyerPersona":"VP Data / Head of Data & AI / CTO","outreachHook":"Noticed OMMAX is hiring a (Senior) AI Engineer (m/f/d) in München working across Kubernetes, Docker, LangChain / LangGraph (Active GenAI / Agentic AI Rollout).","disclosedSalary":null}},{"atsPlatform":"personio","companySlug":"adsquare","companyName":"adsquare GmbH","jobId":"2845189","title":"Chief Revenue Officer (m/f/d)","department":"Sales","location":"London","country":"United Kingdom","workplaceType":"hybrid","publishedAt":"2026-10-15T17:44:44.000Z","daysSincePosted":31,"jobUrl":"https://adsquare.jobs.personio.de/job/2845189?language=en","intent":{"techStackAll":[],"techStackByCategory":{},"techStackCount":0,"buyingSignals":[{"code":"NEW_LEADERSHIP_DECISION_MAKER","label":"New Technical / Commercial Decision-Maker Hire","weight":30,"evidence":"Hiring leadership role: \"Chief Revenue Officer (m/f/d)\""},{"code":"URGENT_HIRING_VELOCITY","label":"Immediate / Urgent Start Mandate","weight":14,"evidence":"on and offer Work model Hybrid Desired start date Asap"}],"signalCodes":["NEW_LEADERSHIP_DECISION_MAKER","URGENT_HIRING_VELOCITY"],"seniorityNormalized":"c_level_vp","isDecisionMakerHire":true,"intentScore":62,"intentTier":"WARM","targetBuyerPersona":"CRO / VP Sales / Head of RevOps","outreachHook":"Noticed adsquare GmbH is hiring a Chief Revenue Officer (m/f/d) in London (New Technical / Commercial Decision-Maker Hire).","disclosedSalary":null}},{"atsPlatform":"recruitee","companySlug":"funda","companyName":"Funda","jobId":"2334637","title":"Site Reliability Engineer","department":"Engineering","location":"Amsterdam, Noord-Holland, Netherlands","country":"Netherlands","workplaceType":"hybrid","publishedAt":"2026-11-10T12:53:43.000Z","daysSincePosted":5,"jobUrl":"https://jobs.funda.nl/o/site-reliability-engineer","intent":{"techStackAll":["Microsoft Azure","Kubernetes","Terraform","Helm","Elasticsearch","Python","C# / .NET"],"techStackByCategory":{"cloud_infra":["Microsoft Azure","Kubernetes","Terraform","Helm"],"data_analytics":["Elasticsearch"],"devtools_engineering":["Python","C# / .NET"]},"techStackCount":7,"buyingSignals":[],"signalCodes":[],"seniorityNormalized":"mid_regular","isDecisionMakerHire":false,"intentScore":62,"intentTier":"WARM","targetBuyerPersona":"VP Data / Head of Data & AI / CTO","outreachHook":"Noticed Funda is hiring a Site Reliability Engineer in Amsterdam, Noord-Holland, Netherlands working across Microsoft Azure, Kubernetes, Terraform [Disclosed band: EUR 5,586-6,504].","disclosedSalary":{"min":5586,"max":6504,"currency":"EUR","period":"monthly","rawText":"EUR 5586-6504 (monthly)","source":"structured_feed"}}},{"atsPlatform":"workable","companySlug":"epignosis","companyName":"Epignosis","jobId":"F8513196FB","title":"Head Of Commercial Enablement","department":"Sales","location":"Athens, Attiki, Greece","country":"Greece","workplaceType":"onsite","publishedAt":"2026-10-30T00:00:00.000Z","daysSincePosted":16,"jobUrl":"https://apply.workable.com/j/F8513196FB","intent":{"techStackAll":["Salesforce","ZoomInfo"],"techStackByCategory":{"crm_sales":["Salesforce","ZoomInfo"]},"techStackCount":2,"buyingSignals":[{"code":"NEW_LEADERSHIP_DECISION_MAKER","label":"New Technical / Commercial Decision-Maker Hire","weight":26,"evidence":"Hiring leadership role: \"Head Of Commercial Enablement\""}],"signalCodes":["NEW_LEADERSHIP_DECISION_MAKER"],"seniorityNormalized":"director_head","isDecisionMakerHire":true,"intentScore":59,"intentTier":"WARM","targetBuyerPersona":"CRO / VP Sales / Head of RevOps","outreachHook":"Noticed Epignosis is hiring a Head Of Commercial Enablement in Athens, Attiki, Greece working across Salesforce, ZoomInfo (New Technical / Commercial Decision-Maker Hire).","disclosedSalary":null}},{"atsPlatform":"workable","companySlug":"epignosis","companyName":"Epignosis","jobId":"F8DE96CFD7","title":"Head Of Commercial Enablement","department":"Sales","location":"London, England, United Kingdom","country":"United Kingdom","workplaceType":"remote","publishedAt":"2026-10-30T00:00:00.000Z","daysSincePosted":16,"jobUrl":"https://apply.workable.com/j/F8DE96CFD7","intent":{"techStackAll":["Salesforce","ZoomInfo"],"techStackByCategory":{"crm_sales":["Salesforce","ZoomInfo"]},"techStackCount":2,"buyingSignals":[{"code":"NEW_LEADERSHIP_DECISION_MAKER","label":"New Technical / Commercial Decision-Maker Hire","weight":26,"evidence":"Hiring leadership role: \"Head Of Commercial Enablement\""}],"signalCodes":["NEW_LEADERSHIP_DECISION_MAKER"],"seniorityNormalized":"director_head","isDecisionMakerHire":true,"intentScore":59,"intentTier":"WARM","targetBuyerPersona":"CRO / VP Sales / Head of RevOps","outreachHook":"Noticed Epignosis is hiring a Head Of Commercial Enablement in London, England, United Kingdom working across Salesforce, ZoomInfo (New Technical / Commercial Decision-Maker Hire).","disclosedSalary":null}},{"atsPlatform":"teamtailor","companySlug":"rebtel","companyName":"Rebtel","jobId":"7091193","title":"Staff .NET Developer","department":"Tech","location":"Stockholm","country":"Sweden","workplaceType":"hybrid","publishedAt":"2026-01-21T15:51:25.000Z","daysSincePosted":298,"jobUrl":"https://rebtel.teamtailor.com/jobs/7091193-staff-net-developer","intent":{"techStackAll":["AWS","Microsoft Azure","Google Cloud (GCP)","Docker"],"techStackByCategory":{"cloud_infra":["AWS","Microsoft Azure","Google Cloud (GCP)","Docker"]},"techStackCount":4,"buyingSignals":[{"code":"NEW_LEADERSHIP_DECISION_MAKER","label":"New Technical / Commercial Decision-Maker Hire","weight":20,"evidence":"Hiring leadership role: \"Staff .NET Developer\""}],"signalCodes":["NEW_LEADERSHIP_DECISION_MAKER"],"seniorityNormalized":"lead_principal","isDecisionMakerHire":true,"intentScore":58,"intentTier":"WARM","targetBuyerPersona":"CTO / VP Engineering","outreachHook":"Noticed Rebtel is hiring a Staff .NET Developer in Stockholm working across AWS, Microsoft Azure, Google Cloud (GCP) (New Technical / Commercial Decision-Maker Hire).","disclosedSalary":null}},{"atsPlatform":"recruitee","companySlug":"vandebron","companyName":"Vandebron","jobId":"2821997","title":"Engineering Team Lead (Backend)","department":"Tech","location":"Amsterdam, Noord-Holland, Nederland","country":"Nederland","workplaceType":"hybrid","publishedAt":"2026-11-10T09:54:46.000Z","daysSincePosted":5,"jobUrl":"https://werkenbij.vandebron.nl/o/engineering-team-lead-backend","intent":{"techStackAll":["Java","Kotlin"],"techStackByCategory":{"devtools_engineering":["Java","Kotlin"]},"techStackCount":2,"buyingSignals":[{"code":"NEW_LEADERSHIP_DECISION_MAKER","label":"New Technical / Commercial Decision-Maker Hire","weight":20,"evidence":"Hiring leadership role: \"Engineering Team Lead (Backend)\""}],"signalCodes":["NEW_LEADERSHIP_DECISION_MAKER"],"seniorityNormalized":"lead_principal","isDecisionMakerHire":true,"intentScore":58,"intentTier":"WARM","targetBuyerPersona":"CTO / VP Engineering","outreachHook":"Noticed Vandebron is hiring a Engineering Team Lead (Backend) in Amsterdam, Noord-Holland, Nederland working across Java, Kotlin (New Technical / Commercial Decision-Maker Hire).","disclosedSalary":null}},{"atsPlatform":"recruitee","companySlug":"channable","companyName":"Channable","jobId":"2789218","title":"Haskell Software Engineer - Creatives Team","department":"Engineering","location":"Utrecht, Utrecht, Netherlands","country":"Netherlands","workplaceType":"hybrid","publishedAt":"2026-10-20T09:26:03.000Z","daysSincePosted":26,"jobUrl":"https://jobs.channable.com/o/haskell-software-engineer-creatives-team","intent":{"techStackAll":["Google Cloud (GCP)","Terraform","Ansible","Prometheus","PostgreSQL","TypeScript","Python","Rust","React"],"techStackByCategory":{"cloud_infra":["Google Cloud (GCP)","Terraform","Ansible","Prometheus"],"data_analytics":["PostgreSQL"],"devtools_engineering":["TypeScript","Python","Rust","React"]},"techStackCount":9,"buyingSignals":[],"signalCodes":[],"seniorityNormalized":"mid_regular","isDecisionMakerHire":false,"intentScore":57,"intentTier":"WARM","targetBuyerPersona":"VP Data / Head of Data & AI / CTO","outreachHook":"Noticed Channable is hiring a Haskell Software Engineer - Creatives Team in Utrecht, Utrecht, Netherlands working across Google Cloud (GCP), Terraform, Ansible [Disclosed band: EUR 4,000-5,700].","disclosedSalary":{"min":4000,"max":5700,"currency":"EUR","period":"monthly","rawText":"EUR 4000-5700 (monthly)","source":"structured_feed"}}},{"atsPlatform":"recruitee","companySlug":"funda","companyName":"Funda","jobId":"594353","title":"Data Engineer","department":"Engineering","location":"Amsterdam, Noord-Holland, Netherlands","country":"Netherlands","workplaceType":"hybrid","publishedAt":"2026-10-26T09:31:41.000Z","daysSincePosted":20,"jobUrl":"https://jobs.funda.nl/o/data-engineer","intent":{"techStackAll":["Microsoft Azure","Google Cloud (GCP)","Kubernetes","Docker","BigQuery","dbt","Airbyte","Anthropic / Claude","Python"],"techStackByCategory":{"cloud_infra":["Microsoft Azure","Google Cloud (GCP)","Kubernetes","Docker"],"data_analytics":["BigQuery","dbt","Airbyte"],"ai_llm":["Anthropic / Claude"],"devtools_engineering":["Python"]},"techStackCount":9,"buyingSignals":[],"signalCodes":[],"seniorityNormalized":"mid_regular","isDecisionMakerHire":false,"intentScore":57,"intentTier":"WARM","targetBuyerPersona":"VP Data / Head of Data & AI / CTO","outreachHook":"Noticed Funda is hiring a Data Engineer in Amsterdam, Noord-Holland, Netherlands working across Microsoft Azure, Google Cloud (GCP), Kubernetes [Disclosed band: EUR 4,512-6,084].","disclosedSalary":{"min":4512,"max":6084,"currency":"EUR","period":"monthly","rawText":"EUR 4512-6084 (monthly)","source":"structured_feed"}}},{"atsPlatform":"personio","companySlug":"hometogo","companyName":"HomeToGo Group Talent Acquisition","jobId":"2875378","title":"Senior Software Engineer (PHP)","department":"NFQ","location":"Vilnius,Kaunas/Vilnius","country":"Lithuania","workplaceType":"unspecified","publishedAt":"2026-11-04T00:00:00.000Z","daysSincePosted":11,"jobUrl":"https://hometogo.jobs.personio.de/job/2875378?language=en","intent":{"techStackAll":["Kubernetes","Docker","Snowflake","PostgreSQL","MySQL / MariaDB","Redis","Elasticsearch","PHP","Symfony / Laravel","RabbitMQ"],"techStackByCategory":{"cloud_infra":["Kubernetes","Docker"],"data_analytics":["Snowflake","PostgreSQL","MySQL / MariaDB","Redis","Elasticsearch"],"devtools_engineering":["PHP","Symfony / Laravel","RabbitMQ"]},"techStackCount":10,"buyingSignals":[],"signalCodes":[],"seniorityNormalized":"senior","isDecisionMakerHire":false,"intentScore":56,"intentTier":"WARM","targetBuyerPersona":"VP Data / Head of Data & AI / CTO","outreachHook":"Noticed HomeToGo Group Talent Acquisition is hiring a Senior Software Engineer (PHP) in Vilnius,Kaunas/Vilnius working across Kubernetes, Docker, Snowflake.","disclosedSalary":null}},{"atsPlatform":"teamtailor","companySlug":"career","companyName":"Teamtailor","jobId":"8706432","title":"Enterprise Account Executive - Chicago","department":"Sales","location":"Chicago","country":"United States","workplaceType":"hybrid","publishedAt":"2026-11-11T16:34:36.000Z","daysSincePosted":4,"jobUrl":"https://career.teamtailor.com/jobs/8706432-enterprise-account-executive-chicago","intent":{"techStackAll":["Salesforce","Salesloft","Apollo.io","Cognism","LinkedIn Sales Navigator","Notion","Teamtailor"],"techStackByCategory":{"crm_sales":["Salesforce","Salesloft","Apollo.io","Cognism","LinkedIn Sales Navigator"],"marketing_product":["Notion"],"hr_people":["Teamtailor"]},"techStackCount":7,"buyingSignals":[],"signalCodes":[],"seniorityNormalized":"mid_regular","isDecisionMakerHire":false,"intentScore":56,"intentTier":"WARM","targetBuyerPersona":"CRO / VP Sales / Head of RevOps","outreachHook":"Noticed Teamtailor is hiring a Enterprise Account Executive - Chicago in Chicago working across Salesforce, Salesloft, Apollo.io.","disclosedSalary":null}},{"atsPlatform":"teamtailor","companySlug":"nextlane","companyName":"Nextlane","jobId":"8679913","title":"QA Automation Engineer","department":"General","location":"Spain - Madrid","country":"Spain","workplaceType":"hybrid","publishedAt":"2026-11-06T10:54:06.000Z","daysSincePosted":9,"jobUrl":"https://nextlane.teamtailor.com/jobs/8679913-qa-automation-engineer","intent":{"techStackAll":["AWS","Microsoft Azure","Docker","TypeScript","Python","Java","GitHub Actions","GitLab CI","Playwright / Cypress"],"techStackByCategory":{"cloud_infra":["AWS","Microsoft Azure","Docker"],"devtools_engineering":["TypeScript","Python","Java","GitHub Actions","GitLab CI","Playwright / Cypress"]},"techStackCount":9,"buyingSignals":[],"signalCodes":[],"seniorityNormalized":"mid_regular","isDecisionMakerHire":false,"intentScore":56,"intentTier":"WARM","targetBuyerPersona":"CTO / VP Engineering","outreachHook":"Noticed Nextlane is hiring a QA Automation Engineer in Spain - Madrid working across AWS, Microsoft Azure, Docker.","disclosedSalary":null}},{"atsPlatform":"teamtailor","companySlug":"nextlane","companyName":"Nextlane","jobId":"8679837","title":"Senior IA Software Engineer","department":"General","location":"Portugal - Sintra","country":"Portugal","workplaceType":"hybrid","publishedAt":"2026-11-06T10:43:49.000Z","daysSincePosted":9,"jobUrl":"https://nextlane.teamtailor.com/jobs/8679837-senior-ia-software-engineer","intent":{"techStackAll":["AWS","Microsoft Azure","Google Cloud (GCP)","Docker","Anthropic / Claude","RAG / Agentic AI","TypeScript","React","Playwright / Cypress"],"techStackByCategory":{"cloud_infra":["AWS","Microsoft Azure","Google Cloud (GCP)","Docker"],"ai_llm":["Anthropic / Claude","RAG / Agentic AI"],"devtools_engineering":["TypeScript","React","Playwright / Cypress"]},"techStackCount":9,"buyingSignals":[],"signalCodes":[],"seniorityNormalized":"senior","isDecisionMakerHire":false,"intentScore":56,"intentTier":"WARM","targetBuyerPersona":"CTO / VP Engineering","outreachHook":"Noticed Nextlane is hiring a Senior IA Software Engineer in Portugal - Sintra working across AWS, Microsoft Azure, Google Cloud (GCP).","disclosedSalary":null}},{"atsPlatform":"teamtailor","companySlug":"justergroupab","companyName":"Justera Group","jobId":"8739505","title":"Software Engineer","department":"Tech","location":"Unspecified","country":"Europe","workplaceType":"onsite","publishedAt":"2026-11-13T10:39:09.000Z","daysSincePosted":2,"jobUrl":"https://justergroupab.teamtailor.com/jobs/8739505-software-engineer","intent":{"techStackAll":["Microsoft Azure","Google Cloud (GCP)","Kubernetes","Terraform","Databricks","PostgreSQL","Python","FastAPI / Django"],"techStackByCategory":{"cloud_infra":["Microsoft Azure","Google Cloud (GCP)","Kubernetes","Terraform"],"data_analytics":["Databricks","PostgreSQL"],"devtools_engineering":["Python","FastAPI / Django"]},"techStackCount":8,"buyingSignals":[],"signalCodes":[],"seniorityNormalized":"mid_regular","isDecisionMakerHire":false,"intentScore":56,"intentTier":"WARM","targetBuyerPersona":"VP Data / Head of Data & AI / CTO","outreachHook":"Noticed Justera Group is hiring a Software Engineer in Unspecified working across Microsoft Azure, Google Cloud (GCP), Kubernetes.","disclosedSalary":null}},{"atsPlatform":"teamtailor","companySlug":"justergroupab","companyName":"Justera Group","jobId":"8657179","title":"Senior Data Engineer – GCP / BigQuery","department":"Tech","location":"Stockholm","country":"Sweden","workplaceType":"hybrid","publishedAt":"2026-11-03T10:27:59.000Z","daysSincePosted":12,"jobUrl":"https://justergroupab.teamtailor.com/jobs/8657179-senior-data-engineer-gcp-bigquery","intent":{"techStackAll":["Google Cloud (GCP)","Terraform","BigQuery","dbt","Apache Kafka","Python"],"techStackByCategory":{"cloud_infra":["Google Cloud (GCP)","Terraform"],"data_analytics":["BigQuery","dbt","Apache Kafka"],"devtools_engineering":["Python"]},"techStackCount":6,"buyingSignals":[],"signalCodes":[],"seniorityNormalized":"senior","isDecisionMakerHire":false,"intentScore":56,"intentTier":"WARM","targetBuyerPersona":"VP Data / Head of Data & AI / CTO","outreachHook":"Noticed Justera Group is hiring a Senior Data Engineer – GCP / BigQuery in Stockholm working across Google Cloud (GCP), Terraform, BigQuery.","disclosedSalary":null}},{"atsPlatform":"smartrecruiters","companySlug":"Devoteam","companyName":"Devoteam","jobId":"744000161453534","title":"Architecte Network & Security – Hybrid & Multi-Cloud (H/F)","department":"Cloud","location":"Levallois-Perret, IDF, France","country":"FR","workplaceType":"hybrid","publishedAt":"2026-11-13T10:02:49.997Z","daysSincePosted":2,"jobUrl":"https://jobs.smartrecruiters.com/Devoteam/744000161453534-architecte-network-security-hybrid-multi-cloud-h-f-","intent":{"techStackAll":["AWS","Microsoft Azure","Google Cloud (GCP)","Terraform","Ansible","Snowflake","Databricks","Python","GitLab CI","SAP"],"techStackByCategory":{"cloud_infra":["AWS","Microsoft Azure","Google Cloud (GCP)","Terraform","Ansible"],"data_analytics":["Snowflake","Databricks"],"devtools_engineering":["Python","GitLab CI"],"erp_finance":["SAP"]},"techStackCount":10,"buyingSignals":[],"signalCodes":[],"seniorityNormalized":"senior","isDecisionMakerHire":false,"intentScore":56,"intentTier":"WARM","targetBuyerPersona":"VP Data / Head of Data & AI / CTO","outreachHook":"Noticed Devoteam is hiring a Architecte Network & Security – Hybrid & Multi-Cloud (H/F) in Levallois-Perret, IDF, France working across AWS, Microsoft Azure, Google Cloud (GCP).","disclosedSalary":null}},{"atsPlatform":"recruitee","companySlug":"fastned","companyName":"Fastned","jobId":"2818767","title":"Backend Engineer - Payments Team","department":"Software Engineering","location":"Amsterdam, Noord-Holland, Netherlands","country":"Netherlands","workplaceType":"hybrid","publishedAt":"2026-11-06T13:27:46.000Z","daysSincePosted":9,"jobUrl":"https://fastned.recruitee.com/o/backend-engineer-payments-team","intent":{"techStackAll":["AWS","Kubernetes","Terraform","Apache Kafka","PostgreSQL","Anthropic / Claude","Java","Kotlin","Spring Boot","GitLab CI"],"techStackByCategory":{"cloud_infra":["AWS","Kubernetes","Terraform"],"data_analytics":["Apache Kafka","PostgreSQL"],"ai_llm":["Anthropic / Claude"],"devtools_engineering":["Java","Kotlin","Spring Boot","GitLab CI"]},"techStackCount":10,"buyingSignals":[],"signalCodes":[],"seniorityNormalized":"mid_regular","isDecisionMakerHire":false,"intentScore":56,"intentTier":"WARM","targetBuyerPersona":"VP Data / Head of Data & AI / CTO","outreachHook":"Noticed Fastned is hiring a Backend Engineer - Payments Team in Amsterdam, Noord-Holland, Netherlands working across AWS, Kubernetes, Terraform.","disclosedSalary":null}},{"atsPlatform":"personio","companySlug":"tanso","companyName":"Tanso Technologies GmbH","jobId":"2888786","title":"Forward Deployed Engineer (f/m/x)","department":"Product, Design & Engineering","location":"Munich","country":"Germany","workplaceType":"unspecified","publishedAt":"2026-11-13T17:29:04.000Z","daysSincePosted":2,"jobUrl":"https://tanso.jobs.personio.de/job/2888786?language=en","intent":{"techStackAll":["SAP"],"techStackByCategory":{"erp_finance":["SAP"]},"techStackCount":1,"buyingSignals":[{"code":"AI_TRANSFORMATION_INITIATIVE","label":"Active GenAI / Agentic AI Rollout","weight":22,"evidence":"technical implementation role. - AI-native way of working: AI agents are an integral pa"}],"signalCodes":["AI_TRANSFORMATION_INITIATIVE"],"seniorityNormalized":"mid_regular","isDecisionMakerHire":false,"intentScore":55,"intentTier":"WARM","targetBuyerPersona":"CPO / VP Product","outreachHook":"Noticed Tanso Technologies GmbH is hiring a Forward Deployed Engineer (f/m/x) in Munich working across SAP (Active GenAI / Agentic AI Rollout).","disclosedSalary":null}},{"atsPlatform":"personio","companySlug":"ommax","companyName":"OMMAX","jobId":"2579074","title":"(Senior) Data Scientist (m/f/d)","department":"Data & AI","location":"München","country":"Germany","workplaceType":"unspecified","publishedAt":"2026-03-27T14:16:23.000Z","daysSincePosted":233,"jobUrl":"https://ommax.jobs.personio.de/job/2579074?language=en","intent":{"techStackAll":["LangChain / LangGraph","Hugging Face","Python"],"techStackByCategory":{"ai_llm":["LangChain / LangGraph","Hugging Face"],"devtools_engineering":["Python"]},"techStackCount":3,"buyingSignals":[{"code":"AI_TRANSFORMATION_INITIATIVE","label":"Active GenAI / Agentic AI Rollout","weight":22,"evidence":"d analytics, including exposure to Generative AI. - You have strong programming skills in Py"}],"signalCodes":["AI_TRANSFORMATION_INITIATIVE"],"seniorityNormalized":"senior","isDecisionMakerHire":false,"intentScore":55,"intentTier":"WARM","targetBuyerPersona":"VP Data / Head of Data & AI / CTO","outreachHook":"Noticed OMMAX is hiring a (Senior) Data Scientist (m/f/d) in München working across LangChain / LangGraph, Hugging Face, Python (Active GenAI / Agentic AI Rollout).","disclosedSalary":null}},{"atsPlatform":"personio","companySlug":"eqs-group","companyName":"EQS Group RegTech, S.L.U.","jobId":"2869220","title":"Senior Sales Enablement Manager","department":"Sales Solutions Consulting","location":"Barcelona","country":"Spain","workplaceType":"unspecified","publishedAt":"2026-10-30T12:02:06.000Z","daysSincePosted":16,"jobUrl":"https://eqs-group.jobs.personio.de/job/2869220?language=en","intent":{"techStackAll":["Salesforce"],"techStackByCategory":{"crm_sales":["Salesforce"]},"techStackCount":1,"buyingSignals":[{"code":"TECH_MIGRATION_MODERNIZATION","label":"Architecture Migration / Greenfield Build","weight":26,"evidence":"Manager, you’ll build the program from scratch and shape how our teams sell across a comple"}],"signalCodes":["TECH_MIGRATION_MODERNIZATION"],"seniorityNormalized":"senior","isDecisionMakerHire":false,"intentScore":54,"intentTier":"WARM","targetBuyerPersona":"CRO / VP Sales / Head of RevOps","outreachHook":"Noticed EQS Group RegTech, S.L.U. is hiring a Senior Sales Enablement Manager in Barcelona working across Salesforce (Architecture Migration / Greenfield Build).","disclosedSalary":null}}];
+const DOSSIERS = [{"atsPlatform":"personio","companySlug":"adsquare","companyName":"adsquare GmbH","careerSiteUrl":"https://adsquare.jobs.personio.de","totalJobsAnalyzed":7,"recentJobsLast14Days":0,"hiringVelocityTier":"ACTIVE_SCALING","departmentsHiring":{"Partnerships":1,"Sales":3,"Data":2,"People & Enablement":1},"workplaceMix":{"hybrid":5,"unspecified":2},"companyTechStackByCategory":{"cloud_infra":["AWS","Kubernetes","Terraform","Datadog","Docker"],"data_analytics":["Redshift","dbt","Apache Airflow","Dagster","Snowflake","BigQuery"],"ai_llm":["RAG / Agentic AI","Anthropic / Claude","PyTorch","TensorFlow"],"devtools_engineering":["Python","GitLab CI","FastAPI / Django"]},"topTechnologies":[{"tool":"AWS","category":"cloud_infra","mentions":2},{"tool":"Kubernetes","category":"cloud_infra","mentions":2},{"tool":"Terraform","category":"cloud_infra","mentions":2},{"tool":"dbt","category":"data_analytics","mentions":2},{"tool":"RAG / Agentic AI","category":"ai_llm","mentions":2},{"tool":"Python","category":"devtools_engineering","mentions":2},{"tool":"Datadog","category":"cloud_infra","mentions":1},{"tool":"Redshift","category":"data_analytics","mentions":1},{"tool":"Apache Airflow","category":"data_analytics","mentions":1},{"tool":"Dagster","category":"data_analytics","mentions":1},{"tool":"GitLab CI","category":"devtools_engineering","mentions":1},{"tool":"Docker","category":"cloud_infra","mentions":1}],"activeBuyingSignals":["URGENT_HIRING_VELOCITY","NEW_LEADERSHIP_DECISION_MAKER","TECH_MIGRATION_MODERNIZATION"],"decisionMakerOpenings":[{"title":"Chief Revenue Officer (m/f/d)","department":"Sales","jobUrl":"https://adsquare.jobs.personio.de/job/2845189?language=en","intentScore":62},{"title":"Staff Data Platform Engineer (m/f/d)","department":"Data","jobUrl":"https://adsquare.jobs.personio.de/job/2869172?language=en","intentScore":100},{"title":"Staff Data Scientist (m/f/d)","department":"Data","jobUrl":"https://adsquare.jobs.personio.de/job/2865259?language=en","intentScore":77}],"highestIntentScore":100,"averageIntentScore":52,"disclosedSalarySamples":[{"title":"Account Manager Platform Partnerships (m/f/d)","formatted":"EUR 50,000 - 65,000 (yearly)"},{"title":"Sales Manager France & Benelux (f/m/d)","formatted":"EUR 35,000 - 43,000 (yearly)"},{"title":"Senior Sales Manager - DACH (m/f/d)","formatted":"EUR 90,000 - 100,000 (yearly)"},{"title":"Staff Data Platform Engineer (m/f/d)","formatted":"EUR 90,000 - 105,000 (yearly)"},{"title":"Staff Data Scientist (m/f/d)","formatted":"EUR 92,000 - 107,000 (yearly)"}],"accountOutreachHook":"Saw adsquare GmbH has 7 open roles across Sales (3) & Data (2) — with active investment in AWS, Kubernetes, Terraform, dbt — including a Chief Revenue Officer (m/f/d) hire.","generatedAt":"2026-11-15T20:30:29.521Z"},{"atsPlatform":"smartrecruiters","companySlug":"ServiceNow","companyName":"ServiceNow","careerSiteUrl":"https://jobs.smartrecruiters.com/ServiceNow","totalJobsAnalyzed":8,"recentJobsLast14Days":8,"hiringVelocityTier":"HYPERGROWTH","departmentsHiring":{"Sales":1,"Engineering, Infrastructure and Operations":5,"Digital Technology":2},"workplaceMix":{"onsite":3,"hybrid":5},"companyTechStackByCategory":{"cloud_infra":["AWS","Microsoft Azure","Google Cloud (GCP)","Kubernetes","Terraform","Ansible"],"devtools_engineering":["Python","Go (Golang)","Java"],"erp_finance":["Workday"]},"topTechnologies":[{"tool":"AWS","category":"cloud_infra","mentions":5},{"tool":"Microsoft Azure","category":"cloud_infra","mentions":5},{"tool":"Google Cloud (GCP)","category":"cloud_infra","mentions":5},{"tool":"Kubernetes","category":"cloud_infra","mentions":5},{"tool":"Terraform","category":"cloud_infra","mentions":5},{"tool":"Ansible","category":"cloud_infra","mentions":5},{"tool":"Python","category":"devtools_engineering","mentions":5},{"tool":"Go (Golang)","category":"devtools_engineering","mentions":5},{"tool":"Java","category":"devtools_engineering","mentions":5},{"tool":"Workday","category":"erp_finance","mentions":1}],"activeBuyingSignals":["AI_TRANSFORMATION_INITIATIVE","NEW_LEADERSHIP_DECISION_MAKER","BUDGET_EXPANSION"],"decisionMakerOpenings":[{"title":"Staff Software Engineer – Compute Engineering","department":"Engineering, Infrastructure and Operations","jobUrl":"https://jobs.smartrecruiters.com/ServiceNow/744000161596329-staff-software-engineer-compute-engineering","intentScore":100},{"title":"Staff Software Engineer – Compute Engineering","department":"Engineering, Infrastructure and Operations","jobUrl":"https://jobs.smartrecruiters.com/ServiceNow/744000161596279-staff-software-engineer-compute-engineering","intentScore":100},{"title":"Senior Staff Software Engineer – Compute Engineering","department":"Engineering, Infrastructure and Operations","jobUrl":"https://jobs.smartrecruiters.com/ServiceNow/744000161595010-senior-staff-software-engineer-compute-engineering","intentScore":100},{"title":"Principal Software Engineer – Compute Engineering","department":"Engineering, Infrastructure and Operations","jobUrl":"https://jobs.smartrecruiters.com/ServiceNow/744000161596084-principal-software-engineer-compute-engineering","intentScore":100}],"highestIntentScore":100,"averageIntentScore":83,"disclosedSalarySamples":[{"title":"Senior Software Engineer – Compute Engineering","formatted":"USD 143,200 - 243,400 (yearly)"},{"title":"Staff Software Engineer – Compute Engineering","formatted":"USD 166,500 - 291,400 (yearly)"},{"title":"Staff Software Engineer – Compute Engineering","formatted":"USD 166,500 - 291,400 (yearly)"},{"title":"Senior Staff Software Engineer – Compute Engineering","formatted":"USD 190,900 - 334,100 (yearly)"},{"title":"Principal Software Engineer – Compute Engineering","formatted":"USD 221,200 - 387,100 (yearly)"}],"accountOutreachHook":"Saw ServiceNow has 8 open roles across Engineering, Infrastructure and Operations (5) & Digital Technology (2) — with active investment in AWS, Microsoft Azure, Google Cloud (GCP), Kubernetes — including a Staff Software Engineer – Compute Engineering hire.","generatedAt":"2026-11-15T21:05:09.698Z"},{"atsPlatform":"teamtailor","companySlug":"puzzel","companyName":"Puzzel","careerSiteUrl":"https://puzzel.teamtailor.com","totalJobsAnalyzed":10,"recentJobsLast14Days":1,"hiringVelocityTier":"ACTIVE_SCALING","departmentsHiring":{"Finance":1,"Commercial":6,"Technology":1,"Customer Success Group":2},"workplaceMix":{"hybrid":8,"onsite":1,"remote":1},"companyTechStackByCategory":{"crm_sales":["Salesforce"],"cloud_infra":["Kubernetes","Docker"],"data_analytics":["MongoDB"],"devtools_engineering":["TypeScript","RabbitMQ","GitHub Actions"],"marketing_product":["Gainsight / Planhat"]},"topTechnologies":[{"tool":"Salesforce","category":"crm_sales","mentions":7},{"tool":"Kubernetes","category":"cloud_infra","mentions":1},{"tool":"Docker","category":"cloud_infra","mentions":1},{"tool":"MongoDB","category":"data_analytics","mentions":1},{"tool":"TypeScript","category":"devtools_engineering","mentions":1},{"tool":"RabbitMQ","category":"devtools_engineering","mentions":1},{"tool":"GitHub Actions","category":"devtools_engineering","mentions":1},{"tool":"Gainsight / Planhat","category":"marketing_product","mentions":1}],"activeBuyingSignals":["BUDGET_EXPANSION","AI_TRANSFORMATION_INITIATIVE","TECH_MIGRATION_MODERNIZATION"],"decisionMakerOpenings":[],"highestIntentScore":98,"averageIntentScore":88,"disclosedSalarySamples":[{"title":"Senior FP&A Business Analyst, Revenue","formatted":"EUR 37,000 - 45,000 (yearly)"}],"accountOutreachHook":"Saw Puzzel has 10 open roles across Commercial (6) & Customer Success Group (2) — with active investment in Salesforce, Kubernetes, Docker, MongoDB.","generatedAt":"2026-11-15T20:30:34.489Z"},{"atsPlatform":"teamtailor","companySlug":"rebtel","companyName":"Rebtel","careerSiteUrl":"https://rebtel.teamtailor.com","totalJobsAnalyzed":8,"recentJobsLast14Days":1,"hiringVelocityTier":"ACTIVE_SCALING","departmentsHiring":{"Tech":6,"Product":1,"Data":1},"workplaceMix":{"unspecified":5,"hybrid":3},"companyTechStackByCategory":{"ai_llm":["Anthropic / Claude","LangChain / LangGraph","LlamaIndex","MLOps"],"devtools_engineering":["TypeScript","React","Next.js","Vue.js","GraphQL","Java","Kotlin","Swift","Python"],"cloud_infra":["AWS","Microsoft Azure","Google Cloud (GCP)","Docker","Kubernetes"],"data_analytics":["Apache Airflow"]},"topTechnologies":[{"tool":"AWS","category":"cloud_infra","mentions":3},{"tool":"Microsoft Azure","category":"cloud_infra","mentions":3},{"tool":"Google Cloud (GCP)","category":"cloud_infra","mentions":3},{"tool":"React","category":"devtools_engineering","mentions":2},{"tool":"GraphQL","category":"devtools_engineering","mentions":2},{"tool":"Java","category":"devtools_engineering","mentions":2},{"tool":"Kotlin","category":"devtools_engineering","mentions":2},{"tool":"Swift","category":"devtools_engineering","mentions":2},{"tool":"Docker","category":"cloud_infra","mentions":2},{"tool":"Anthropic / Claude","category":"ai_llm","mentions":1},{"tool":"TypeScript","category":"devtools_engineering","mentions":1},{"tool":"Next.js","category":"devtools_engineering","mentions":1}],"activeBuyingSignals":["TECH_MIGRATION_MODERNIZATION","AI_TRANSFORMATION_INITIATIVE","NEW_LEADERSHIP_DECISION_MAKER"],"decisionMakerOpenings":[{"title":"Staff .NET Developer","department":"Tech","jobUrl":"https://rebtel.teamtailor.com/jobs/7091193-staff-net-developer","intentScore":58}],"highestIntentScore":82,"averageIntentScore":51,"disclosedSalarySamples":[],"accountOutreachHook":"Saw Rebtel has 8 open roles across Tech (6) & Product (1) — with active investment in AWS, Microsoft Azure, Google Cloud (GCP), React — including a Staff .NET Developer hire.","generatedAt":"2026-11-15T20:30:34.489Z"},{"atsPlatform":"smartrecruiters","companySlug":"DeliveryHero","companyName":"Delivery Hero","careerSiteUrl":"https://jobs.smartrecruiters.com/DeliveryHero","totalJobsAnalyzed":8,"recentJobsLast14Days":8,"hiringVelocityTier":"HYPERGROWTH","departmentsHiring":{"Information Technology":2,"Sales":4,"General Business":2},"workplaceMix":{"onsite":4,"hybrid":4},"companyTechStackByCategory":{"cloud_infra":["Google Cloud (GCP)"],"data_analytics":["BigQuery","Apache Airflow","Looker","Tableau"],"ai_llm":["OpenAI / GPT","LangChain / LangGraph","PyTorch","TensorFlow","Hugging Face","RAG / Agentic AI","MLOps"],"devtools_engineering":["Python"],"crm_sales":["Salesforce"],"marketing_product":["Jira / Confluence","Notion"]},"topTechnologies":[{"tool":"Salesforce","category":"crm_sales","mentions":4},{"tool":"Looker","category":"data_analytics","mentions":3},{"tool":"BigQuery","category":"data_analytics","mentions":2},{"tool":"Python","category":"devtools_engineering","mentions":2},{"tool":"Google Cloud (GCP)","category":"cloud_infra","mentions":1},{"tool":"Apache Airflow","category":"data_analytics","mentions":1},{"tool":"OpenAI / GPT","category":"ai_llm","mentions":1},{"tool":"LangChain / LangGraph","category":"ai_llm","mentions":1},{"tool":"PyTorch","category":"ai_llm","mentions":1},{"tool":"TensorFlow","category":"ai_llm","mentions":1},{"tool":"Hugging Face","category":"ai_llm","mentions":1},{"tool":"RAG / Agentic AI","category":"ai_llm","mentions":1}],"activeBuyingSignals":["AI_TRANSFORMATION_INITIATIVE","NEW_LEADERSHIP_DECISION_MAKER","TECH_MIGRATION_MODERNIZATION"],"decisionMakerOpenings":[{"title":"Director of Fintech","department":"Information Technology","jobUrl":"https://jobs.smartrecruiters.com/DeliveryHero/744000161677328-director-of-fintech","intentScore":54}],"highestIntentScore":82,"averageIntentScore":51,"disclosedSalarySamples":[{"title":"Territory Manager S&M Cities Italy","formatted":"EUR 32,923 - 41,154 (yearly)"},{"title":"Sr Account Manager S&M Cities Italy","formatted":"EUR 32,923 - 41,154 (yearly)"},{"title":"Account Manager Regions Milano Italy","formatted":"EUR 26,338 - 32,923 (yearly)"},{"title":"Sr Account Manager Regions Milano Italy","formatted":"EUR 32,923 - 41,154 (yearly)"}],"accountOutreachHook":"Saw Delivery Hero has 8 open roles across Sales (4) & Information Technology (2) — with active investment in Salesforce, Looker, BigQuery, Python — including a Director of Fintech hire.","generatedAt":"2026-11-15T21:05:09.698Z"},{"atsPlatform":"recruitee","companySlug":"fastned","companyName":"Fastned","careerSiteUrl":"https://fastned.recruitee.com","totalJobsAnalyzed":8,"recentJobsLast14Days":5,"hiringVelocityTier":"HYPERGROWTH","departmentsHiring":{"sales":1,"Field Operations":1,"Software Engineering":1,"Finance & Funding":1,"Network Development":1,"Commercial Team":2,"Construction Management":1},"workplaceMix":{"hybrid":7,"onsite":1},"companyTechStackByCategory":{"cloud_infra":["AWS","Kubernetes","Terraform"],"data_analytics":["Apache Kafka","PostgreSQL"],"ai_llm":["Anthropic / Claude"],"devtools_engineering":["Java","Kotlin","Spring Boot","GitLab CI"]},"topTechnologies":[{"tool":"AWS","category":"cloud_infra","mentions":1},{"tool":"Kubernetes","category":"cloud_infra","mentions":1},{"tool":"Terraform","category":"cloud_infra","mentions":1},{"tool":"Apache Kafka","category":"data_analytics","mentions":1},{"tool":"PostgreSQL","category":"data_analytics","mentions":1},{"tool":"Anthropic / Claude","category":"ai_llm","mentions":1},{"tool":"Java","category":"devtools_engineering","mentions":1},{"tool":"Kotlin","category":"devtools_engineering","mentions":1},{"tool":"Spring Boot","category":"devtools_engineering","mentions":1},{"tool":"GitLab CI","category":"devtools_engineering","mentions":1}],"activeBuyingSignals":["NEW_LEADERSHIP_DECISION_MAKER","BUDGET_EXPANSION"],"decisionMakerOpenings":[{"title":"Head of Partnerships","department":"sales","jobUrl":"https://fastned.recruitee.com/o/head-of-partnerships","intentScore":54},{"title":"Chief Financial Officer","department":"Finance & Funding","jobUrl":"https://fastned.recruitee.com/o/chief-financial-officer-3","intentScore":80},{"title":"Head of Expansion South-West Europe","department":"Network Development","jobUrl":"https://fastned.recruitee.com/o/head-of-expansion-south-west-europe","intentScore":76}],"highestIntentScore":80,"averageIntentScore":55,"disclosedSalarySamples":[{"title":"Business Development Manager UK","formatted":"GBP 61,000 - 66,000 (yearly)"},{"title":"Sales Manager UK","formatted":"GBP 61,000 - 66,000 (yearly)"}],"accountOutreachHook":"Saw Fastned has 8 open roles across Commercial Team (2) & sales (1) — with active investment in AWS, Kubernetes, Terraform, Apache Kafka — including a Head of Partnerships hire.","generatedAt":"2026-11-15T21:06:21.700Z"},{"atsPlatform":"smartrecruiters","companySlug":"BoschGroup","companyName":"Bosch Group","careerSiteUrl":"https://jobs.smartrecruiters.com/BoschGroup","totalJobsAnalyzed":8,"recentJobsLast14Days":8,"hiringVelocityTier":"HYPERGROWTH","departmentsHiring":{"Information Technology":3,"Sales":1,"Human Resources":2,"Manufacturing":1,"Engineering":1},"workplaceMix":{"onsite":8},"companyTechStackByCategory":{"cloud_infra":["AWS","Microsoft Azure","Google Cloud (GCP)","Kubernetes","Docker"],"data_analytics":["Apache Airflow","MongoDB"],"ai_llm":["PyTorch","TensorFlow","MLOps","OpenAI / GPT","LangChain / LangGraph","LlamaIndex","Vector DB (Pinecone/Qdrant/Weaviate)","RAG / Agentic AI"],"devtools_engineering":["Python"]},"topTechnologies":[{"tool":"AWS","category":"cloud_infra","mentions":3},{"tool":"Microsoft Azure","category":"cloud_infra","mentions":3},{"tool":"Google Cloud (GCP)","category":"cloud_infra","mentions":3},{"tool":"PyTorch","category":"ai_llm","mentions":3},{"tool":"TensorFlow","category":"ai_llm","mentions":3},{"tool":"Python","category":"devtools_engineering","mentions":3},{"tool":"OpenAI / GPT","category":"ai_llm","mentions":2},{"tool":"LangChain / LangGraph","category":"ai_llm","mentions":2},{"tool":"LlamaIndex","category":"ai_llm","mentions":2},{"tool":"Vector DB (Pinecone/Qdrant/Weaviate)","category":"ai_llm","mentions":2},{"tool":"RAG / Agentic AI","category":"ai_llm","mentions":2},{"tool":"Kubernetes","category":"cloud_infra","mentions":1}],"activeBuyingSignals":["AI_TRANSFORMATION_INITIATIVE","NEW_LEADERSHIP_DECISION_MAKER"],"decisionMakerOpenings":[{"title":"Operation Head of Bosch China Training Center","department":"Human Resources","jobUrl":"https://jobs.smartrecruiters.com/BoschGroup/744000161634499-operation-head-of-bosch-china-training-center","intentScore":76}],"highestIntentScore":78,"averageIntentScore":56,"disclosedSalarySamples":[],"accountOutreachHook":"Saw Bosch Group has 8 open roles across Information Technology (3) & Human Resources (2) — with active investment in AWS, Microsoft Azure, Google Cloud (GCP), PyTorch — including a Operation Head of Bosch China Training Center hire.","generatedAt":"2026-11-15T21:05:09.698Z"},{"atsPlatform":"teamtailor","companySlug":"nextlane","companyName":"Nextlane","careerSiteUrl":"https://nextlane.teamtailor.com","totalJobsAnalyzed":10,"recentJobsLast14Days":7,"hiringVelocityTier":"HYPERGROWTH","departmentsHiring":{"Go-To-Market":1,"Customer Excellence":3,"General":5,"Engineering":1},"workplaceMix":{"hybrid":10},"companyTechStackByCategory":{"crm_sales":["Salesforce"],"cloud_infra":["AWS","Microsoft Azure","Docker","Google Cloud (GCP)","Kubernetes"],"devtools_engineering":["TypeScript","Python","Java","GitHub Actions","GitLab CI","Playwright / Cypress","React"],"ai_llm":["Anthropic / Claude","RAG / Agentic AI"]},"topTechnologies":[{"tool":"AWS","category":"cloud_infra","mentions":6},{"tool":"Microsoft Azure","category":"cloud_infra","mentions":6},{"tool":"Docker","category":"cloud_infra","mentions":5},{"tool":"TypeScript","category":"devtools_engineering","mentions":5},{"tool":"Playwright / Cypress","category":"devtools_engineering","mentions":5},{"tool":"Anthropic / Claude","category":"ai_llm","mentions":5},{"tool":"Google Cloud (GCP)","category":"cloud_infra","mentions":4},{"tool":"RAG / Agentic AI","category":"ai_llm","mentions":4},{"tool":"React","category":"devtools_engineering","mentions":4},{"tool":"Java","category":"devtools_engineering","mentions":2},{"tool":"GitHub Actions","category":"devtools_engineering","mentions":2},{"tool":"Salesforce","category":"crm_sales","mentions":1}],"activeBuyingSignals":["NEW_LEADERSHIP_DECISION_MAKER"],"decisionMakerOpenings":[{"title":"Senior/Staff Platform Software Engineer","department":"General","jobUrl":"https://nextlane.teamtailor.com/jobs/8679362-senior-staff-platform-software-engineer","intentScore":76}],"highestIntentScore":76,"averageIntentScore":45,"disclosedSalarySamples":[],"accountOutreachHook":"Saw Nextlane has 10 open roles across General (5) & Customer Excellence (3) — with active investment in AWS, Microsoft Azure, Docker, TypeScript — including a Senior/Staff Platform Software Engineer hire.","generatedAt":"2026-11-15T20:30:34.489Z"},{"atsPlatform":"smartrecruiters","companySlug":"Canva","companyName":"Canva","careerSiteUrl":"https://jobs.smartrecruiters.com/Canva","totalJobsAnalyzed":8,"recentJobsLast14Days":8,"hiringVelocityTier":"HYPERGROWTH","departmentsHiring":{"Information Technology":5,"Sales":3},"workplaceMix":{"remote":4,"hybrid":3,"onsite":1},"companyTechStackByCategory":{"crm_sales":["Salesforce","Outreach","LinkedIn Sales Navigator","ZoomInfo"],"cloud_infra":["Terraform"],"devtools_engineering":["Python","Go (Golang)","Java"],"security_compliance":["Okta / Auth0","ISO 27001","SOC 2"]},"topTechnologies":[{"tool":"Terraform","category":"cloud_infra","mentions":4},{"tool":"Python","category":"devtools_engineering","mentions":4},{"tool":"Go (Golang)","category":"devtools_engineering","mentions":4},{"tool":"Java","category":"devtools_engineering","mentions":4},{"tool":"Okta / Auth0","category":"security_compliance","mentions":4},{"tool":"ISO 27001","category":"security_compliance","mentions":4},{"tool":"SOC 2","category":"security_compliance","mentions":4},{"tool":"Salesforce","category":"crm_sales","mentions":2},{"tool":"LinkedIn Sales Navigator","category":"crm_sales","mentions":2},{"tool":"Outreach","category":"crm_sales","mentions":1},{"tool":"ZoomInfo","category":"crm_sales","mentions":1}],"activeBuyingSignals":["NEW_LEADERSHIP_DECISION_MAKER","COMPLIANCE_SECURITY_MANDATE"],"decisionMakerOpenings":[{"title":"Staff Security Engineer-  AI Security (remote across Australia) ","department":"Information Technology","jobUrl":"https://jobs.smartrecruiters.com/Canva/6000000001574098-staff-security-engineer-ai-security-remote-across-australia-","intentScore":48}],"highestIntentScore":76,"averageIntentScore":58,"disclosedSalarySamples":[],"accountOutreachHook":"Saw Canva has 8 open roles across Information Technology (5) & Sales (3) — with active investment in Terraform, Python, Go (Golang), Java — including a Staff Security Engineer-  AI Security (remote across Australia)  hire.","generatedAt":"2026-11-15T21:05:09.698Z"},{"atsPlatform":"smartrecruiters","companySlug":"Devoteam","companyName":"Devoteam","careerSiteUrl":"https://jobs.smartrecruiters.com/Devoteam","totalJobsAnalyzed":8,"recentJobsLast14Days":8,"hiringVelocityTier":"HYPERGROWTH","departmentsHiring":{"Sales & Pre-Sales":2,"UX, UI & products":2,"IT Strategy & PM":1,"Development":2,"Cloud":1},"workplaceMix":{"onsite":3,"hybrid":4,"remote":1},"companyTechStackByCategory":{"crm_sales":["Salesforce"],"cloud_infra":["AWS","Microsoft Azure","Google Cloud (GCP)","Datadog","Terraform","Ansible"],"data_analytics":["Snowflake","Databricks"],"devtools_engineering":["Python","RabbitMQ","GitLab CI"],"erp_finance":["SAP"]},"topTechnologies":[{"tool":"Microsoft Azure","category":"cloud_infra","mentions":4},{"tool":"AWS","category":"cloud_infra","mentions":3},{"tool":"Google Cloud (GCP)","category":"cloud_infra","mentions":3},{"tool":"Snowflake","category":"data_analytics","mentions":3},{"tool":"Python","category":"devtools_engineering","mentions":3},{"tool":"Salesforce","category":"crm_sales","mentions":2},{"tool":"Datadog","category":"cloud_infra","mentions":1},{"tool":"RabbitMQ","category":"devtools_engineering","mentions":1},{"tool":"Terraform","category":"cloud_infra","mentions":1},{"tool":"Ansible","category":"cloud_infra","mentions":1},{"tool":"Databricks","category":"data_analytics","mentions":1},{"tool":"GitLab CI","category":"devtools_engineering","mentions":1}],"activeBuyingSignals":["AI_TRANSFORMATION_INITIATIVE"],"decisionMakerOpenings":[],"highestIntentScore":75,"averageIntentScore":44,"disclosedSalarySamples":[],"accountOutreachHook":"Saw Devoteam has 8 open roles across Sales & Pre-Sales (2) & UX, UI & products (2) — with active investment in Microsoft Azure, AWS, Google Cloud (GCP), Snowflake.","generatedAt":"2026-11-15T21:05:09.698Z"},{"atsPlatform":"personio","companySlug":"hometogo","companyName":"HomeToGo Group Talent Acquisition","careerSiteUrl":"https://hometogo.jobs.personio.de","totalJobsAnalyzed":10,"recentJobsLast14Days":1,"hiringVelocityTier":"ACTIVE_SCALING","departmentsHiring":{"NFQ":4,"Finance_HTG":2,"Level 7 and up":1,"Product_HTG":1,"Levels 5 & 6":1,"Accounts Receivable":1},"workplaceMix":{"unspecified":10},"companyTechStackByCategory":{"cloud_infra":["Kubernetes","Docker","AWS","Grafana","Prometheus"],"data_analytics":["Snowflake","Apache Kafka","PostgreSQL","MySQL / MariaDB","Redis","Elasticsearch"],"devtools_engineering":["PHP","Symfony / Laravel","RabbitMQ"],"crm_sales":["Salesforce"],"ai_llm":["RAG / Agentic AI"],"erp_finance":["SAP"],"marketing_product":["Jira / Confluence"]},"topTechnologies":[{"tool":"Kubernetes","category":"cloud_infra","mentions":4},{"tool":"PHP","category":"devtools_engineering","mentions":4},{"tool":"Symfony / Laravel","category":"devtools_engineering","mentions":4},{"tool":"RabbitMQ","category":"devtools_engineering","mentions":4},{"tool":"Docker","category":"cloud_infra","mentions":3},{"tool":"MySQL / MariaDB","category":"data_analytics","mentions":3},{"tool":"Redis","category":"data_analytics","mentions":3},{"tool":"Elasticsearch","category":"data_analytics","mentions":3},{"tool":"Salesforce","category":"crm_sales","mentions":3},{"tool":"Snowflake","category":"data_analytics","mentions":2},{"tool":"PostgreSQL","category":"data_analytics","mentions":2},{"tool":"AWS","category":"cloud_infra","mentions":2}],"activeBuyingSignals":["NEW_LEADERSHIP_DECISION_MAKER","COMPLIANCE_SECURITY_MANDATE","TECH_MIGRATION_MODERNIZATION"],"decisionMakerOpenings":[{"title":"Senior Software Engineer & Team Lead","department":"NFQ","jobUrl":"https://hometogo.jobs.personio.de/job/2578538?language=en","intentScore":66},{"title":"Director Pricing, Revenue & Distribution Management - Interhome (m/f/d)","department":"Level 7 and up","jobUrl":"https://hometogo.jobs.personio.de/job/2794729?language=en","intentScore":74},{"title":"Principal/Senior Product Manager SEO/GEO (m/f/d)","department":"Product_HTG","jobUrl":"https://hometogo.jobs.personio.de/job/2799826?language=en","intentScore":38}],"highestIntentScore":74,"averageIntentScore":44,"disclosedSalarySamples":[],"accountOutreachHook":"Saw HomeToGo Group Talent Acquisition has 10 open roles across NFQ (4) & Finance_HTG (2) — with active investment in Kubernetes, PHP, Symfony / Laravel, RabbitMQ — including a Senior Software Engineer & Team Lead hire.","generatedAt":"2026-11-15T20:30:29.521Z"},{"atsPlatform":"teamtailor","companySlug":"career","companyName":"Teamtailor","careerSiteUrl":"https://career.teamtailor.com","totalJobsAnalyzed":10,"recentJobsLast14Days":5,"hiringVelocityTier":"HYPERGROWTH","departmentsHiring":{"Customer Success":2,"Data":1,"Sales":3,"Product Specialists":2,"Marketing":1,"Partnerships":1},"workplaceMix":{"hybrid":9,"onsite":1},"companyTechStackByCategory":{"hr_people":["Teamtailor"],"data_analytics":["Snowflake","BigQuery","dbt"],"crm_sales":["Salesforce","Salesloft","Apollo.io","Cognism","LinkedIn Sales Navigator"],"marketing_product":["Notion"]},"topTechnologies":[{"tool":"Teamtailor","category":"hr_people","mentions":10},{"tool":"Salesforce","category":"crm_sales","mentions":3},{"tool":"Salesloft","category":"crm_sales","mentions":3},{"tool":"LinkedIn Sales Navigator","category":"crm_sales","mentions":3},{"tool":"Notion","category":"marketing_product","mentions":3},{"tool":"Apollo.io","category":"crm_sales","mentions":2},{"tool":"Cognism","category":"crm_sales","mentions":2},{"tool":"Snowflake","category":"data_analytics","mentions":1},{"tool":"BigQuery","category":"data_analytics","mentions":1},{"tool":"dbt","category":"data_analytics","mentions":1}],"activeBuyingSignals":["TECH_MIGRATION_MODERNIZATION","NEW_LEADERSHIP_DECISION_MAKER"],"decisionMakerOpenings":[{"title":"Head of Marketing - North America","department":"Marketing","jobUrl":"https://career.teamtailor.com/jobs/8633011-head-of-marketing-north-america","intentScore":54}],"highestIntentScore":74,"averageIntentScore":46,"disclosedSalarySamples":[],"accountOutreachHook":"Saw Teamtailor has 10 open roles across Sales (3) & Customer Success (2) — with active investment in Teamtailor, Salesforce, Salesloft, LinkedIn Sales Navigator — including a Head of Marketing - North America hire.","generatedAt":"2026-11-15T20:30:34.489Z"},{"atsPlatform":"workable","companySlug":"learnworlds","companyName":"LearnWorlds","careerSiteUrl":"https://apply.workable.com/learnworlds/","totalJobsAnalyzed":8,"recentJobsLast14Days":0,"hiringVelocityTier":"ACTIVE_SCALING","departmentsHiring":{"Engineering":6,"Design":2},"workplaceMix":{"remote":8},"companyTechStackByCategory":{"cloud_infra":["Kubernetes","Docker"],"data_analytics":["PostgreSQL","MySQL / MariaDB","MongoDB"],"ai_llm":["OpenAI / GPT"],"devtools_engineering":["PHP","Vue.js"]},"topTechnologies":[{"tool":"Kubernetes","category":"cloud_infra","mentions":6},{"tool":"Docker","category":"cloud_infra","mentions":6},{"tool":"PostgreSQL","category":"data_analytics","mentions":6},{"tool":"MySQL / MariaDB","category":"data_analytics","mentions":6},{"tool":"MongoDB","category":"data_analytics","mentions":6},{"tool":"OpenAI / GPT","category":"ai_llm","mentions":6},{"tool":"PHP","category":"devtools_engineering","mentions":6},{"tool":"Vue.js","category":"devtools_engineering","mentions":6}],"activeBuyingSignals":["TECH_MIGRATION_MODERNIZATION"],"decisionMakerOpenings":[],"highestIntentScore":72,"averageIntentScore":60,"disclosedSalarySamples":[],"accountOutreachHook":"Saw LearnWorlds has 8 open roles across Engineering (6) & Design (2) — with active investment in Kubernetes, Docker, PostgreSQL, MySQL / MariaDB.","generatedAt":"2026-11-15T21:06:08.403Z"},{"atsPlatform":"personio","companySlug":"ommax","companyName":"OMMAX","careerSiteUrl":"https://ommax.jobs.personio.de","totalJobsAnalyzed":10,"recentJobsLast14Days":0,"hiringVelocityTier":"ACTIVE_SCALING","departmentsHiring":{"Data & AI":8,"Tech":1,"Transaction Advisory":1},"workplaceMix":{"unspecified":10},"companyTechStackByCategory":{"cloud_infra":["Kubernetes","Docker","Microsoft Azure","Terraform","AWS"],"ai_llm":["LangChain / LangGraph","PyTorch","Hugging Face","MLOps"],"devtools_engineering":["Python","GitHub Actions"]},"topTechnologies":[{"tool":"Kubernetes","category":"cloud_infra","mentions":3},{"tool":"Docker","category":"cloud_infra","mentions":3},{"tool":"LangChain / LangGraph","category":"ai_llm","mentions":2},{"tool":"Python","category":"devtools_engineering","mentions":2},{"tool":"Microsoft Azure","category":"cloud_infra","mentions":2},{"tool":"Terraform","category":"cloud_infra","mentions":2},{"tool":"PyTorch","category":"ai_llm","mentions":1},{"tool":"GitHub Actions","category":"devtools_engineering","mentions":1},{"tool":"Hugging Face","category":"ai_llm","mentions":1},{"tool":"AWS","category":"cloud_infra","mentions":1},{"tool":"MLOps","category":"ai_llm","mentions":1}],"activeBuyingSignals":["AI_TRANSFORMATION_INITIATIVE"],"decisionMakerOpenings":[],"highestIntentScore":68,"averageIntentScore":36,"disclosedSalarySamples":[],"accountOutreachHook":"Saw OMMAX has 10 open roles across Data & AI (8) & Tech (1) — with active investment in Kubernetes, Docker, LangChain / LangGraph, Python.","generatedAt":"2026-11-15T20:30:29.521Z"},{"atsPlatform":"workable","companySlug":"viva","companyName":"Viva.com","careerSiteUrl":"https://apply.workable.com/viva/","totalJobsAnalyzed":8,"recentJobsLast14Days":4,"hiringVelocityTier":"ACTIVE_SCALING","departmentsHiring":{"Anti-Financial Crime":1,"Compliance & Legal":1,"Technology":1,"Operations Support":1,"Business Development":4},"workplaceMix":{"onsite":6,"hybrid":1,"remote":1},"companyTechStackByCategory":{"devtools_engineering":["Python"],"cloud_infra":["AWS","Microsoft Azure","Google Cloud (GCP)"],"data_analytics":["Tableau","Power BI","MySQL / MariaDB","MongoDB"],"crm_sales":["LinkedIn Sales Navigator"],"ai_llm":["OpenAI / GPT"]},"topTechnologies":[{"tool":"Python","category":"devtools_engineering","mentions":2},{"tool":"Microsoft Azure","category":"cloud_infra","mentions":2},{"tool":"Power BI","category":"data_analytics","mentions":2},{"tool":"AWS","category":"cloud_infra","mentions":1},{"tool":"Google Cloud (GCP)","category":"cloud_infra","mentions":1},{"tool":"Tableau","category":"data_analytics","mentions":1},{"tool":"MySQL / MariaDB","category":"data_analytics","mentions":1},{"tool":"MongoDB","category":"data_analytics","mentions":1},{"tool":"LinkedIn Sales Navigator","category":"crm_sales","mentions":1},{"tool":"OpenAI / GPT","category":"ai_llm","mentions":1}],"activeBuyingSignals":["AI_TRANSFORMATION_INITIATIVE"],"decisionMakerOpenings":[],"highestIntentScore":68,"averageIntentScore":33,"disclosedSalarySamples":[],"accountOutreachHook":"Saw Viva.com has 8 open roles across Business Development (4) & Anti-Financial Crime (1) — with active investment in Python, Microsoft Azure, Power BI, AWS.","generatedAt":"2026-11-15T21:06:08.403Z"},{"atsPlatform":"recruitee","companySlug":"funda","companyName":"Funda","careerSiteUrl":"https://funda.recruitee.com","totalJobsAnalyzed":8,"recentJobsLast14Days":4,"hiringVelocityTier":"ACTIVE_SCALING","departmentsHiring":{"Product":1,"Engineering":5,"Marketing":2},"workplaceMix":{"hybrid":6,"onsite":2},"companyTechStackByCategory":{"cloud_infra":["Microsoft Azure","Kubernetes","Terraform","Helm","Google Cloud (GCP)","Docker"],"data_analytics":["Elasticsearch","BigQuery","dbt","Airbyte"],"devtools_engineering":["Python","C# / .NET"],"marketing_product":["Figma"],"ai_llm":["Anthropic / Claude"]},"topTechnologies":[{"tool":"Microsoft Azure","category":"cloud_infra","mentions":4},{"tool":"Kubernetes","category":"cloud_infra","mentions":4},{"tool":"C# / .NET","category":"devtools_engineering","mentions":4},{"tool":"Terraform","category":"cloud_infra","mentions":2},{"tool":"Python","category":"devtools_engineering","mentions":2},{"tool":"Helm","category":"cloud_infra","mentions":1},{"tool":"Elasticsearch","category":"data_analytics","mentions":1},{"tool":"Figma","category":"marketing_product","mentions":1},{"tool":"Google Cloud (GCP)","category":"cloud_infra","mentions":1},{"tool":"Docker","category":"cloud_infra","mentions":1},{"tool":"BigQuery","category":"data_analytics","mentions":1},{"tool":"dbt","category":"data_analytics","mentions":1}],"activeBuyingSignals":[],"decisionMakerOpenings":[],"highestIntentScore":62,"averageIntentScore":43,"disclosedSalarySamples":[{"title":"Customer Researcher","formatted":"EUR 4,457 - 5,498 (monthly)"},{"title":"Site Reliability Engineer","formatted":"EUR 5,586 - 6,504 (monthly)"},{"title":"Senior Backend .NET Engineer","formatted":"EUR 5,815 - 6,486 (monthly)"},{"title":"Data Engineer","formatted":"EUR 4,512 - 6,084 (monthly)"},{"title":"Medior Backend .NET Engineer","formatted":"EUR 4,512 - 6,084 (monthly)"}],"accountOutreachHook":"Saw Funda has 8 open roles across Engineering (5) & Marketing (2) — with active investment in Microsoft Azure, Kubernetes, C# / .NET, Terraform.","generatedAt":"2026-11-15T21:06:21.700Z"},{"atsPlatform":"workable","companySlug":"epignosis","companyName":"Epignosis","careerSiteUrl":"https://apply.workable.com/epignosis/","totalJobsAnalyzed":8,"recentJobsLast14Days":4,"hiringVelocityTier":"ACTIVE_SCALING","departmentsHiring":{"Customer Support":1,"Sales":2,"Operations":1,"Marketing":1,"Partnerships":3},"workplaceMix":{"onsite":7,"remote":1},"companyTechStackByCategory":{"crm_sales":["Salesforce","ZoomInfo"]},"topTechnologies":[{"tool":"Salesforce","category":"crm_sales","mentions":3},{"tool":"ZoomInfo","category":"crm_sales","mentions":2}],"activeBuyingSignals":["NEW_LEADERSHIP_DECISION_MAKER","TECH_MIGRATION_MODERNIZATION"],"decisionMakerOpenings":[{"title":"Head Of Commercial Enablement","department":"Sales","jobUrl":"https://apply.workable.com/j/F8513196FB","intentScore":59},{"title":"Head Of Commercial Enablement","department":"Sales","jobUrl":"https://apply.workable.com/j/F8DE96CFD7","intentScore":59}],"highestIntentScore":59,"averageIntentScore":37,"disclosedSalarySamples":[],"accountOutreachHook":"Saw Epignosis has 8 open roles across Partnerships (3) & Sales (2) — with active investment in Salesforce, ZoomInfo — including a Head Of Commercial Enablement hire.","generatedAt":"2026-11-15T21:06:08.403Z"},{"atsPlatform":"recruitee","companySlug":"vandebron","companyName":"Vandebron","careerSiteUrl":"https://vandebron.recruitee.com","totalJobsAnalyzed":7,"recentJobsLast14Days":1,"hiringVelocityTier":"ACTIVE_SCALING","departmentsHiring":{"Tech":1,"Marketing":1,"People & Culture":1,"Bijbanen":2,"Customer Operations":1,"Overig":1},"workplaceMix":{"hybrid":2,"onsite":5},"companyTechStackByCategory":{"devtools_engineering":["Java","Kotlin"],"marketing_product":["Jira / Confluence"]},"topTechnologies":[{"tool":"Java","category":"devtools_engineering","mentions":1},{"tool":"Kotlin","category":"devtools_engineering","mentions":1},{"tool":"Jira / Confluence","category":"marketing_product","mentions":1}],"activeBuyingSignals":["NEW_LEADERSHIP_DECISION_MAKER"],"decisionMakerOpenings":[{"title":"Engineering Team Lead (Backend)","department":"Tech","jobUrl":"https://werkenbij.vandebron.nl/o/engineering-team-lead-backend","intentScore":58}],"highestIntentScore":58,"averageIntentScore":29,"disclosedSalarySamples":[{"title":"Marketing Project Manager","formatted":"EUR 5,000 - 5,800 (monthly)"}],"accountOutreachHook":"Saw Vandebron has 7 open roles across Bijbanen (2) & Tech (1) — with active investment in Java, Kotlin, Jira / Confluence — including a Engineering Team Lead (Backend) hire.","generatedAt":"2026-11-15T21:06:21.700Z"},{"atsPlatform":"recruitee","companySlug":"channable","companyName":"Channable","careerSiteUrl":"https://channable.recruitee.com","totalJobsAnalyzed":8,"recentJobsLast14Days":1,"hiringVelocityTier":"ACTIVE_SCALING","departmentsHiring":{"Operations":1,"Engineering":3,"Support":1,"Customer Success":2,"Open application":1},"workplaceMix":{"hybrid":8},"companyTechStackByCategory":{"marketing_product":["Shopify"],"cloud_infra":["Google Cloud (GCP)","Terraform","Ansible","Prometheus","Grafana"],"data_analytics":["PostgreSQL","Redis"],"devtools_engineering":["TypeScript","Python","Rust","React","GraphQL","Sentry"]},"topTechnologies":[{"tool":"PostgreSQL","category":"data_analytics","mentions":2},{"tool":"Python","category":"devtools_engineering","mentions":2},{"tool":"Shopify","category":"marketing_product","mentions":1},{"tool":"Google Cloud (GCP)","category":"cloud_infra","mentions":1},{"tool":"Terraform","category":"cloud_infra","mentions":1},{"tool":"Ansible","category":"cloud_infra","mentions":1},{"tool":"Prometheus","category":"cloud_infra","mentions":1},{"tool":"TypeScript","category":"devtools_engineering","mentions":1},{"tool":"Rust","category":"devtools_engineering","mentions":1},{"tool":"React","category":"devtools_engineering","mentions":1},{"tool":"Grafana","category":"cloud_infra","mentions":1},{"tool":"Redis","category":"data_analytics","mentions":1}],"activeBuyingSignals":[],"decisionMakerOpenings":[],"highestIntentScore":57,"averageIntentScore":34,"disclosedSalarySamples":[{"title":"Technical Writer, Customer Education","formatted":"EUR 2,976 - 4,252 (monthly)"},{"title":"Senior Engineering Manager - Core","formatted":"EUR 100,000 - 120,000 (yearly)"},{"title":"Technical Customer Support - French Speaking","formatted":"EUR 2,850 - 2,950 (monthly)"},{"title":"Haskell Software Engineer - Creatives Team","formatted":"EUR 4,000 - 5,700 (monthly)"},{"title":"Senior Customer Success Manager Benelux","formatted":"EUR 4,575 - 6,250 (monthly)"}],"accountOutreachHook":"Saw Channable has 8 open roles across Engineering (3) & Customer Success (2) — with active investment in PostgreSQL, Python, Shopify, Google Cloud (GCP).","generatedAt":"2026-11-15T21:06:21.700Z"},{"atsPlatform":"teamtailor","companySlug":"justergroupab","companyName":"Justera Group","careerSiteUrl":"https://justergroupab.teamtailor.com","totalJobsAnalyzed":10,"recentJobsLast14Days":9,"hiringVelocityTier":"HYPERGROWTH","departmentsHiring":{"Tech":9,"General":1},"workplaceMix":{"hybrid":5,"onsite":5},"companyTechStackByCategory":{"erp_finance":["Workday","SAP"],"crm_sales":["Dynamics 365"],"cloud_infra":["Microsoft Azure","Google Cloud (GCP)","Kubernetes","Terraform"],"data_analytics":["Databricks","PostgreSQL","BigQuery","dbt","Apache Kafka"],"devtools_engineering":["Python","FastAPI / Django","Swift","Rust","Java"]},"topTechnologies":[{"tool":"Python","category":"devtools_engineering","mentions":3},{"tool":"Microsoft Azure","category":"cloud_infra","mentions":2},{"tool":"Google Cloud (GCP)","category":"cloud_infra","mentions":2},{"tool":"Kubernetes","category":"cloud_infra","mentions":2},{"tool":"Terraform","category":"cloud_infra","mentions":2},{"tool":"Workday","category":"erp_finance","mentions":1},{"tool":"Dynamics 365","category":"crm_sales","mentions":1},{"tool":"Databricks","category":"data_analytics","mentions":1},{"tool":"PostgreSQL","category":"data_analytics","mentions":1},{"tool":"FastAPI / Django","category":"devtools_engineering","mentions":1},{"tool":"Swift","category":"devtools_engineering","mentions":1},{"tool":"SAP","category":"erp_finance","mentions":1}],"activeBuyingSignals":["COMPLIANCE_SECURITY_MANDATE","URGENT_HIRING_VELOCITY"],"decisionMakerOpenings":[],"highestIntentScore":56,"averageIntentScore":41,"disclosedSalarySamples":[],"accountOutreachHook":"Saw Justera Group has 10 open roles across Tech (9) & General (1) — with active investment in Python, Microsoft Azure, Google Cloud (GCP), Kubernetes.","generatedAt":"2026-11-15T20:30:34.489Z"},{"atsPlatform":"personio","companySlug":"tanso","companyName":"Tanso Technologies GmbH","careerSiteUrl":"https://tanso.jobs.personio.de","totalJobsAnalyzed":8,"recentJobsLast14Days":1,"hiringVelocityTier":"ACTIVE_SCALING","departmentsHiring":{"Customer Success":3,"Sales & Partnerships":1,"Product, Design & Engineering":1,"Operations & Finance":1,"Engineering":2},"workplaceMix":{"unspecified":8},"companyTechStackByCategory":{"crm_sales":["HubSpot"],"marketing_product":["Zendesk / Intercom"],"erp_finance":["SAP"],"cloud_infra":["Microsoft Azure"],"data_analytics":["PostgreSQL"],"devtools_engineering":["TypeScript"]},"topTechnologies":[{"tool":"HubSpot","category":"crm_sales","mentions":2},{"tool":"Zendesk / Intercom","category":"marketing_product","mentions":2},{"tool":"Microsoft Azure","category":"cloud_infra","mentions":2},{"tool":"PostgreSQL","category":"data_analytics","mentions":2},{"tool":"TypeScript","category":"devtools_engineering","mentions":2},{"tool":"SAP","category":"erp_finance","mentions":1}],"activeBuyingSignals":["COMPLIANCE_SECURITY_MANDATE","AI_TRANSFORMATION_INITIATIVE"],"decisionMakerOpenings":[],"highestIntentScore":55,"averageIntentScore":38,"disclosedSalarySamples":[],"accountOutreachHook":"Saw Tanso Technologies GmbH has 8 open roles across Customer Success (3) & Engineering (2) — with active investment in HubSpot, Zendesk / Intercom, Microsoft Azure, PostgreSQL.","generatedAt":"2026-11-15T20:30:29.521Z"},{"atsPlatform":"personio","companySlug":"eqs-group","companyName":"EQS Group Inc.","careerSiteUrl":"https://eqs-group.jobs.personio.de","totalJobsAnalyzed":10,"recentJobsLast14Days":3,"hiringVelocityTier":"ACTIVE_SCALING","departmentsHiring":{"Sales - USA":1,"Sales - Europe South":1,"Customer Experience C&E":2,"Sales - Germany":1,"Sales - France":1,"Sales Solutions Consulting":2,"Engineering Compliance":2},"workplaceMix":{"remote":1,"unspecified":9},"companyTechStackByCategory":{"crm_sales":["Salesforce","LinkedIn Sales Navigator"],"devtools_engineering":["Python"],"security_compliance":["Okta / Auth0","NIS2 / DORA"],"cloud_infra":["Kubernetes","Docker","Helm"],"data_analytics":["dbt","Apache Airflow","Apache Spark","PostgreSQL","MySQL / MariaDB"]},"topTechnologies":[{"tool":"Python","category":"devtools_engineering","mentions":4},{"tool":"Salesforce","category":"crm_sales","mentions":2},{"tool":"Okta / Auth0","category":"security_compliance","mentions":2},{"tool":"Kubernetes","category":"cloud_infra","mentions":2},{"tool":"Docker","category":"cloud_infra","mentions":2},{"tool":"Helm","category":"cloud_infra","mentions":2},{"tool":"dbt","category":"data_analytics","mentions":2},{"tool":"Apache Airflow","category":"data_analytics","mentions":2},{"tool":"Apache Spark","category":"data_analytics","mentions":2},{"tool":"PostgreSQL","category":"data_analytics","mentions":2},{"tool":"MySQL / MariaDB","category":"data_analytics","mentions":2},{"tool":"LinkedIn Sales Navigator","category":"crm_sales","mentions":1}],"activeBuyingSignals":["COMPLIANCE_SECURITY_MANDATE","TECH_MIGRATION_MODERNIZATION"],"decisionMakerOpenings":[],"highestIntentScore":54,"averageIntentScore":40,"disclosedSalarySamples":[{"title":"Account Executive","formatted":"USD 220,000 - 260,000 (yearly)"}],"accountOutreachHook":"Saw EQS Group Inc. has 10 open roles across Customer Experience C&E (2) & Sales Solutions Consulting (2) — with active investment in Python, Salesforce, Okta / Auth0, Kubernetes.","generatedAt":"2026-11-15T20:30:29.521Z"},{"atsPlatform":"recruitee","companySlug":"otovo","companyName":"Otovo","careerSiteUrl":"https://otovo.recruitee.com","totalJobsAnalyzed":8,"recentJobsLast14Days":3,"hiringVelocityTier":"ACTIVE_SCALING","departmentsHiring":{"Operations":7,"Product":1},"workplaceMix":{"onsite":8},"companyTechStackByCategory":{"devtools_engineering":["TypeScript","Rust"]},"topTechnologies":[{"tool":"TypeScript","category":"devtools_engineering","mentions":1},{"tool":"Rust","category":"devtools_engineering","mentions":1}],"activeBuyingSignals":["NEW_LEADERSHIP_DECISION_MAKER"],"decisionMakerOpenings":[{"title":"Member of Technical Staff","department":"Product","jobUrl":"https://careers.otovo.com/o/member-of-technical-staff","intentScore":53}],"highestIntentScore":53,"averageIntentScore":32,"disclosedSalarySamples":[{"title":"Field Service Technician","formatted":"USD 28 - 32 (hourly)"},{"title":"Field Service Technician – O&M Solar","formatted":"USD 28 - 40 (hourly)"},{"title":"Field Service Technician – O&M Solar","formatted":"USD 32 - 38 (hourly)"},{"title":"Warehouse Technician","formatted":"USD 28 - 30 (hourly)"},{"title":"Warehouse Technician","formatted":"USD 28 - 30 (hourly)"}],"accountOutreachHook":"Saw Otovo has 8 open roles across Operations (7) & Product (1) — with active investment in TypeScript, Rust — including a Member of Technical Staff hire.","generatedAt":"2026-11-15T21:06:21.700Z"},{"atsPlatform":"workable","companySlug":"blueground","companyName":"Blueground","careerSiteUrl":"https://apply.workable.com/blueground/","totalJobsAnalyzed":6,"recentJobsLast14Days":0,"hiringVelocityTier":"ACTIVE_SCALING","departmentsHiring":{"Shared Services":2,"City Core":4},"workplaceMix":{"onsite":5,"remote":1},"companyTechStackByCategory":{"erp_finance":["Workday"]},"topTechnologies":[{"tool":"Workday","category":"erp_finance","mentions":2}],"activeBuyingSignals":["BUDGET_EXPANSION"],"decisionMakerOpenings":[],"highestIntentScore":40,"averageIntentScore":26,"disclosedSalarySamples":[{"title":"Operations Lead - New York City","formatted":"USD 65,000 - 74,500 (yearly)"},{"title":"Warehouse Associate","formatted":"USD 32,000 - 36,000 (yearly)"}],"accountOutreachHook":"Saw Blueground has 6 open roles across City Core (4) & Shared Services (2) — with active investment in Workday.","generatedAt":"2026-11-15T21:06:08.403Z"},{"atsPlatform":"workable","companySlug":"skroutz","companyName":"Skroutz S.A","careerSiteUrl":"https://apply.workable.com/skroutz/","totalJobsAnalyzed":8,"recentJobsLast14Days":1,"hiringVelocityTier":"ACTIVE_SCALING","departmentsHiring":{"Last Mile":4,"General":1,"FBS":3},"workplaceMix":{"onsite":8},"companyTechStackByCategory":{"devtools_engineering":["Python"]},"topTechnologies":[{"tool":"Python","category":"devtools_engineering","mentions":1}],"activeBuyingSignals":["NEW_LEADERSHIP_DECISION_MAKER"],"decisionMakerOpenings":[{"title":"Warehouse Staff - Aspropyrgos (WSA 0926)","department":"FBS","jobUrl":"https://apply.workable.com/j/12CC21E6A1","intentScore":38},{"title":"Warehouse Staff Night Shift - Aspropyrgos (WSNSA 0926)","department":"FBS","jobUrl":"https://apply.workable.com/j/2BFA843F32","intentScore":38},{"title":"Warehouse Team Lead - Aspropyrgos (WTL 0926)","department":"FBS","jobUrl":"https://apply.workable.com/j/BABD9194CF","intentScore":38}],"highestIntentScore":38,"averageIntentScore":30,"disclosedSalarySamples":[{"title":"Business Intelligence Engineer - Skroutz Last Mile (BIE1026)","formatted":"EUR 30,800 - 42,000 (yearly)"}],"accountOutreachHook":"Saw Skroutz S.A has 8 open roles across Last Mile (4) & FBS (3) — with active investment in Python — including a Warehouse Staff - Aspropyrgos (WSA 0926) hire.","generatedAt":"2026-11-15T21:06:08.403Z"}];
+
+const POPULAR_TOOLS = [
+  'AWS', 'Kubernetes', 'Docker', 'Terraform', 'Microsoft Azure',
+  'Google Cloud (GCP)', 'Salesforce', 'HubSpot', 'dbt', 'Python',
+  'TypeScript', 'LangChain / LangGraph', 'PHP', 'Symfony / Laravel'
+];
+
+const state = {
+  view: 'jobs',
+  ats: 'all',
+  sig: 'all',
+  tech: null,
+  search: '',
+  selectedIdx: 0,
+  tone: 'founder'
+};
+
+function formatSalary(sal) {
+  if (!sal || (!sal.min && !sal.max)) return null;
+  const min = sal.min ? sal.min.toLocaleString('en-US') : '?';
+  const max = sal.max ? sal.max.toLocaleString('en-US') : '?';
+  return sal.currency + ' ' + min + ' – ' + max;
+}
+
+function getFilteredJobs() {
+  return JOBS.filter((j) => {
+    if (state.ats !== 'all' && j.atsPlatform !== state.ats) return false;
+    const intent = j.intent || {};
+    if (state.sig === 'hot' && intent.intentTier !== 'HOT') return false;
+    if (state.sig === 'dm' && !intent.isDecisionMakerHire) return false;
+    if (state.sig === 'salary' && !intent.disclosedSalary) return false;
+    if (state.tech && !(intent.techStackAll || []).includes(state.tech)) return false;
+    if (state.search) {
+      const hay = (j.companyName + ' ' + j.title + ' ' + j.location + ' ' + (intent.techStackAll || []).join(' ')).toLowerCase();
+      if (!hay.includes(state.search.toLowerCase())) return false;
+    }
+    return true;
+  });
+}
+
+function getFilteredDossiers() {
+  return DOSSIERS.filter((d) => {
+    if (state.ats !== 'all' && d.atsPlatform !== state.ats) return false;
+    if (state.sig === 'hot' && d.highestIntentScore < 70) return false;
+    if (state.sig === 'dm' && (!d.decisionMakerOpenings || d.decisionMakerOpenings.length === 0)) return false;
+    if (state.sig === 'salary' && (!d.disclosedSalarySamples || d.disclosedSalarySamples.length === 0)) return false;
+    if (state.tech && !d.topTechnologies.some((t) => t.tool === state.tech)) return false;
+    if (state.search) {
+      const hay = (d.companyName + ' ' + d.topTechnologies.map(t => t.tool).join(' ') + ' ' + d.accountOutreachHook).toLowerCase();
+      if (!hay.includes(state.search.toLowerCase())) return false;
+    }
+    return true;
+  });
+}
+
+function renderTechChips() {
+  const row = document.getElementById('techChipsRow');
+  row.innerHTML = '<span class="chip-label">FILTER BY TECH STACK:</span>';
+  POPULAR_TOOLS.forEach((tool) => {
+    const btn = document.createElement('button');
+    btn.className = 'tech-filter-chip' + (state.tech === tool ? ' active' : '');
+    btn.textContent = tool;
+    btn.onclick = () => {
+      state.tech = state.tech === tool ? null : tool;
+      state.selectedIdx = 0;
+      renderAll();
+    };
+    row.appendChild(btn);
+  });
+}
+
+function renderFeed() {
+  const container = document.getElementById('feedContainer');
+  container.innerHTML = '';
+
+  if (state.view === 'jobs') {
+    const items = getFilteredJobs();
+    if (!items.length) {
+      container.innerHTML = '<div class="signal-card">No live roles match current filter combination. Click an active filter chip to reset.</div>';
+      return;
+    }
+    if (state.selectedIdx >= items.length) state.selectedIdx = 0;
+
+    items.forEach((job, idx) => {
+      const intent = job.intent || {};
+      const card = document.createElement('div');
+      card.className = 'signal-card' + (idx === state.selectedIdx ? ' selected' : '');
+      card.onclick = () => { state.selectedIdx = idx; renderAll(); };
+
+      const salText = formatSalary(intent.disclosedSalary);
+      const tier = intent.intentTier || 'MONITOR';
+      const stackHtml = (intent.techStackAll || []).slice(0, 7).map(t => '<span class="stack-pill">' + t + '</span>').join('');
+      const sigHtml = (intent.signalCodes || []).map(s => '<span class="sig-pill">' + s + '</span>').join('');
+      const salHtml = salText ? '<span class="salary-pill">💶 ' + salText + '</span>' : '';
+
+      card.innerHTML =
+        '<div class="card-head">' +
+          '<div>' +
+            '<div class="meta-line">' +
+              '<span class="ats-badge ats-' + job.atsPlatform + '">' + job.atsPlatform + '</span>' +
+              '<strong style="color:#e2e8f0;">' + job.companyName + '</strong>' +
+              '<span>• ' + job.location + ' (' + job.workplaceType + ')</span>' +
+              '<span>• ' + job.department + '</span>' +
+            '</div>' +
+            '<div class="role-title">' + job.title + '</div>' +
+          '</div>' +
+          '<div class="score-box score-' + tier + '">' +
+            '<span class="score-num">' + (intent.intentScore || 0) + '</span>' +
+            '<span class="score-tier">' + tier + '</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="tag-wrap">' + salHtml + sigHtml + stackHtml + '</div>';
+
+      container.appendChild(card);
+    });
+    updateComposerFromJob(items[state.selectedIdx]);
+  } else {
+    const dossiers = getFilteredDossiers();
+    if (!dossiers.length) {
+      container.innerHTML = '<div class="signal-card">No company dossiers match current filter combination.</div>';
+      return;
+    }
+    if (state.selectedIdx >= dossiers.length) state.selectedIdx = 0;
+
+    dossiers.forEach((d, idx) => {
+      const card = document.createElement('div');
+      card.className = 'signal-card' + (idx === state.selectedIdx ? ' selected' : '');
+      card.onclick = () => { state.selectedIdx = idx; renderAll(); };
+      const tier = d.highestIntentScore >= 70 ? 'HOT' : 'WARM';
+      const stackHtml = d.topTechnologies.slice(0, 8).map(t => '<span class="stack-pill">' + t.tool + ' (' + t.mentions + ')</span>').join('');
+      const sigHtml = d.activeBuyingSignals.map(s => '<span class="sig-pill">' + s + '</span>').join('');
+      const salSample = d.disclosedSalarySamples?.[0] ? '<span class="salary-pill">💶 ' + d.disclosedSalarySamples[0].formatted + '</span>' : '';
+
+      card.innerHTML =
+        '<div class="card-head">' +
+          '<div>' +
+            '<div class="meta-line">' +
+              '<span class="ats-badge ats-' + d.atsPlatform + '">' + d.atsPlatform + '</span>' +
+              '<span style="color:var(--emerald); font-family:var(--mono);">' + d.hiringVelocityTier + '</span>' +
+              '<span>• ' + d.totalJobsAnalyzed + ' Open Roles Analyzed</span>' +
+            '</div>' +
+            '<div class="role-title">' + d.companyName + '</div>' +
+            '<div style="font-size:12.5px; color:var(--muted); margin-top:4px;">' + d.accountOutreachHook + '</div>' +
+          '</div>' +
+          '<div class="score-box score-' + tier + '">' +
+            '<span class="score-num">' + d.highestIntentScore + '</span>' +
+            '<span class="score-tier">MAX SCORE</span>' +
+          '</div>' +
+        '</div>' +
+        '<div class="tag-wrap">' + salSample + sigHtml + stackHtml + '</div>';
+
+      container.appendChild(card);
+    });
+    updateComposerFromDossier(dossiers[state.selectedIdx]);
+  }
+}
+
+function updateComposerFromJob(job) {
+  if (!job) return;
+  const intent = job.intent || {};
+  const pitch = document.getElementById('valuePropInput').value.trim();
+  const stack = (intent.techStackAll || []).slice(0, 3).join(', ') || job.department;
+  const badge = document.getElementById('selectedCompanyBadge');
+  badge.textContent = job.atsPlatform.toUpperCase() + ' • ' + job.companySlug;
+  badge.className = 'ats-badge ats-' + job.atsPlatform;
+  document.getElementById('buyerPersonaText').textContent = intent.targetBuyerPersona || 'VP Engineering / CTO';
+  document.getElementById('liveJobLink').href = job.jobUrl;
+
+  const box = document.getElementById('emailPreviewBox');
+  if (state.tone === 'founder') {
+    box.textContent =
+      'Subject: ' + job.companyName + ' — ' + job.title + '\n\n' +
+      'Hi {{first_name}},\n\n' +
+      (intent.outreachHook || ('Noticed ' + job.companyName + ' is hiring for ' + job.title + '.')) + '\n\n' +
+      'Reaching out because ' + pitch + ' — especially for teams actively investing in ' + stack + '.\n\n' +
+      'Worth a quick 3-sentence breakdown of how peer EU teams set this up, or not a Q4 priority?';
+  } else if (state.tone === 'technical') {
+    box.textContent =
+      'Subject: ' + stack + ' architecture @ ' + job.companyName + '\n\n' +
+      'Hi {{first_name}},\n\n' +
+      'Saw your open ' + job.title + ' req in ' + job.location + ((intent.signalCodes || []).length ? ' (' + intent.signalCodes.join(' + ') + ')' : '') + '.\n\n' +
+      'Typically when teams scale ' + stack + ', ' + pitch + '.\n\n' +
+      'Open to seeing the benchmark architecture before the new hire ramps?';
+  } else {
+    box.textContent = JSON.stringify({
+      company_name: job.companyName,
+      ats_platform: job.atsPlatform,
+      trigger_role: job.title,
+      location: job.location,
+      intent_score: intent.intentScore,
+      intent_tier: intent.intentTier,
+      buyer_persona: intent.targetBuyerPersona,
+      tech_stack: intent.techStackAll,
+      buying_signals: intent.signalCodes,
+      disclosed_salary: intent.disclosedSalary,
+      icebreaker: intent.outreachHook,
+      job_url: job.jobUrl
+    }, null, 2);
+  }
+}
+
+function updateComposerFromDossier(d) {
+  if (!d) return;
+  const pitch = document.getElementById('valuePropInput').value.trim();
+  const stack = d.topTechnologies.slice(0, 4).map(t => t.tool).join(', ') || 'modern cloud tooling';
+  const badge = document.getElementById('selectedCompanyBadge');
+  badge.textContent = d.atsPlatform.toUpperCase() + ' • ACCOUNT';
+  badge.className = 'ats-badge ats-' + d.atsPlatform;
+  document.getElementById('buyerPersonaText').textContent = d.decisionMakerOpenings?.[0]?.title ? ('Hiring: ' + d.decisionMakerOpenings[0].title) : 'VP Engineering / CTO / CRO';
+  document.getElementById('liveJobLink').href = d.careerSiteUrl;
+
+  const box = document.getElementById('emailPreviewBox');
+  if (state.tone === 'json') {
+    box.textContent = JSON.stringify(d, null, 2);
+  } else {
+    box.textContent =
+      'Subject: ' + d.companyName + ' scaling (' + d.totalJobsAnalyzed + ' open reqs)\n\n' +
+      'Hi {{first_name}},\n\n' +
+      d.accountOutreachHook + '\n\n' +
+      'Given your team\'s active investment across ' + stack + ', ' + pitch + '.\n\n' +
+      'Would it be crazy to share a 2-minute playbook on how similar European ' + d.hiringVelocityTier.toLowerCase().replace('_', ' ') + ' teams handle this?';
+  }
+}
+
+function renderAll() {
+  renderTechChips();
+  renderFeed();
+}
+
+document.querySelectorAll('#viewModeGroup .seg-btn').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('#viewModeGroup .seg-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.view = btn.dataset.view;
+    state.selectedIdx = 0;
+    renderAll();
+  };
+});
+
+document.querySelectorAll('#atsFilterGroup .seg-btn').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('#atsFilterGroup .seg-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.ats = btn.dataset.ats;
+    state.selectedIdx = 0;
+    renderAll();
+  };
+});
+
+document.querySelectorAll('#signalFilterGroup .seg-btn').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('#signalFilterGroup .seg-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.sig = btn.dataset.sig;
+    state.selectedIdx = 0;
+    renderAll();
+  };
+});
+
+document.querySelectorAll('#toneGroup .seg-btn').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('#toneGroup .seg-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.tone = btn.dataset.tone;
+    renderFeed();
+  };
+});
+
+document.getElementById('searchInput').oninput = (e) => {
+  state.search = e.target.value;
+  state.selectedIdx = 0;
+  renderFeed();
+};
+
+document.getElementById('valuePropInput').oninput = () => renderFeed();
+
+document.getElementById('btnCopyEmail').onclick = async () => {
+  const txt = document.getElementById('emailPreviewBox').textContent;
+  await navigator.clipboard.writeText(txt);
+  const btn = document.getElementById('btnCopyEmail');
+  btn.textContent = 'Copied!';
+  setTimeout(() => { btn.textContent = 'Copy Cold Email'; }, 1400);
+};
+
+document.getElementById('btnCoverMode').onclick = () => {
+  document.body.classList.toggle('cover-mode');
+};
+
+document.getElementById('btnExportCsv').onclick = () => {
+  const rows = getFilteredJobs();
+  const header = ['atsPlatform','companyName','title','department','location','workplaceType','intentScore','intentTier','buyerPersona','techStack','buyingSignals','outreachHook','jobUrl'];
+  const csvLines = [header.join(',')];
+  rows.forEach(r => {
+    const i = r.intent || {};
+    const vals = [
+      r.atsPlatform, r.companyName, r.title, r.department, r.location, r.workplaceType,
+      i.intentScore || 0, i.intentTier || '', i.targetBuyerPersona || '',
+      (i.techStackAll || []).join('; '), (i.signalCodes || []).join('; '),
+      i.outreachHook || '', r.jobUrl
+    ].map(v => '"' + String(v).replace(/"/g, '""') + '"');
+    csvLines.push(vals.join(','));
+  });
+  const blob = new Blob([csvLines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'european-hiring-intent-leads.csv';
+  a.click();
+};
+
+renderAll();
+</script>
+</body>
+</html>
