@@ -1,0 +1,17 @@
+{
+  "name": "hiring-intent-autopilot-mcp",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Zero-dependency MCP Server & CLI for European B2B Hiring Intent Intelligence (Personio & Teamtailor — Local HTTP + Apify Cloud PPE).",
+  "bin": {
+    "hiring-intent-mcp": "./bin/hiring-intent-mcp.mjs"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "start": "node ./bin/hiring-intent-mcp.mjs",
+    "cli:demo": "node ./bin/hiring-intent-mcp.mjs --cli --platform personio --target adsquare --max 5",
+    "test": "node ./test-mcp.mjs"
+  }
+}
