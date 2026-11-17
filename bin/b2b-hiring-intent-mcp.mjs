@@ -1,20 +1,24 @@
 #!/usr/bin/env node
 /**
- * b2b-hiring-intent-mcp — Open-Core Zero-Dependency MCP Server & CLI
+ * b2b-hiring-intent-mcp v1.1.0 — Open-Core Zero-Dependency 9-ATS MCP Server & CLI
  *
- * Inspect single companies & regulatory filings locally over stdio MCP (`Claude Desktop`, `Cursor`, `VS Code Copilot`),
- * or scale to 100–10,000+ targets on schedule via our 10 hosted Cloud Pay-Per-Event APIs:
+ * Inspect any company across 9 ATS platforms (Greenhouse, Lever, Ashby, Personio, Teamtailor,
+ * SmartRecruiters, Workable, Recruitee, Pinpoint) locally over stdio MCP (`Claude Desktop`, `Cursor`, `VS Code Copilot`),
+ * or scale to 100–10,000+ targets on schedule via our 11 hosted Cloud Pay-Per-Event APIs:
  *   https://apify.com/yan0lovesha
  */
 
+import fs from 'node:fs';
 import readline from 'node:readline';
+import { fileURLToPath } from 'node:url';
 
 const SERVER_INFO = {
     name: 'b2b-hiring-intent-mcp',
-    version: '1.0.0',
+    version: '1.1.0',
 };
 
 const CLOUD_ACTOR_MAP = {
+    multi_ats: 'yan0lovesha~multi-ats-jobs-hiring-intent',
     ashby: 'yan0lovesha~ashby-jobs-hiring-intent',
     personio: 'yan0lovesha~personio-jobs-hiring-intent',
     teamtailor: 'yan0lovesha~teamtailor-jobs-hiring-signal',
@@ -142,18 +146,166 @@ function enrichIntent(job, structuredSalary = null) {
 
 async function fetchSafe(url) {
     const res = await fetch(url, {
-        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; B2BHiringIntentMCP/1.0)' },
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; B2BHiringIntentMCP/1.1)' },
         signal: AbortSignal.timeout(15000),
     });
     return { ok: res.ok, status: res.status, text: await res.text() };
 }
 
-async function scanSingleTarget(platform, target, maxJobs = 5) {
+const SUPPORTED_PLATFORMS = new Set([
+    'greenhouse',
+    'lever',
+    'ashby',
+    'personio',
+    'teamtailor',
+    'smartrecruiters',
+    'workable',
+    'recruitee',
+    'pinpoint',
+]);
+
+export function detectAtsTarget(rawInput = '', explicitPlatform = '') {
+    const trimmed = String(rawInput || '').trim();
+    const exp = String(explicitPlatform || '').trim().toLowerCase();
+    if (!trimmed) return null;
+
+    const colonMatch = trimmed.match(/^([a-zA-Z0-9_-]+):(.+)$/);
+    if (colonMatch && !/^https?$/i.test(colonMatch[1])) {
+        const prefix = colonMatch[1].toLowerCase();
+        if (SUPPORTED_PLATFORMS.has(prefix)) {
+            return detectAtsTarget(colonMatch[2].trim(), prefix);
+        }
+    }
+
+    if (/^https?:\/\//i.test(trimmed)) {
+        try {
+            const parsed = new URL(trimmed);
+            const host = parsed.hostname.toLowerCase();
+            const parts = parsed.pathname.split('/').filter(Boolean);
+
+            if (host.endsWith('greenhouse.io')) {
+                const forToken = parsed.searchParams.get('for');
+                if (forToken) return { platform: 'greenhouse', target: forToken.trim() };
+                const bIdx = parts.indexOf('boards');
+                if (bIdx >= 0 && parts[bIdx + 1]) return { platform: 'greenhouse', target: decodeURIComponent(parts[bIdx + 1]) };
+                if (parts[0] && parts[0] !== 'embed') return { platform: 'greenhouse', target: decodeURIComponent(parts[0]) };
+            }
+            if (host.endsWith('lever.co')) {
+                const pIdx = parts.indexOf('postings');
+                if (pIdx >= 0 && parts[pIdx + 1]) return { platform: 'lever', target: decodeURIComponent(parts[pIdx + 1]) };
+                if (parts[0]) return { platform: 'lever', target: decodeURIComponent(parts[0]) };
+            }
+            if (host.endsWith('ashbyhq.com')) {
+                const jIdx = parts.indexOf('job-board');
+                const slug = jIdx >= 0 && parts[jIdx + 1] ? parts[jIdx + 1] : parts[0];
+                if (slug) return { platform: 'ashby', target: decodeURIComponent(slug) };
+            }
+            const personioMatch = host.match(/^([a-z0-9-]+)\.jobs\.personio\.(?:de|com)$/);
+            if (personioMatch) return { platform: 'personio', target: personioMatch[1] };
+
+            const ttMatch = host.match(/^([a-z0-9-]+)\.teamtailor\.com$/);
+            if (ttMatch && ttMatch[1] !== 'www') return { platform: 'teamtailor', target: `https://${host}` };
+
+            if (host.endsWith('smartrecruiters.com')) {
+                const cIdx = parts.indexOf('companies');
+                const slug = cIdx >= 0 && parts[cIdx + 1] ? parts[cIdx + 1] : parts[0];
+                if (slug) return { platform: 'smartrecruiters', target: decodeURIComponent(slug) };
+            }
+            if (host.endsWith('workable.com')) {
+                if (host !== 'apply.workable.com' && host !== 'www.workable.com') {
+                    return { platform: 'workable', target: host.split('.')[0] };
+                }
+                const aIdx = parts.indexOf('accounts');
+                if (aIdx >= 0 && parts[aIdx + 1]) return { platform: 'workable', target: parts[aIdx + 1].toLowerCase() };
+                if (parts[0] && parts[0] !== 'j' && parts[0] !== 'api') return { platform: 'workable', target: parts[0].toLowerCase() };
+            }
+            const rcMatch = host.match(/^([a-z0-9-]+)\.recruitee\.com$/);
+            if (rcMatch && rcMatch[1] !== 'www') return { platform: 'recruitee', target: rcMatch[1] };
+
+            const ppMatch = host.match(/^([a-z0-9-]+)\.pinpointhq\.com$/);
+            if (ppMatch && ppMatch[1] !== 'www') return { platform: 'pinpoint', target: ppMatch[1] };
+        } catch {
+            return null;
+        }
+    }
+
+    if (exp && SUPPORTED_PLATFORMS.has(exp)) {
+        return { platform: exp, target: trimmed };
+    }
+    return null;
+}
+
+export async function scanSingleTarget(platform, target, maxJobs = 5) {
     const cap = Math.min(10, Math.max(1, Number(maxJobs || 5)));
-    const p = String(platform || 'ashby').toLowerCase();
+    const detected = detectAtsTarget(target, platform && platform !== 'auto' ? platform : '');
+    const p = detected ? detected.platform : String(platform || 'ashby').toLowerCase();
+    const resolvedTarget = detected ? detected.target : String(target || '').trim();
+    if (!resolvedTarget) return [];
+
+    if (p === 'greenhouse') {
+        const slug = resolvedTarget.replace(/^https?:\/\/(?:job-)?boards(?:\.eu)?\.greenhouse\.io\//i, '').split('/')[0].trim();
+        const r = await fetchSafe(
+            `https://boards-api.greenhouse.io/v1/boards/${encodeURIComponent(slug)}/jobs?content=true&pay_transparency=true`,
+        );
+        if (!r.ok) return [];
+        const j = JSON.parse(r.text);
+        const jobs = [...(j.jobs || [])].sort((a, b) => {
+            const pA = a.pay_input_ranges?.length ? 1 : 0;
+            const pB = b.pay_input_ranges?.length ? 1 : 0;
+            return pB - pA;
+        });
+        return jobs.slice(0, cap).map((item) => {
+            const pr = (item.pay_input_ranges || [])[0];
+            const sal =
+                pr && (pr.min_cents || pr.max_cents)
+                    ? `${pr.currency_type || 'USD'} $${Math.round((pr.min_cents || 0) / 100).toLocaleString('en-US')} - $${Math.round((pr.max_cents || 0) / 100).toLocaleString('en-US')}`
+                    : null;
+            const desc = htmlToText(item.content || '');
+            const job = {
+                atsPlatform: 'greenhouse',
+                companyName: item.company_name || slug,
+                title: item.title,
+                department: item.departments?.[0]?.name || 'General',
+                location: item.location?.name || item.offices?.[0]?.name || 'Global',
+                jobUrl: item.absolute_url || `https://boards.greenhouse.io/${slug}/jobs/${item.id}`,
+                descriptionText: desc.slice(0, 900),
+            };
+            return { ...job, intent: enrichIntent(job, sal) };
+        });
+    }
+
+    if (p === 'lever') {
+        const slug = resolvedTarget.replace(/^https?:\/\/jobs(?:\.eu)?\.lever\.co\//i, '').split('/')[0].trim();
+        const r = await fetchSafe(`https://api.lever.co/v0/postings/${encodeURIComponent(slug)}?mode=json&limit=${Math.max(15, cap * 3)}`);
+        if (!r.ok) return [];
+        const arr = JSON.parse(r.text);
+        if (!Array.isArray(arr)) return [];
+        arr.sort((a, b) => ((b.salaryRange?.min ? 1 : 0) - (a.salaryRange?.min ? 1 : 0)));
+        return arr.slice(0, cap).map((item) => {
+            const sr = item.salaryRange;
+            const sal =
+                sr && (sr.min || sr.max)
+                    ? `${sr.currency || 'USD'} ${Number(sr.min || 0).toLocaleString('en-US')} - ${Number(sr.max || 0).toLocaleString('en-US')} (${sr.interval || 'per-year'})`
+                    : null;
+            const listsText = (item.lists || []).map((l) => `${l.text || ''}: ${htmlToText(l.content || '')}`).join('\n');
+            const fullDesc = [item.descriptionPlain || htmlToText(item.description || ''), listsText, item.additionalPlain || '']
+                .filter(Boolean)
+                .join('\n');
+            const job = {
+                atsPlatform: 'lever',
+                companyName: slug,
+                title: item.text,
+                department: item.categories?.department || item.categories?.team || 'General',
+                location: item.categories?.location || 'Global',
+                jobUrl: item.hostedUrl,
+                descriptionText: fullDesc.slice(0, 900),
+            };
+            return { ...job, intent: enrichIntent(job, sal) };
+        });
+    }
 
     if (p === 'ashby') {
-        const slug = target.replace(/^https?:\/\/jobs\.ashbyhq\.com\//i, '').split('/')[0].trim();
+        const slug = resolvedTarget.replace(/^https?:\/\/jobs\.ashbyhq\.com\//i, '').split('/')[0].trim();
         const r = await fetchSafe(`https://api.ashbyhq.com/posting-api/job-board/${encodeURIComponent(slug)}?includeCompensation=true`);
         if (!r.ok) return [];
         const j = JSON.parse(r.text);
@@ -173,7 +325,7 @@ async function scanSingleTarget(platform, target, maxJobs = 5) {
     }
 
     if (p === 'personio') {
-        const slug = target.replace(/\.jobs\.personio\.(de|com).*$/i, '').replace(/^https?:\/\//i, '').trim();
+        const slug = resolvedTarget.replace(/\.jobs\.personio\.(de|com).*$/i, '').replace(/^https?:\/\//i, '').trim();
         const baseUrl = `https://${slug}.jobs.personio.de`;
         const xmlRes = await fetchSafe(`${baseUrl}/xml?language=en`);
         if (xmlRes.ok && /<position>/i.test(xmlRes.text)) {
@@ -196,10 +348,10 @@ async function scanSingleTarget(platform, target, maxJobs = 5) {
     }
 
     if (p === 'teamtailor') {
-        const baseUrl = /^https?:\/\//i.test(target) ? new URL(target).origin : `https://${target.trim()}.teamtailor.com`;
+        const baseUrl = /^https?:\/\//i.test(resolvedTarget) ? new URL(resolvedTarget).origin : `https://${resolvedTarget.trim()}.teamtailor.com`;
         const rss = await fetchSafe(`${baseUrl}/jobs.rss`);
         if (!rss.ok) return [];
-        const companyName = xmlTag(rss.text.split('<item>')[0] || '', 'title') || target;
+        const companyName = xmlTag(rss.text.split('<item>')[0] || '', 'title') || resolvedTarget;
         return xmlAllBlocks(rss.text, 'item').slice(0, cap).map((item) => {
             const desc = htmlToText(xmlTag(item, 'description'));
             const job = {
@@ -216,7 +368,7 @@ async function scanSingleTarget(platform, target, maxJobs = 5) {
     }
 
     if (p === 'workable') {
-        const slug = target.trim().toLowerCase();
+        const slug = resolvedTarget.trim().toLowerCase();
         const r = await fetchSafe(`https://apply.workable.com/api/v1/widget/accounts/${encodeURIComponent(slug)}?details=true`);
         if (!r.ok) return [];
         const j = JSON.parse(r.text);
@@ -236,7 +388,7 @@ async function scanSingleTarget(platform, target, maxJobs = 5) {
     }
 
     if (p === 'recruitee') {
-        const slug = target.replace(/\.recruitee\.com.*$/i, '').trim().toLowerCase();
+        const slug = resolvedTarget.replace(/\.recruitee\.com.*$/i, '').trim().toLowerCase();
         const r = await fetchSafe(`https://${slug}.recruitee.com/api/offers`);
         if (!r.ok) return [];
         const j = JSON.parse(r.text);
@@ -256,7 +408,7 @@ async function scanSingleTarget(platform, target, maxJobs = 5) {
     }
 
     if (p === 'pinpoint') {
-        const slug = target.replace(/\.pinpointhq\.com.*$/i, '').trim().toLowerCase();
+        const slug = resolvedTarget.replace(/\.pinpointhq\.com.*$/i, '').trim().toLowerCase();
         const r = await fetchSafe(`https://${slug}.pinpointhq.com/postings.json`);
         if (!r.ok) return [];
         const parsed = JSON.parse(r.text);
@@ -278,7 +430,7 @@ async function scanSingleTarget(platform, target, maxJobs = 5) {
     }
 
     if (p === 'smartrecruiters') {
-        const slug = target.trim();
+        const slug = resolvedTarget.trim();
         const r = await fetchSafe(`https://api.smartrecruiters.com/v1/companies/${encodeURIComponent(slug)}/postings?limit=${cap}`);
         if (!r.ok) return [];
         const j = JSON.parse(r.text);
@@ -303,24 +455,31 @@ const TOOLS = [
     {
         name: 'scan_company_hiring_intent',
         description:
-            'Scan a single company board across 7 ATS platforms (ashby, personio, teamtailor, smartrecruiters, workable, recruitee, pinpoint) to extract open jobs, tech stack, disclosed salaries, and B2B buying intent scores. For 50-10,000 company batch runs, XML-404 fallbacks & Company Dossiers, use https://apify.com/yan0lovesha.',
+            'Scan any company career board across 9 ATS platforms (greenhouse, lever, ashby, personio, teamtailor, smartrecruiters, workable, recruitee, pinpoint) by passing either a career URL (`url`) or (`platform` + `target`) to extract open jobs, tech stack, disclosed salaries, and B2B buying intent scores. For 50-10,000 company batch runs & Account Dossiers, use https://apify.com/yan0lovesha.',
         inputSchema: {
             type: 'object',
             properties: {
+                url: {
+                    type: 'string',
+                    description:
+                        'Optional full career board URL (auto-detects boards.greenhouse.io/*, job-boards.greenhouse.io/*, jobs.lever.co/*, jobs.ashbyhq.com/*, *.jobs.personio.de/*, *.teamtailor.com/*, careers.smartrecruiters.com/*, apply.workable.com/*, *.recruitee.com/*, *.pinpointhq.com/*).',
+                },
                 platform: {
                     type: 'string',
-                    enum: ['ashby', 'personio', 'teamtailor', 'smartrecruiters', 'workable', 'recruitee', 'pinpoint'],
+                    enum: ['auto', 'greenhouse', 'lever', 'ashby', 'personio', 'teamtailor', 'smartrecruiters', 'workable', 'recruitee', 'pinpoint'],
                 },
-                target: { type: 'string', description: 'Company ATS board slug (e.g. ramp, adsquare, puzzel, viva, channable, smartthings, Canva).' },
+                target: {
+                    type: 'string',
+                    description: 'Company ATS board slug or career URL (e.g. figma, zoox, ramp, adsquare, puzzel, viva, channable, smartthings, Canva).',
+                },
                 maxJobs: { type: 'number', default: 5 },
             },
-            required: ['platform', 'target'],
         },
     },
     {
         name: 'list_cloud_b2b_lead_apis',
         description:
-            'List all 10 production Cloud Pay-Per-Event APIs (7 Global/EU ATS Hiring Intent APIs + US Solar/Building Permits + US Medical/Dental Clinic Owners + FDA 510k Cleared MedTech Leads) available on Apify Store.',
+            'List all 11 production Cloud Pay-Per-Event APIs (Flagship 9-ATS Unified Hiring Intent API + 7 Dedicated Global/EU ATS APIs + US Solar/Building Permits + US Medical/Dental Clinic Owners + FDA 510k Cleared MedTech Leads) available on Apify Store.',
         inputSchema: { type: 'object', properties: {} },
     },
 ];
@@ -341,6 +500,8 @@ async function handleRpc(msg) {
     if (method === 'notifications/initialized') return null;
     if (method === 'ping') return { jsonrpc: '2.0', id, result: {} };
     if (method === 'tools/list') return { jsonrpc: '2.0', id, result: { tools: TOOLS } };
+    if (method === 'resources/list') return { jsonrpc: '2.0', id, result: { resources: [] } };
+    if (method === 'prompts/list') return { jsonrpc: '2.0', id, result: { prompts: [] } };
     if (method === 'tools/call') {
         if (params?.name === 'list_cloud_b2b_lead_apis') {
             return {
@@ -365,7 +526,10 @@ async function handleRpc(msg) {
             };
         }
         if (params?.name === 'scan_company_hiring_intent') {
-            const data = await scanSingleTarget(params.arguments?.platform, String(params.arguments?.target || ''), params.arguments?.maxJobs);
+            const args = params.arguments || {};
+            const inputTarget = String(args.url || args.target || '');
+            const inputPlatform = args.url ? 'auto' : args.platform || 'auto';
+            const data = await scanSingleTarget(inputPlatform, inputTarget, args.maxJobs);
             return {
                 jsonrpc: '2.0',
                 id,
@@ -377,19 +541,32 @@ async function handleRpc(msg) {
     return id !== undefined ? { jsonrpc: '2.0', id, error: { code: -32601, message: 'Method not found' } } : null;
 }
 
-if (process.argv.includes('--cli')) {
-    const getArg = (k, d) => {
-        const i = process.argv.indexOf(`--${k}`);
-        return i >= 0 && process.argv[i + 1] ? process.argv[i + 1] : d;
-    };
-    const items = await scanSingleTarget(getArg('platform', 'ashby'), getArg('target', 'ramp'), Number(getArg('max', '4')));
-    process.stdout.write(JSON.stringify(items, null, 2) + '\n');
-} else {
-    const rl = readline.createInterface({ input: process.stdin, terminal: false });
-    for await (const line of rl) {
-        const t = line.trim();
-        if (!t.startsWith('{')) continue;
-        const res = await handleRpc(JSON.parse(t));
-        if (res) process.stdout.write(JSON.stringify(res) + '\n');
+const isMain = (() => {
+    try {
+        return Boolean(process.argv[1]) && fs.realpathSync(fileURLToPath(import.meta.url)) === fs.realpathSync(process.argv[1]);
+    } catch {
+        return false;
+    }
+})();
+
+if (isMain) {
+    if (process.argv.includes('--cli')) {
+        const getArg = (k, d) => {
+            const i = process.argv.indexOf(`--${k}`);
+            return i >= 0 && process.argv[i + 1] ? process.argv[i + 1] : d;
+        };
+        const careerUrl = getArg('url', '');
+        const items = careerUrl
+            ? await scanSingleTarget('auto', careerUrl, Number(getArg('max', '4')))
+            : await scanSingleTarget(getArg('platform', 'ashby'), getArg('target', 'ramp'), Number(getArg('max', '4')));
+        process.stdout.write(JSON.stringify(items, null, 2) + '\n');
+    } else {
+        const rl = readline.createInterface({ input: process.stdin, terminal: false });
+        for await (const line of rl) {
+            const t = line.trim();
+            if (!t.startsWith('{')) continue;
+            const res = await handleRpc(JSON.parse(t));
+            if (res) process.stdout.write(JSON.stringify(res) + '\n');
+        }
     }
 }

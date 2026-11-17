@@ -1,14 +1,27 @@
 {
   "name": "b2b-hiring-intent-mcp",
-  "version": "1.0.0",
+  "version": "1.1.0",
+  "mcpName": "io.github.yan0lovesha/hiring-intent-mcp",
   "type": "module",
-  "description": "Zero-dependency Open-Core MCP Server & CLI for B2B Hiring Intent, Tech-Stack Signals, Disclosed Salaries & US Regulatory Leads (Ashby, Personio, Teamtailor, SmartRecruiters, Workable, Recruitee, Pinpoint, CMS NPI & FDA 510k).",
+  "description": "Zero-dependency Open-Core MCP Server & CLI for B2B Hiring Intent, Tech-Stack Signals, Disclosed Salaries & US Regulatory Leads across 9 ATS platforms (Greenhouse, Lever, Ashby, Personio, Teamtailor, SmartRecruiters, Workable, Recruitee, Pinpoint) + CMS NPI & FDA 510k.",
+  "homepage": "https://apify.com/yan0lovesha",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yan0lovesha/hiring-intent-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yan0lovesha/hiring-intent-mcp/issues"
+  },
   "bin": {
     "b2b-hiring-intent-mcp": "./bin/b2b-hiring-intent-mcp.mjs"
   },
   "keywords": [
     "mcp",
     "mcp-server",
+    "model-context-protocol",
+    "greenhouse",
+    "lever",
+    "ashby",
     "b2b-leads",
     "hiring-intent",
     "tech-stack",
@@ -16,7 +29,6 @@
     "clay",
     "n8n",
     "apify",
-    "ashby",
     "personio",
     "teamtailor",
     "fda-510k",
@@ -27,6 +39,9 @@
   },
   "scripts": {
     "start": "node ./bin/b2b-hiring-intent-mcp.mjs",
+    "demo:url": "node ./bin/b2b-hiring-intent-mcp.mjs --cli --url https://boards.greenhouse.io/figma --max 4",
+    "demo:greenhouse": "node ./bin/b2b-hiring-intent-mcp.mjs --cli --platform greenhouse --target figma --max 4",
+    "demo:lever": "node ./bin/b2b-hiring-intent-mcp.mjs --cli --platform lever --target zoox --max 4",
     "demo:ashby": "node ./bin/b2b-hiring-intent-mcp.mjs --cli --platform ashby --target ramp --max 4",
     "demo:personio": "node ./bin/b2b-hiring-intent-mcp.mjs --cli --platform personio --target adsquare --max 4",
     "test": "node ./test/smoke.test.mjs"
