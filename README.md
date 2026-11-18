@@ -88,10 +88,15 @@ The local open-core MCP server is ideal for inspecting 1–5 companies interacti
 
 ---
 
-## Turn Signals into Outbound Sequences, Clay Formulas & `n8n` Workflows (Agensi Skill)
+## Turn Signals into Outbound Sequences, Clay Formulas & `n8n` Workflows (Agent Skills)
 
-Using **Claude Code, Cursor, GitHub Copilot, Codex CLI, or OpenClaw**? Install our verified **`SKILL.md` Outbound Execution Engine** on **[Agensi](https://www.agensi.io/creators/yan0lovesha)**:
-- **[B2B Signal-to-Cold-Email Autopilot Pro (Clay + n8n)](https://www.agensi.io/skills/b2b-signal-to-cold-email-autopilot-pro-clay-n8n)** — Converts raw ATS, permit, NPI clinic, and FDA 510(k) signals into **CFO / VP Eng / RevOps 3-touch plain-text sequences** (verified by a 16-rule `<=75w` anti-AI-slop linter), **Clay `intentScore >= 60` 70% credit-saver formulas**, and **import-ready `n8n` workflow JSON**.
+Using **Claude Code, Cursor, GitHub Copilot, Codex CLI, Windsurf, or OpenClaw**?
+1. **Free 9-ATS Hiring Intent Radar Skill (Bundled in [`skills/b2b-hiring-intent-radar`](./skills/b2b-hiring-intent-radar)):**
+   ```bash
+   npx skills add yan0lovesha/hiring-intent-mcp
+   ```
+2. **Pro Outbound Execution Engine on [Agensi](https://www.agensi.io/creators/yan0lovesha):**
+   - **[B2B Signal-to-Cold-Email Autopilot Pro (Clay + n8n)](https://www.agensi.io/skills/b2b-signal-to-cold-email-autopilot-pro-clay-n8n)** — Converts raw ATS, permit, NPI clinic, and FDA 510(k) signals into **CFO / VP Eng / RevOps 3-touch plain-text sequences** (verified by a 16-rule `<=75w` anti-AI-slop linter), **Clay `intentScore >= 60` 70% credit-saver formulas**, and **import-ready `n8n` workflow JSON**.
 
 ---
 

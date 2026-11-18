@@ -1,0 +1,553 @@
+{
+  "generatedAt": "2026-11-17T04:37:30.700234+00:00",
+  "taxonomySize": 132,
+  "accountsMatched": 4,
+  "unresolvedTargets": [],
+  "batchScaleNotice": "Need 10+ company batch runs, scheduled monitoring, or US Solar Permits / NPI Clinics / FDA 510(k) leads? Run with --cloud-catalog or visit https://apify.com/yan0lovesha",
+  "dossiers": [
+    {
+      "companyName": "Puzzel",
+      "atsPlatform": "teamtailor",
+      "totalOpenRolesOnBoard": 11,
+      "rolesAnalyzed": 4,
+      "accountIntentScore": 100,
+      "accountIntentTier": "HOT",
+      "recommendedBuyerPersona": "VP of Revenue Operations / CRO / Head of Growth",
+      "activeSignals": [
+        "TECH_MIGRATION_MODERNIZATION",
+        "AI_TRANSFORMATION_INITIATIVE",
+        "BUDGET_HYPERGROWTH",
+        "REVOPS_GTM_SCALE"
+      ],
+      "leadershipOpenings": [],
+      "verifiedTechStack": [
+        "Salesforce",
+        "Gong"
+      ],
+      "techStackByCategory": {
+        "crm_gtm_revops": [
+          "Salesforce",
+          "Gong"
+        ]
+      },
+      "disclosedSalarySamples": [
+        "Senior FP&A Business Analyst, Revenue: €37,000 - €45,000"
+      ],
+      "icebreakers": {
+        "executiveAngle": "Saw Puzzel has 11 open roles right now, led by \"Account Executive - Denmark\" across Salesforce, Gong.",
+        "hiringManagerAngle": "Noticed the open \"Account Executive - Denmark\" req on your Commercial team working with Salesforce, Gong — teams scaling that stack usually hit tooling bottlenecks 3-4 months before the new hire fully ramps."
+      },
+      "topRoles": [
+        {
+          "atsPlatform": "teamtailor",
+          "companyName": "Puzzel",
+          "companySlug": "puzzel",
+          "title": "Account Executive - Denmark",
+          "department": "Commercial",
+          "location": "Europe",
+          "workplaceType": "unspecified",
+          "disclosedSalary": null,
+          "publishedAt": "Fri, 30 Oct 2026 16:22:19 +0100",
+          "jobUrl": "https://puzzel.teamtailor.com/jobs/8644680-account-executive-denmark",
+          "intentScore": 98,
+          "intentTier": "HOT",
+          "signals": [
+            "TECH_MIGRATION_MODERNIZATION",
+            "AI_TRANSFORMATION_INITIATIVE",
+            "BUDGET_HYPERGROWTH",
+            "REVOPS_GTM_SCALE"
+          ],
+          "techStack": [
+            "Salesforce"
+          ],
+          "techByCategory": {
+            "crm_gtm_revops": [
+              "Salesforce"
+            ]
+          },
+          "excerpt": "Account Executive - Denmark Aarhus | Copenhagen About Puzzel 🔍 We're the AI-native customer experience platform built in Norway, trusted across Europe, and growing fast. For 25 years we've helped contact centres deliver faster, more human service — without the clutter or complexity. Today we're #1 in the Nordics, scaling rapidly in the UK"
+        },
+        {
+          "atsPlatform": "teamtailor",
+          "companyName": "Puzzel",
+          "companySlug": "puzzel",
+          "title": "Account Executive - Norway",
+          "department": "Commercial",
+          "location": "Europe",
+          "workplaceType": "unspecified",
+          "disclosedSalary": null,
+          "publishedAt": "Fri, 30 Oct 2026 16:01:59 +0100",
+          "jobUrl": "https://puzzel.teamtailor.com/jobs/8644498-account-executive-norway",
+          "intentScore": 98,
+          "intentTier": "HOT",
+          "signals": [
+            "TECH_MIGRATION_MODERNIZATION",
+            "AI_TRANSFORMATION_INITIATIVE",
+            "BUDGET_HYPERGROWTH",
+            "REVOPS_GTM_SCALE"
+          ],
+          "techStack": [
+            "Salesforce"
+          ],
+          "techByCategory": {
+            "crm_gtm_revops": [
+              "Salesforce"
+            ]
+          },
+          "excerpt": "Account Executive - Norway Arendal | Oslo About Puzzel 🔍 We're the AI-native customer experience platform built in Norway, trusted across Europe, and growing fast. For 25 years we've helped contact centres deliver faster, more human service — without the clutter or complexity. Today we're #1 in the Nordics, scaling rapidly in the UK and t"
+        },
+        {
+          "atsPlatform": "teamtailor",
+          "companyName": "Puzzel",
+          "companySlug": "puzzel",
+          "title": "Senior FP&A Business Analyst, Revenue",
+          "department": "Finance",
+          "location": "Europe",
+          "workplaceType": "unspecified",
+          "disclosedSalary": "€37,000 - €45,000",
+          "publishedAt": "Thu, 05 Nov 2026 16:28:34 +0100",
+          "jobUrl": "https://puzzel.teamtailor.com/jobs/8674333-senior-fp-a-business-analyst-revenue",
+          "intentScore": 82,
+          "intentTier": "HOT",
+          "signals": [
+            "AI_TRANSFORMATION_INITIATIVE",
+            "BUDGET_HYPERGROWTH",
+            "REVOPS_GTM_SCALE"
+          ],
+          "techStack": [
+            "Salesforce"
+          ],
+          "techByCategory": {
+            "crm_gtm_revops": [
+              "Salesforce"
+            ]
+          },
+          "excerpt": "Senior FP&A Analyst, Revenue Sofia, Bulgaria | €37,000 - €45,000 About Puzzel 🔍 We're the AI-native customer experience platform built in Norway, trusted across Europe, and growing fast. For 25 years we've helped contact centres deliver faster, more human service — without the clutter or complexity. Today we're #1 in the Nordics, scaling "
+        },
+        {
+          "atsPlatform": "teamtailor",
+          "companyName": "Puzzel",
+          "companySlug": "puzzel",
+          "title": "Partner Account Manager - Netherlands",
+          "department": "Commercial",
+          "location": "Europe",
+          "workplaceType": "unspecified",
+          "disclosedSalary": null,
+          "publishedAt": "Fri, 30 Oct 2026 15:31:37 +0100",
+          "jobUrl": "https://puzzel.teamtailor.com/jobs/8644282-partner-account-manager-netherlands",
+          "intentScore": 78,
+          "intentTier": "HOT",
+          "signals": [
+            "AI_TRANSFORMATION_INITIATIVE",
+            "BUDGET_HYPERGROWTH",
+            "REVOPS_GTM_SCALE"
+          ],
+          "techStack": [
+            "Salesforce",
+            "Gong"
+          ],
+          "techByCategory": {
+            "crm_gtm_revops": [
+              "Salesforce",
+              "Gong"
+            ]
+          },
+          "excerpt": "Partner Account Manager Amsterdam Area About Puzzel 🔍 We're the AI-native customer experience platform built in Norway, trusted across Europe, and growing fast. For 25 years we've helped contact centres deliver faster, more human service — without the clutter or complexity. Today we're #1 in the Nordics, scaling rapidly in the UK and the "
+        }
+      ]
+    },
+    {
+      "companyName": "Cloudflare",
+      "atsPlatform": "greenhouse",
+      "totalOpenRolesOnBoard": 471,
+      "rolesAnalyzed": 4,
+      "accountIntentScore": 94,
+      "accountIntentTier": "HOT",
+      "recommendedBuyerPersona": "VP of Revenue Operations / CRO / Head of Growth",
+      "activeSignals": [
+        "NEW_LEADERSHIP_DECISION_MAKER",
+        "AI_TRANSFORMATION_INITIATIVE",
+        "REVOPS_GTM_SCALE"
+      ],
+      "leadershipOpenings": [
+        "Chief of Staff to Chief Strategy Officer",
+        "Commercial Sales Director, West",
+        "Director, Growth Sales (AI & Digital Natives)"
+      ],
+      "verifiedTechStack": [
+        "Cloudflare"
+      ],
+      "techStackByCategory": {
+        "cloud_infra": [
+          "Cloudflare"
+        ]
+      },
+      "disclosedSalarySamples": [
+        "Chief of Staff to Chief Strategy Officer: $221,000- $304,000",
+        "Commercial Sales Director, West: $328,000 - $451,000",
+        "Director, Growth Sales (AI & Digital Natives): $378,000 - $496,000"
+      ],
+      "icebreakers": {
+        "executiveAngle": "Saw Cloudflare has 471 open roles right now, led by \"Chief of Staff to Chief Strategy Officer\" ($221,000- $304,000) across Cloudflare.",
+        "hiringManagerAngle": "Noticed the open \"Chief of Staff to Chief Strategy Officer\" req on your Strategy team working with Cloudflare — teams scaling that stack usually hit tooling bottlenecks 3-4 months before the new hire fully ramps."
+      },
+      "topRoles": [
+        {
+          "atsPlatform": "greenhouse",
+          "companyName": "Cloudflare",
+          "companySlug": "cloudflare",
+          "title": "Chief of Staff to Chief Strategy Officer",
+          "department": "Strategy",
+          "location": "Hybrid",
+          "workplaceType": "onsite",
+          "disclosedSalary": "$221,000- $304,000",
+          "publishedAt": "2026-11-09T19:03:42-05:00",
+          "jobUrl": "https://boards.greenhouse.io/cloudflare/jobs/8076815?gh_jid=8076815",
+          "intentScore": 86,
+          "intentTier": "HOT",
+          "signals": [
+            "NEW_LEADERSHIP_DECISION_MAKER",
+            "AI_TRANSFORMATION_INITIATIVE",
+            "REVOPS_GTM_SCALE"
+          ],
+          "techStack": [
+            "Cloudflare"
+          ],
+          "techByCategory": {
+            "cloud_infra": [
+              "Cloudflare"
+            ]
+          },
+          "excerpt": "About Us At Cloudflare, we are on a mission to help build a better Internet. Today the company runs one of the world’s largest networks that powers millions of websites and other Internet properties for customers ranging from individual bloggers to SMBs to Fortune 500 companies. Cloudflare protects and accelerates any Internet application"
+        },
+        {
+          "atsPlatform": "greenhouse",
+          "companyName": "Cloudflare",
+          "companySlug": "cloudflare",
+          "title": "Commercial Sales Director, West",
+          "department": "Field Sales",
+          "location": "Hybrid",
+          "workplaceType": "onsite",
+          "disclosedSalary": "$328,000 - $451,000",
+          "publishedAt": "2026-11-09T19:03:42-05:00",
+          "jobUrl": "https://boards.greenhouse.io/cloudflare/jobs/8324315?gh_jid=8324315",
+          "intentScore": 70,
+          "intentTier": "HOT",
+          "signals": [
+            "NEW_LEADERSHIP_DECISION_MAKER",
+            "AI_TRANSFORMATION_INITIATIVE"
+          ],
+          "techStack": [
+            "Cloudflare"
+          ],
+          "techByCategory": {
+            "cloud_infra": [
+              "Cloudflare"
+            ]
+          },
+          "excerpt": "About Us At Cloudflare, we are on a mission to help build a better Internet. Today the company runs one of the world’s largest networks that powers millions of websites and other Internet properties for customers ranging from individual bloggers to SMBs to Fortune 500 companies. Cloudflare protects and accelerates any Internet application"
+        },
+        {
+          "atsPlatform": "greenhouse",
+          "companyName": "Cloudflare",
+          "companySlug": "cloudflare",
+          "title": "Director, Growth Sales (AI & Digital Natives)",
+          "department": "Mid Market",
+          "location": "Hybrid",
+          "workplaceType": "onsite",
+          "disclosedSalary": "$378,000 - $496,000",
+          "publishedAt": "2026-11-13T18:08:31-05:00",
+          "jobUrl": "https://boards.greenhouse.io/cloudflare/jobs/8383781?gh_jid=8383781",
+          "intentScore": 70,
+          "intentTier": "HOT",
+          "signals": [
+            "NEW_LEADERSHIP_DECISION_MAKER",
+            "AI_TRANSFORMATION_INITIATIVE"
+          ],
+          "techStack": [
+            "Cloudflare"
+          ],
+          "techByCategory": {
+            "cloud_infra": [
+              "Cloudflare"
+            ]
+          },
+          "excerpt": "About Us At Cloudflare, we are on a mission to help build a better Internet. Today the company runs one of the world’s largest networks that powers millions of websites and other Internet properties for customers ranging from individual bloggers to SMBs to Fortune 500 companies. Cloudflare protects and accelerates any Internet application"
+        },
+        {
+          "atsPlatform": "greenhouse",
+          "companyName": "Cloudflare",
+          "companySlug": "cloudflare",
+          "title": "Director, Growth Sales (AI & Digital Natives)",
+          "department": "Mid Market",
+          "location": "Distributed",
+          "workplaceType": "onsite",
+          "disclosedSalary": null,
+          "publishedAt": "2026-11-09T19:03:42-05:00",
+          "jobUrl": "https://boards.greenhouse.io/cloudflare/jobs/8243255?gh_jid=8243255",
+          "intentScore": 62,
+          "intentTier": "WARM",
+          "signals": [
+            "NEW_LEADERSHIP_DECISION_MAKER",
+            "AI_TRANSFORMATION_INITIATIVE"
+          ],
+          "techStack": [
+            "Cloudflare"
+          ],
+          "techByCategory": {
+            "cloud_infra": [
+              "Cloudflare"
+            ]
+          },
+          "excerpt": "About Us At Cloudflare, we are on a mission to help build a better Internet. Today the company runs one of the world’s largest networks that powers millions of websites and other Internet properties for customers ranging from individual bloggers to SMBs to Fortune 500 companies. Cloudflare protects and accelerates any Internet application"
+        }
+      ]
+    },
+    {
+      "companyName": "ramp",
+      "atsPlatform": "ashby",
+      "totalOpenRolesOnBoard": 179,
+      "rolesAnalyzed": 4,
+      "accountIntentScore": 74,
+      "accountIntentTier": "HOT",
+      "recommendedBuyerPersona": "VP of Revenue Operations / CRO / Head of Growth",
+      "activeSignals": [
+        "NEW_LEADERSHIP_DECISION_MAKER",
+        "REVOPS_GTM_SCALE",
+        "AI_TRANSFORMATION_INITIATIVE"
+      ],
+      "leadershipOpenings": [
+        "Head of Brand",
+        "Director, Product Design",
+        "Director, Brand Operations",
+        "Chief Compliance Officer, Ramp Advisory LLC"
+      ],
+      "verifiedTechStack": [
+        "Ruby on Rails"
+      ],
+      "techStackByCategory": {
+        "devtools_engineering": [
+          "Ruby on Rails"
+        ]
+      },
+      "disclosedSalarySamples": [
+        "Head of Brand: $309K – $424K • Offers Equity",
+        "Director, Product Design: $320K – $440K • Offers Equity",
+        "Director, Brand Operations: $200K – $352K • Offers Equity",
+        "Chief Compliance Officer, Ramp Advisory LLC: $170K – $300K • Offers Equity • Multiple Ranges"
+      ],
+      "icebreakers": {
+        "executiveAngle": "Saw ramp has 179 open roles right now, led by \"Head of Brand\" ($309K – $424K • Offers Equity) across Ruby on Rails.",
+        "hiringManagerAngle": "Noticed the open \"Head of Brand\" req on your Design team working with Ruby on Rails — teams scaling that stack usually hit tooling bottlenecks 3-4 months before the new hire fully ramps."
+      },
+      "topRoles": [
+        {
+          "atsPlatform": "ashby",
+          "companyName": "ramp",
+          "companySlug": "ramp",
+          "title": "Head of Brand",
+          "department": "Design",
+          "location": "New York, NY (HQ)",
+          "workplaceType": "remote",
+          "disclosedSalary": "$309K – $424K • Offers Equity",
+          "publishedAt": "2026-07-01T18:00:02.705+00:00",
+          "jobUrl": "https://jobs.ashbyhq.com/ramp/30323399-3039-499d-a0b6-a891ced89e1e",
+          "intentScore": 66,
+          "intentTier": "WARM",
+          "signals": [
+            "NEW_LEADERSHIP_DECISION_MAKER",
+            "REVOPS_GTM_SCALE"
+          ],
+          "techStack": [
+            "Ruby on Rails"
+          ],
+          "techByCategory": {
+            "devtools_engineering": [
+              "Ruby on Rails"
+            ]
+          },
+          "excerpt": "ABOUT RAMP\n\nRamp is building the smart infrastructure for finance teams, embedded in the transaction flow of every dollar a business spends. We automate how over $275B in annualized spend flows in and out of 85,000+ companies: authorizing payments, flagging risk, categorizing spend, and closing books.\n\nThe problems are high-stakes, data-d"
+        },
+        {
+          "atsPlatform": "ashby",
+          "companyName": "ramp",
+          "companySlug": "ramp",
+          "title": "Director, Product Design",
+          "department": "Design",
+          "location": "New York, NY (HQ)",
+          "workplaceType": "remote",
+          "disclosedSalary": "$320K – $440K • Offers Equity",
+          "publishedAt": "2026-06-08T20:49:17.168+00:00",
+          "jobUrl": "https://jobs.ashbyhq.com/ramp/78b98c66-af59-4fa8-a5ae-d8af8d737976",
+          "intentScore": 66,
+          "intentTier": "WARM",
+          "signals": [
+            "NEW_LEADERSHIP_DECISION_MAKER",
+            "AI_TRANSFORMATION_INITIATIVE"
+          ],
+          "techStack": [],
+          "techByCategory": {},
+          "excerpt": "ABOUT RAMP\n\nRamp is building the smart infrastructure for finance teams, embedded in the transaction flow of every dollar a business spends. We automate how over $275B in annualized spend flows in and out of 85,000+ companies: authorizing payments, flagging risk, categorizing spend, and closing books.\n\nThe problems are high-stakes, data-d"
+        },
+        {
+          "atsPlatform": "ashby",
+          "companyName": "ramp",
+          "companySlug": "ramp",
+          "title": "Director, Brand Operations",
+          "department": "Marketing",
+          "location": "New York, NY (HQ)",
+          "workplaceType": "remote",
+          "disclosedSalary": "$200K – $352K • Offers Equity",
+          "publishedAt": "2026-08-13T20:39:51.629+00:00",
+          "jobUrl": "https://jobs.ashbyhq.com/ramp/2c101be9-f4b8-4a63-a634-9798d9a09eaa",
+          "intentScore": 46,
+          "intentTier": "WARM",
+          "signals": [
+            "NEW_LEADERSHIP_DECISION_MAKER"
+          ],
+          "techStack": [],
+          "techByCategory": {},
+          "excerpt": "ABOUT RAMP\n\nRamp is building the smart infrastructure for finance teams, embedded in the transaction flow of every dollar a business spends. We automate how over $275B in annualized spend flows in and out of 85,000+ companies: authorizing payments, flagging risk, categorizing spend, and closing books.\n\nThe problems are high-stakes, data-d"
+        },
+        {
+          "atsPlatform": "ashby",
+          "companyName": "ramp",
+          "companySlug": "ramp",
+          "title": "Chief Compliance Officer, Ramp Advisory LLC",
+          "department": "Compliance",
+          "location": "New York, NY (HQ)",
+          "workplaceType": "remote",
+          "disclosedSalary": "$170K – $300K • Offers Equity • Multiple Ranges",
+          "publishedAt": "2026-10-16T21:05:12.511+00:00",
+          "jobUrl": "https://jobs.ashbyhq.com/ramp/abd1360f-bd9d-4649-ac02-9af2a437ff98",
+          "intentScore": 46,
+          "intentTier": "WARM",
+          "signals": [
+            "NEW_LEADERSHIP_DECISION_MAKER"
+          ],
+          "techStack": [],
+          "techByCategory": {},
+          "excerpt": "ABOUT RAMP\n\nRamp is building the smart infrastructure for finance teams, embedded in the transaction flow of every dollar a business spends. We automate how over $275B in annualized spend flows in and out of 85,000+ companies: authorizing payments, flagging risk, categorizing spend, and closing books.\n\nThe problems are high-stakes, data-d"
+        }
+      ]
+    },
+    {
+      "companyName": "adsquare GmbH",
+      "atsPlatform": "personio",
+      "totalOpenRolesOnBoard": 7,
+      "rolesAnalyzed": 4,
+      "accountIntentScore": 58,
+      "accountIntentTier": "WARM",
+      "recommendedBuyerPersona": "CISO / VP of Security & GRC",
+      "activeSignals": [
+        "NEW_LEADERSHIP_DECISION_MAKER",
+        "REVOPS_GTM_SCALE"
+      ],
+      "leadershipOpenings": [
+        "Chief Revenue Officer (m/f/d)"
+      ],
+      "verifiedTechStack": [
+        "GDPR"
+      ],
+      "techStackByCategory": {
+        "security_compliance": [
+          "GDPR"
+        ]
+      },
+      "disclosedSalarySamples": [],
+      "icebreakers": {
+        "executiveAngle": "Saw adsquare GmbH has 7 open roles right now, led by \"Chief Revenue Officer (m/f/d)\" across GDPR.",
+        "hiringManagerAngle": "Noticed the open \"Chief Revenue Officer (m/f/d)\" req on your Sales team working with GDPR — teams scaling that stack usually hit tooling bottlenecks 3-4 months before the new hire fully ramps."
+      },
+      "topRoles": [
+        {
+          "atsPlatform": "personio",
+          "companyName": "adsquare GmbH",
+          "companySlug": "adsquare",
+          "title": "Chief Revenue Officer (m/f/d)",
+          "department": "Sales",
+          "location": "London",
+          "workplaceType": "unspecified",
+          "disclosedSalary": null,
+          "publishedAt": "2026-10-15T17:44:44+00:00",
+          "jobUrl": "https://adsquare.jobs.personio.de/job/2845189?language=en",
+          "intentScore": 58,
+          "intentTier": "WARM",
+          "signals": [
+            "NEW_LEADERSHIP_DECISION_MAKER",
+            "REVOPS_GTM_SCALE"
+          ],
+          "techStack": [
+            "GDPR"
+          ],
+          "techByCategory": {
+            "security_compliance": [
+              "GDPR"
+            ]
+          },
+          "excerpt": "Adsquare's mission is centered on: Passion: Solving complex challenges with exceptional people, technology, and data. Niche: Specializing in Real-World Intelligence that drives Outcomes. Our work is guided by our core values, and we look for candidates who embody them: Drive: Turning ambition into action that brings valuable outcomes. Res"
+        },
+        {
+          "atsPlatform": "personio",
+          "companyName": "adsquare GmbH",
+          "companySlug": "adsquare",
+          "title": "Account Manager Platform Partnerships (m/f/d)",
+          "department": "Partnerships",
+          "location": "Berlin",
+          "workplaceType": "unspecified",
+          "disclosedSalary": null,
+          "publishedAt": "2026-10-28T14:01:39+00:00",
+          "jobUrl": "https://adsquare.jobs.personio.de/job/2865194?language=en",
+          "intentScore": 20,
+          "intentTier": "MONITOR",
+          "signals": [],
+          "techStack": [
+            "GDPR"
+          ],
+          "techByCategory": {
+            "security_compliance": [
+              "GDPR"
+            ]
+          },
+          "excerpt": "Adsquare’s mission is centered on: Passion: Solving complex challenges with exceptional people, technology, and data. Niche: Specializing in Location Intelligence for Programmatic Advertisers. Our work is guided by our core values, and we look for candidates who embody them: Drive: Turning ambition into action that brings valuable outcome"
+        },
+        {
+          "atsPlatform": "personio",
+          "companyName": "adsquare GmbH",
+          "companySlug": "adsquare",
+          "title": "Sales Manager France & Benelux (f/m/d)",
+          "department": "Sales",
+          "location": "Paris",
+          "workplaceType": "unspecified",
+          "disclosedSalary": null,
+          "publishedAt": "2026-02-13T14:46:08+00:00",
+          "jobUrl": "https://adsquare.jobs.personio.de/job/2529546?language=en",
+          "intentScore": 16,
+          "intentTier": "MONITOR",
+          "signals": [],
+          "techStack": [],
+          "techByCategory": {},
+          "excerpt": "Adsquare is a leading data provider within the programmatic and digital advertising ecosystem, with a strong focus on geolocation intelligence. We enable brands and agencies to activate smarter, privacy-first, location-based campaigns powered by high-quality audience data. With a solid European presence, we are now accelerating our expans"
+        },
+        {
+          "atsPlatform": "personio",
+          "companyName": "adsquare GmbH",
+          "companySlug": "adsquare",
+          "title": "Senior Sales Manager - DACH (m/f/d)",
+          "department": "Sales",
+          "location": "Berlin",
+          "workplaceType": "unspecified",
+          "disclosedSalary": null,
+          "publishedAt": "2025-11-03T14:49:10+00:00",
+          "jobUrl": "https://adsquare.jobs.personio.de/job/2413882?language=en",
+          "intentScore": 16,
+          "intentTier": "MONITOR",
+          "signals": [],
+          "techStack": [],
+          "techByCategory": {},
+          "excerpt": "Adsquare's mission is centered on: Passion: Solving complex challenges with exceptional people, technology, and data. Niche: Specializing in Location Intelligence for Programmatic Advertisers. Our work is guided by our core values, and we look for candidates who embody them: Drive: Turning ambition into action that brings valuable outcome"
+        }
+      ]
+    }
+  ]
+}
