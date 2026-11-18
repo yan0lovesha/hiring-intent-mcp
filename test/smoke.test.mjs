@@ -19,7 +19,7 @@ assert.deepEqual(detectAtsTarget('https://apply.workable.com/viva/'), { platform
 assert.deepEqual(detectAtsTarget('https://channable.recruitee.com/'), { platform: 'recruitee', target: 'channable' });
 assert.deepEqual(detectAtsTarget('https://smartthings.pinpointhq.com/postings.json'), { platform: 'pinpoint', target: 'smartthings' });
 
-console.log('[2/4] Testing Open-Core MCP stdio server (v1.1.0)...');
+console.log('[2/4] Testing Open-Core MCP stdio server (v1.2.0)...');
 const proc = spawn(process.execPath, [bin], { stdio: ['pipe', 'pipe', 'inherit'] });
 const replies = new Map();
 let buf = '';
@@ -48,13 +48,16 @@ const waitId = async (id) => {
 proc.stdin.write(JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'initialize', params: {} }) + '\n');
 const r1 = await waitId(1);
 assert.equal(r1.result.serverInfo.name, 'b2b-hiring-intent-mcp');
-assert.equal(r1.result.serverInfo.version, '1.1.0');
+assert.equal(r1.result.serverInfo.version, '1.2.0');
 
 proc.stdin.write(JSON.stringify({ jsonrpc: '2.0', id: 2, method: 'tools/call', params: { name: 'list_cloud_b2b_lead_apis', arguments: {} } }) + '\n');
 const r2 = await waitId(2);
 const catalog = JSON.parse(r2.result.content[0].text);
-assert.equal(Object.keys(catalog.actors).length, 11);
+assert.equal(Object.keys(catalog.actors).length, 15);
 assert.equal(catalog.actors.multi_ats, 'yan0lovesha~multi-ats-jobs-hiring-intent');
+assert.equal(catalog.actors.greenhouse, 'yan0lovesha~greenhouse-jobs-hiring-intent');
+assert.equal(catalog.actors.lever, 'yan0lovesha~lever-jobs-hiring-intent');
+assert.ok(catalog.agensiOutboundAutopilotSkill.includes('agensi.io/skills/'));
 proc.stdin.end();
 
 console.log('[3/4] Testing CLI --url auto-detection on Greenhouse (figma) & Lever (zoox)...');
@@ -70,4 +73,4 @@ console.log('[4/4] Testing Open-Core CLI live Ashby scan (ramp)...');
 const out = JSON.parse(execFileSync(process.execPath, [bin, '--cli', '--platform', 'ashby', '--target', 'ramp', '--max', '2'], { encoding: 'utf8' }));
 assert.ok(out.length > 0);
 console.log(`  -> Live Ashby scan OK: ${out[0].companyName} | ${out[0].title} | Comp=${out[0].intent.disclosedSalary}`);
-console.log('OPEN-CORE REPO v1.1.0 SMOKE TESTS PASSED!');
+console.log('OPEN-CORE REPO v1.2.0 SMOKE TESTS PASSED!');
