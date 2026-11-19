@@ -339,6 +339,11 @@ CLOUD_PPE_CATALOG = [
         "useCase": "US Municipal Commercial, Solar PV & Roofing Permits with project valuations ($) & contractor phones",
     },
     {
+        "slug": "us-contractor-licenses-leads",
+        "url": f"{APIFY_PUBLISHER_URL}/us-contractor-licenses-leads",
+        "useCase": "US Licensed HVAC, Electrical, Plumbing & General Contractors with active state license records & contacts",
+    },
+    {
         "slug": "us-fmcsa-trucking-fleet-leads",
         "url": f"{APIFY_PUBLISHER_URL}/us-fmcsa-trucking-fleet-leads",
         "useCase": "US DOT FMCSA Commercial Trucking Fleets with power units, safety ratings, owners & insurance leads",

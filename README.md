@@ -5,7 +5,7 @@
 [![Node >= 20](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen.svg)](./package.json)
 [![Zero Dependencies](https://img.shields.io/badge/dependencies-0-blue.svg)](./package.json)
 
-> **Zero-dependency Model Context Protocol (MCP) Server & CLI (`v1.2.0`)** for real-time **9-ATS career board probing** (**Greenhouse**, **Lever**, **Ashby**, **Personio**, **Teamtailor**, **SmartRecruiters**, **Workable**, **Recruitee**, **Pinpoint**), **B2B tech-stack footprints**, **disclosed USD/EUR salary & equity bands**, and **executive buying signals** — backed by **15 production Cloud Pay-Per-Event APIs** and **Agensi AI Agent Outbound Skills** for Clay, n8n, Make, and autonomous AI Agents.
+> **Zero-dependency Model Context Protocol (MCP) Server & CLI (`v1.2.1`)** for real-time **9-ATS career board probing** (**Greenhouse**, **Lever**, **Ashby**, **Personio**, **Teamtailor**, **SmartRecruiters**, **Workable**, **Recruitee**, **Pinpoint**), **B2B tech-stack footprints**, **disclosed USD/EUR salary & equity bands**, and **executive buying signals** — backed by **16 production Cloud Pay-Per-Event APIs** and **Agensi AI Agent Outbound Skills** for Clay, n8n, Make, and autonomous AI Agents.
 
 ---
 
@@ -64,7 +64,7 @@ Open [`demo/index.html`](./demo/index.html) in any browser to filter 50+ real sc
 
 ## Need Scheduled Batch Scale (100–10,000+ Targets), XML-404 Fallbacks, or US Permit/FDA/Clinic Leads?
 
-The local open-core MCP server is ideal for inspecting 1–5 companies interactively. For **Clay.com waterfalls**, **scheduled n8n / Make outbound pipelines**, **custom career page ATS fingerprinting**, **Account-Level Company Dossiers**, and **US Federal/Municipal High-Ticket Lead Registries**, use our **15 Cloud Pay-Per-Event + Hosted MCP APIs on Apify Store** (`LIMITED_PERMISSIONS` native, pennies per run, zero monthly subscription):
+The local open-core MCP server is ideal for inspecting 1–5 companies interactively. For **Clay.com waterfalls**, **scheduled n8n / Make outbound pipelines**, **custom career page ATS fingerprinting**, **Account-Level Company Dossiers**, and **US Federal/Municipal High-Ticket Lead Registries**, use our **16 Cloud Pay-Per-Event + Hosted MCP APIs on Apify Store** (`LIMITED_PERMISSIONS` native, pennies per run, zero monthly subscription):
 
 👉 **Full Publisher Catalog**: **[https://apify.com/yan0lovesha](https://apify.com/yan0lovesha)**
 
@@ -85,13 +85,14 @@ The local open-core MCP server is ideal for inspecting 1–5 companies interacti
 | 12 | [**US Federal Contract Awards & GovCon Leads API**](https://apify.com/yan0lovesha/us-federal-contracts-awards-leads) | Official US Federal USAspending Awards Feed | Newly awarded federal prime contractors, **Award Amounts ($), NAICS & Agency Buyers** |
 | 13 | [**US Medical & Dental Clinic Owners Leads API**](https://apify.com/yan0lovesha/us-npi-medical-dental-clinics-leads) | US Federal HHS CMS NPPES NPI-2 Registry (All 50 States) | Private Dental, MedSpa/Derm, Chiropractic & Mental Health **Clinic Owners + Direct Phone Numbers** |
 | 14 | [**FDA 510(k) Cleared Medical Device Leads API**](https://apify.com/yan0lovesha/fda-510k-medical-device-leads) | Official US FDA openFDA 510(k) `SESE` Clearances | Newly cleared MedTech manufacturers, **Named Regulatory Contacts**, addresses & SaMD/AI flags |
+| 15 | [**US Licensed HVAC, Electrical & General Contractor Leads API**](https://apify.com/yan0lovesha/us-contractor-licenses-leads) | US State Contractor Licensing Boards | Active licensed commercial HVAC, electrical, plumbing & general contractors with direct contacts |
 
 ---
 
 ## Turn Signals into Outbound Sequences, Clay Formulas & `n8n` Workflows (Agent Skills)
 
 Using **Claude Code, Cursor, GitHub Copilot, Codex CLI, Windsurf, or OpenClaw**?
-1. **Free 9-ATS Hiring Intent Radar Skill (Bundled in [`skills/b2b-hiring-intent-radar`](./skills/b2b-hiring-intent-radar)):**
+1. **Free 9-ATS Hiring Intent Radar Skill (Bundled in [`skills/b2b-hiring-intent-radar`](./skills/b2b-hiring-intent-radar) & [Agensi Store](https://www.agensi.io/skills/b2b-hiring-intent-125-tech-stack-radar-9-global-ats)):**
    ```bash
    npx skills add yan0lovesha/hiring-intent-mcp
    ```
@@ -106,7 +107,7 @@ Using **Claude Code, Cursor, GitHub Copilot, Codex CLI, Windsurf, or OpenClaw**?
    - Parameters: `url` *(optional career URL — auto-detects any of the 9 ATS platforms)*, or `platform` (`greenhouse` | `lever` | `ashby` | `personio` | `teamtailor` | `smartrecruiters` | `workable` | `recruitee` | `pinpoint` | `auto`) + `target` *(board slug)*, `maxJobs` *(1–10, default 5)*.
    - Returns: Open roles enriched with `intentScore` (`0–100`), `intentTier` (`HOT` | `WARM` | `MONITOR`), `techStackAll`, `signalCodes`, `disclosedSalary`, and ready-to-send `outreachHook`.
 2. **`list_cloud_b2b_lead_apis`**:
-   - Returns all 15 hosted Pay-Per-Event Apify Store Actors, `https://mcp.apify.com` integration identifiers, and Agensi AI Agent Skill links for high-volume scheduled batch workflows.
+   - Returns all 16 hosted Pay-Per-Event Apify Store Actors, `https://mcp.apify.com` integration identifiers, and Agensi AI Agent Skill links for high-volume scheduled batch workflows.
 
 ---
 

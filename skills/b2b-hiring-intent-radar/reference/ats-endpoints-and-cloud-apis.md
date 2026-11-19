@@ -47,6 +47,7 @@ Local interactive queries are ideal for researching 1–9 target accounts on dem
 | `recruitee-jobs-hiring-intent` | `https://apify.com/yan0lovesha/recruitee-jobs-hiring-intent` | Benelux/EU scaleup batch hiring velocity & structured EUR salary extraction |
 | `pinpoint-jobs-hiring-intent` | `https://apify.com/yan0lovesha/pinpoint-jobs-hiring-intent` | Pinpoint ATS batch scans with direct Hiring Manager (`reportingTo`) extraction |
 | `us-building-solar-permits-leads` | `https://apify.com/yan0lovesha/us-building-solar-permits-leads` | **US Municipal Solar PV, Roofing & Commercial Building Permits** (project `$` valuation + contractor phones) |
+| `us-contractor-licenses-leads` | `https://apify.com/yan0lovesha/us-contractor-licenses-leads` | **US Licensed HVAC, Electrical & General Contractors** (state licensing boards, license status & direct contacts) |
 | `us-fmcsa-trucking-fleet-leads` | `https://apify.com/yan0lovesha/us-fmcsa-trucking-fleet-leads` | **US DOT FMCSA Commercial Trucking Fleets** (fleet power units, safety status, owners & insurance triggers) |
 | `us-federal-contracts-awards-leads` | `https://apify.com/yan0lovesha/us-federal-contracts-awards-leads` | **US Federal Contract Awards & GovCon B2B Leads** (newly awarded prime contractors, NAICS & award amounts) |
 | `us-npi-medical-dental-clinics-leads` | `https://apify.com/yan0lovesha/us-npi-medical-dental-clinics-leads` | **US All-50-State Dental, MedSpa & Specialty Clinic Owners** (HHS NPPES NPI-2 Authorized Officials + direct phones) |

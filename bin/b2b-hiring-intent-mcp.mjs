@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 
 const SERVER_INFO = {
     name: 'b2b-hiring-intent-mcp',
-    version: '1.2.0',
+    version: '1.2.1',
 };
 
 const CLOUD_ACTOR_MAP = {
@@ -29,6 +29,7 @@ const CLOUD_ACTOR_MAP = {
     recruitee: 'yan0lovesha~recruitee-jobs-hiring-intent',
     pinpoint: 'yan0lovesha~pinpoint-jobs-hiring-intent',
     us_permits: 'yan0lovesha~us-building-solar-permits-leads',
+    us_contractor_licenses: 'yan0lovesha~us-contractor-licenses-leads',
     us_fmcsa_trucking: 'yan0lovesha~us-fmcsa-trucking-fleet-leads',
     us_federal_contracts: 'yan0lovesha~us-federal-contracts-awards-leads',
     us_npi_clinics: 'yan0lovesha~us-npi-medical-dental-clinics-leads',
@@ -483,7 +484,7 @@ const TOOLS = [
     {
         name: 'list_cloud_b2b_lead_apis',
         description:
-            'List all 15 production Cloud Pay-Per-Event APIs (Flagship 9-ATS Unified Hiring Intent API + 9 Dedicated Global/EU ATS APIs + US Solar/Building Permits + FMCSA Trucking Fleets + Federal Contract Awards + US Medical/Dental Clinic Owners + FDA 510k Cleared MedTech Leads) plus Agensi AI Agent Skills.',
+            'List all 16 production Cloud Pay-Per-Event APIs (Flagship 9-ATS Unified Hiring Intent API + 9 Dedicated Global/EU ATS APIs + US Solar/Building Permits + US Licensed Contractors + FMCSA Trucking Fleets + Federal Contract Awards + US Medical/Dental Clinic Owners + FDA 510k Cleared MedTech Leads) plus Agensi AI Agent Skills.',
         inputSchema: { type: 'object', properties: {} },
     },
 ];
@@ -520,6 +521,8 @@ async function handleRpc(msg) {
                                     storeProfile: 'https://apify.com/yan0lovesha',
                                     mcpEndpoint: 'https://mcp.apify.com',
                                     agensiCreatorProfile: 'https://www.agensi.io/creators/yan0lovesha',
+                                    agensiFreeHiringRadarSkill:
+                                        'https://www.agensi.io/skills/b2b-hiring-intent-125-tech-stack-radar-9-global-ats',
                                     agensiOutboundAutopilotSkill:
                                         'https://www.agensi.io/skills/b2b-signal-to-cold-email-autopilot-pro-clay-n8n',
                                     actors: CLOUD_ACTOR_MAP,
