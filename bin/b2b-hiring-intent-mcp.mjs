@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 /**
- * b2b-hiring-intent-mcp v1.1.0 — Open-Core Zero-Dependency 9-ATS MCP Server & CLI
+ * b2b-hiring-intent-mcp v1.3.0 — Open-Core Zero-Dependency 9-ATS MCP Server & CLI
  *
- * Inspect any company across 9 ATS platforms (Greenhouse, Lever, Ashby, Personio, Teamtailor,
- * SmartRecruiters, Workable, Recruitee, Pinpoint) locally over stdio MCP (`Claude Desktop`, `Cursor`, `VS Code Copilot`),
- * or scale to 100–10,000+ targets on schedule via our 11 hosted Cloud Pay-Per-Event APIs:
+ * Inspect, fingerprint, compare, and activate B2B hiring-intent signals across 9 ATS platforms
+ * (Greenhouse, Lever, Ashby, Personio, Teamtailor, SmartRecruiters, Workable, Recruitee, Pinpoint)
+ * locally over stdio MCP (`Claude Desktop`, `Cursor`, `VS Code Copilot`), or scale to 100–10,000+ targets
+ * on schedule via our 16 hosted Cloud Pay-Per-Event APIs:
  *   https://apify.com/yan0lovesha
  */
 
@@ -14,7 +15,7 @@ import { fileURLToPath } from 'node:url';
 
 const SERVER_INFO = {
     name: 'b2b-hiring-intent-mcp',
-    version: '1.2.2',
+    version: '1.3.0',
 };
 
 const CLOUD_ACTOR_MAP = {
@@ -456,36 +457,319 @@ export async function scanSingleTarget(platform, target, maxJobs = 5) {
     return [];
 }
 
+const CLOUD_CATALOG_CATEGORIES = {
+    ats_hiring_intent: [
+        'multi_ats',
+        'greenhouse',
+        'lever',
+        'ashby',
+        'personio',
+        'teamtailor',
+        'smartrecruiters',
+        'workable',
+        'recruitee',
+        'pinpoint',
+    ],
+    us_permits_contractors: ['us_permits', 'us_contractor_licenses'],
+    us_fleet_govcon: ['us_fmcsa_trucking', 'us_federal_contracts'],
+    us_healthcare_fda: ['us_npi_clinics', 'fda_510k'],
+};
+
+export async function detectCompanyAtsBoard(rawInput = '', probeLive = true) {
+    const cleaned = String(rawInput || '').trim();
+    if (!cleaned) return { input: rawInput, detected: false, boards: [] };
+
+    const direct = detectAtsTarget(cleaned);
+    if (direct) {
+        const sample = probeLive ? await scanSingleTarget(direct.platform, direct.target, 3) : [];
+        return {
+            input: cleaned,
+            detected: true,
+            mode: 'url_pattern',
+            boards: [
+                {
+                    platform: direct.platform,
+                    target: direct.target,
+                    reachable: probeLive ? sample.length > 0 : null,
+                    sampledOpenRoles: sample.length,
+                    hasDisclosedCompensation: sample.some((j) => Boolean(j.intent?.disclosedSalary)),
+                    sampleTitles: sample.map((j) => j.title),
+                },
+            ],
+        };
+    }
+
+    const slug = cleaned
+        .replace(/^https?:\/\//i, '')
+        .split('/')[0]
+        .replace(/\.(com|io|ai|co|de|org|net)$/i, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9-]/g, '');
+
+    if (!probeLive || !slug) {
+        return { input: cleaned, detected: false, candidateSlug: slug, boards: [] };
+    }
+
+    const candidates = ['greenhouse', 'lever', 'ashby', 'workable', 'recruitee', 'pinpoint', 'personio', 'teamtailor', 'smartrecruiters'];
+    const checks = await Promise.all(
+        candidates.map(async (plat) => {
+            try {
+                const jobs = await scanSingleTarget(plat, slug, 2);
+                if (jobs.length > 0) {
+                    return {
+                        platform: plat,
+                        target: slug,
+                        companyName: jobs[0].companyName || slug,
+                        reachable: true,
+                        sampledOpenRoles: jobs.length,
+                        hasDisclosedCompensation: jobs.some((j) => Boolean(j.intent?.disclosedSalary)),
+                        sampleTitles: jobs.map((j) => j.title),
+                    };
+                }
+            } catch {
+                // Ignore unreachable board
+            }
+            return null;
+        }),
+    );
+    const boards = checks.filter(Boolean);
+    return {
+        input: cleaned,
+        candidateSlug: slug,
+        detected: boards.length > 0,
+        mode: 'live_slug_probe',
+        boards,
+    };
+}
+
+export async function compareCompaniesHiringIntent(targets = [], maxJobsPerCompany = 4) {
+    const boundedTargets = (Array.isArray(targets) ? targets : []).slice(0, 5).map((t) => String(t || '').trim()).filter(Boolean);
+    const cap = Math.min(8, Math.max(1, Number(maxJobsPerCompany || 4)));
+
+    const dossiers = await Promise.all(
+        boundedTargets.map(async (entry) => {
+            const parsed = detectAtsTarget(entry);
+            let jobs = [];
+            let resolvedPlatform = parsed?.platform || null;
+            let resolvedTarget = parsed?.target || entry;
+
+            if (parsed) {
+                jobs = await scanSingleTarget(parsed.platform, parsed.target, cap);
+            } else {
+                const boardInfo = await detectCompanyAtsBoard(entry, true);
+                if (boardInfo.boards.length > 0) {
+                    resolvedPlatform = boardInfo.boards[0].platform;
+                    resolvedTarget = boardInfo.boards[0].target;
+                    jobs = await scanSingleTarget(resolvedPlatform, resolvedTarget, cap);
+                }
+            }
+
+            const scores = jobs.map((j) => j.intent?.intentScore || 0);
+            const maxIntentScore = scores.length ? Math.max(...scores) : 0;
+            const hotRoleCount = jobs.filter((j) => j.intent?.intentTier === 'HOT').length;
+            const aggregatedTechStack = [...new Set(jobs.flatMap((j) => j.intent?.techStackAll || []))];
+            const signalCodes = [...new Set(jobs.flatMap((j) => j.intent?.signalCodes || []))];
+            const executiveRoles = jobs
+                .filter((j) => (j.intent?.signalCodes || []).includes('NEW_LEADERSHIP_DECISION_MAKER'))
+                .map((j) => j.title);
+            const topDisclosedSalary = jobs.map((j) => j.intent?.disclosedSalary).find(Boolean) || null;
+            const topJob = [...jobs].sort((a, b) => (b.intent?.intentScore || 0) - (a.intent?.intentScore || 0))[0] || null;
+
+            return {
+                input: entry,
+                companyName: topJob?.companyName || resolvedTarget,
+                atsPlatform: resolvedPlatform || 'unknown',
+                sampledOpenRoles: jobs.length,
+                hotRoleCount,
+                maxIntentScore,
+                accountTier: maxIntentScore >= 70 ? 'PRIORITY_HOT' : maxIntentScore >= 45 ? 'ACTIVE_WARM' : 'MONITOR',
+                executiveRoles,
+                aggregatedTechStack,
+                signalCodes,
+                topDisclosedSalary,
+                recommendedOutreachHook: topJob?.intent?.outreachHook || null,
+            };
+        }),
+    );
+
+    dossiers.sort((a, b) => b.maxIntentScore - a.maxIntentScore || b.hotRoleCount - a.hotRoleCount);
+    return {
+        comparedCount: dossiers.length,
+        batchScaleNote:
+            'Local comparison supports up to 5 accounts interactively. For scheduled 50-10,000+ account waterfalls, use https://mcp.apify.com/?tools=yan0lovesha/multi-ats-jobs-hiring-intent.',
+        rankedDossiers: dossiers,
+    };
+}
+
+export function generateSignalOutreachSequence({
+    companyName = 'Acme Corp',
+    roleTitle = 'Senior Platform Engineer',
+    techStack = [],
+    disclosedSalary = '',
+    buyerPersona = 'vp_engineering',
+    valueProposition = 'cut onboarding & tooling ramp time by 40%',
+} = {}) {
+    const cleanCompany = String(companyName || 'your team').trim();
+    const cleanRole = String(roleTitle || 'new engineering role').trim();
+    const stackList = (Array.isArray(techStack) ? techStack : String(techStack || '').split(','))
+        .map((s) => String(s || '').trim())
+        .filter(Boolean)
+        .slice(0, 3);
+    const stackPhrase = stackList.length ? stackList.join(' + ') : 'your core stack';
+    const cleanValue = String(valueProposition || 'ship faster without adding headcount').trim();
+    const salaryNote = disclosedSalary ? ` (especially at the ${disclosedSalary} band)` : '';
+
+    const personaAngles = {
+        vp_engineering: {
+            subject1: `${cleanCompany}'s ${cleanRole} search`,
+            touch1: `Saw ${cleanCompany} opened a ${cleanRole} role working across ${stackPhrase}. While that seat fills, teams usually hit delivery bottlenecks on the exact workflows that hire will own. We help engineering orgs ${cleanValue} before new hires even finish onboarding. Worth a 10-minute sanity check next week?`,
+            touch2: `Quick follow-up on the ${cleanRole} req — are you prioritizing ${stackPhrase} throughput this quarter, or keeping capacity flat until the role is filled? Happy to share a 2-minute teardown tailored to ${cleanCompany}.`,
+            touch3: `Closing the loop so I don't clutter your inbox. If scaling ${stackPhrase} velocity comes back to the top of ${cleanCompany}'s roadmap, let me know and I'll send over the benchmark notes.`,
+        },
+        cfo_finance: {
+            subject1: ` hiring ROI / ${cleanRole} at ${cleanCompany}`,
+            touch1: `Noticed ${cleanCompany} is budgeting for a ${cleanRole}${salaryNote}. Most finance leaders we work with look to automate the manual ${stackPhrase} workload alongside new headcount so OPEX scales sub-linearly. We help teams ${cleanValue}. Open to a brief cost-comparison note?`,
+            touch2: `Following up briefly — even trimming 30 days of ramp friction around your ${stackPhrase} workflow typically pays back within a quarter. Happy to send the unit-economics breakdown if helpful.`,
+            touch3: `Last note from me. Whenever headcount efficiency around ${cleanCompany}'s ${stackPhrase} stack becomes a focus, feel free to reply here.`,
+        },
+        revops_gtm: {
+            subject1: `${cleanCompany} GTM signal (${cleanRole})`,
+            touch1: `Spotted ${cleanCompany} hiring a ${cleanRole} with ${stackPhrase} in the stack. Usually that signals a pipeline or operational push this quarter. We help GTM and RevOps teams ${cleanValue} without rebuilding existing workflows. Open to seeing how similar teams wire this up?`,
+            touch2: `Quick bump on ${cleanCompany}'s ${cleanRole} buildout — happy to share the exact workflow template teams use on top of ${stackPhrase} if that saves your team setup hours.`,
+            touch3: `Signing off on this thread for now. Reach out anytime if automating ${stackPhrase} handoffs moves up the priority list at ${cleanCompany}.`,
+        },
+    };
+
+    const chosen = personaAngles[buyerPersona] || personaAngles.vp_engineering;
+    return {
+        companyName: cleanCompany,
+        buyerPersona: personaAngles[buyerPersona] ? buyerPersona : 'vp_engineering',
+        subjectLine: chosen.subject1.trim(),
+        touches: [
+            { step: 1, dayOffset: 0, body: chosen.touch1, wordCount: chosen.touch1.split(/\s+/).length },
+            { step: 2, dayOffset: 3, body: chosen.touch2, wordCount: chosen.touch2.split(/\s+/).length },
+            { step: 3, dayOffset: 7, body: chosen.touch3, wordCount: chosen.touch3.split(/\s+/).length },
+        ],
+        clayCreditSaverFormula: '{{intentScore}} >= 60 && ({{intentTier}} == "HOT" || {{signalCodes}}?.length > 0)',
+        proAutomationTemplateUrl: 'https://www.agensi.io/skills/b2b-signal-to-cold-email-autopilot-pro-clay-n8n',
+    };
+}
+
 const TOOLS = [
     {
         name: 'scan_company_hiring_intent',
         description:
-            'Scan any company career board across 9 ATS platforms (greenhouse, lever, ashby, personio, teamtailor, smartrecruiters, workable, recruitee, pinpoint) by passing either a career URL (`url`) or (`platform` + `target`) to extract open jobs, tech stack, disclosed salaries, and B2B buying intent scores. For 50-10,000 company batch runs & Account Dossiers, use https://apify.com/yan0lovesha.',
+            'Scan a single company career board across 9 ATS platforms (greenhouse, lever, ashby, personio, teamtailor, smartrecruiters, workable, recruitee, pinpoint) via career URL (`url`) or (`platform` + `target`) to extract open jobs, tech stack, disclosed salaries, and B2B buying intent scores.',
         inputSchema: {
             type: 'object',
             properties: {
                 url: {
                     type: 'string',
                     description:
-                        'Optional full career board URL (auto-detects boards.greenhouse.io/*, job-boards.greenhouse.io/*, jobs.lever.co/*, jobs.ashbyhq.com/*, *.jobs.personio.de/*, *.teamtailor.com/*, careers.smartrecruiters.com/*, apply.workable.com/*, *.recruitee.com/*, *.pinpointhq.com/*).',
+                        'Full career board URL (auto-detects boards.greenhouse.io/*, job-boards.greenhouse.io/*, jobs.lever.co/*, jobs.ashbyhq.com/*, *.jobs.personio.de/*, *.teamtailor.com/*, careers.smartrecruiters.com/*, apply.workable.com/*, *.recruitee.com/*, *.pinpointhq.com/*).',
                 },
                 platform: {
                     type: 'string',
                     enum: ['auto', 'greenhouse', 'lever', 'ashby', 'personio', 'teamtailor', 'smartrecruiters', 'workable', 'recruitee', 'pinpoint'],
+                    description: 'ATS platform identifier (defaults to auto when url is passed).',
                 },
                 target: {
                     type: 'string',
                     description: 'Company ATS board slug or career URL (e.g. figma, zoox, ramp, adsquare, puzzel, viva, channable, smartthings, Canva).',
                 },
-                maxJobs: { type: 'number', default: 5 },
+                maxJobs: { type: 'number', default: 5, minimum: 1, maximum: 10, description: 'Maximum open roles to enrich (1-10).' },
+            },
+        },
+    },
+    {
+        name: 'compare_companies_hiring_intent',
+        description:
+            'Scan and rank up to 5 company career URLs or slugs in parallel across all 9 ATS platforms, returning prioritized Account Buying Dossiers with maxIntentScore, hotRoleCount, executive hires, aggregated tech stack, and disclosed salary bands.',
+        inputSchema: {
+            type: 'object',
+            required: ['targets'],
+            properties: {
+                targets: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    minItems: 1,
+                    maxItems: 5,
+                    description: 'List of 1 to 5 career URLs, platform:slug strings (e.g. "greenhouse:figma", "ashby:ramp"), or company slugs.',
+                },
+                maxJobsPerCompany: {
+                    type: 'number',
+                    default: 4,
+                    minimum: 1,
+                    maximum: 8,
+                    description: 'Number of roles sampled per company (1-8).',
+                },
+            },
+        },
+    },
+    {
+        name: 'detect_company_ats_board',
+        description:
+            'Identify which of the 9 supported ATS platforms powers a career URL, or probe a company slug live across Greenhouse, Lever, Ashby, Workable, Recruitee, Pinpoint, Personio, Teamtailor, and SmartRecruiters to find active job boards and compensation availability.',
+        inputSchema: {
+            type: 'object',
+            required: ['input'],
+            properties: {
+                input: {
+                    type: 'string',
+                    description: 'Company career URL (e.g. https://boards.greenhouse.io/figma) or company slug (e.g. ramp, zoox, figma).',
+                },
+                probeLive: {
+                    type: 'boolean',
+                    default: true,
+                    description: 'When true, verifies live board reachability and samples active role titles.',
+                },
+            },
+        },
+    },
+    {
+        name: 'generate_signal_outreach_sequence',
+        description:
+            'Convert a detected B2B hiring signal (company name, open role, tech stack, and optional salary band) into a concise 3-touch plain-text outbound sequence (<=75 words per email) tailored to VP Engineering, CFO/Finance, or RevOps/GTM plus a Clay credit-saver filter formula.',
+        inputSchema: {
+            type: 'object',
+            required: ['companyName', 'roleTitle'],
+            properties: {
+                companyName: { type: 'string', description: 'Target company name.' },
+                roleTitle: { type: 'string', description: 'Open job title triggering the buying signal.' },
+                techStack: {
+                    type: 'array',
+                    items: { type: 'string' },
+                    description: 'Detected tech stack tags (e.g. ["Snowflake", "dbt", "Kubernetes"]).',
+                },
+                disclosedSalary: { type: 'string', description: 'Optional disclosed compensation band.' },
+                buyerPersona: {
+                    type: 'string',
+                    enum: ['vp_engineering', 'cfo_finance', 'revops_gtm'],
+                    default: 'vp_engineering',
+                    description: 'Executive persona to tailor messaging for.',
+                },
+                valueProposition: {
+                    type: 'string',
+                    description: 'One-phrase outcome your product delivers (e.g. "cut Snowflake compute spend by 30%").',
+                },
             },
         },
     },
     {
         name: 'list_cloud_b2b_lead_apis',
         description:
-            'List all 16 production Cloud Pay-Per-Event APIs (Flagship 9-ATS Unified Hiring Intent API + 9 Dedicated Global/EU ATS APIs + US Solar/Building Permits + US Licensed Contractors + FMCSA Trucking Fleets + Federal Contract Awards + US Medical/Dental Clinic Owners + FDA 510k Cleared MedTech Leads) plus Agensi AI Agent Skills.',
-        inputSchema: { type: 'object', properties: {} },
+            'List our 16 hosted Cloud Pay-Per-Event B2B Lead & Hiring Intent APIs (9-ATS Unified API, dedicated ATS APIs, US Solar/Building Permits, Licensed Contractors, FMCSA Trucking Fleets, Federal Contract Awards, NPI Medical/Dental Clinics, FDA 510k MedTech) with streamable-http MCP URLs and REST invocation endpoints.',
+        inputSchema: {
+            type: 'object',
+            properties: {
+                category: {
+                    type: 'string',
+                    enum: ['all', 'ats_hiring_intent', 'us_permits_contractors', 'us_fleet_govcon', 'us_healthcare_fda'],
+                    default: 'all',
+                    description: 'Optional vertical filter for Cloud PPE APIs.',
+                },
+            },
+        },
     },
 ];
 
@@ -508,7 +792,26 @@ async function handleRpc(msg) {
     if (method === 'resources/list') return { jsonrpc: '2.0', id, result: { resources: [] } };
     if (method === 'prompts/list') return { jsonrpc: '2.0', id, result: { prompts: [] } };
     if (method === 'tools/call') {
+        const args = params?.arguments || {};
         if (params?.name === 'list_cloud_b2b_lead_apis') {
+            const cat = args.category && args.category !== 'all' ? args.category : null;
+            const allowedKeys = cat && CLOUD_CATALOG_CATEGORIES[cat] ? new Set(CLOUD_CATALOG_CATEGORIES[cat]) : null;
+            const endpoints = Object.fromEntries(
+                Object.entries(CLOUD_ACTOR_MAP)
+                    .filter(([k]) => !allowedKeys || allowedKeys.has(k))
+                    .map(([k, actorTilde]) => {
+                        const slashSlug = actorTilde.replace('~', '/');
+                        return [
+                            k,
+                            {
+                                actorIdSlug: actorTilde,
+                                storeUrl: `https://apify.com/${slashSlug}`,
+                                hostedMcpUrl: `https://mcp.apify.com/?tools=${slashSlug}`,
+                                syncRestEndpoint: `https://api.apify.com/v2/acts/${actorTilde}/run-sync-get-dataset-items`,
+                            },
+                        ];
+                    }),
+            );
             return {
                 jsonrpc: '2.0',
                 id,
@@ -520,12 +823,16 @@ async function handleRpc(msg) {
                                 {
                                     storeProfile: 'https://apify.com/yan0lovesha',
                                     mcpEndpoint: 'https://mcp.apify.com',
+                                    officialMcpRegistryName: 'io.github.yan0lovesha/hiring-intent-mcp',
+                                    glamaPage: 'https://glama.ai/mcp/servers/yan0lovesha/hiring-intent-mcp',
                                     agensiCreatorProfile: 'https://www.agensi.io/creators/yan0lovesha',
                                     agensiFreeHiringRadarSkill:
                                         'https://www.agensi.io/skills/b2b-hiring-intent-125-tech-stack-radar-9-global-ats',
                                     agensiOutboundAutopilotSkill:
                                         'https://www.agensi.io/skills/b2b-signal-to-cold-email-autopilot-pro-clay-n8n',
+                                    categoryFilter: cat || 'all',
                                     actors: CLOUD_ACTOR_MAP,
+                                    endpoints,
                                 },
                                 null,
                                 2,
@@ -536,10 +843,33 @@ async function handleRpc(msg) {
             };
         }
         if (params?.name === 'scan_company_hiring_intent') {
-            const args = params.arguments || {};
             const inputTarget = String(args.url || args.target || '');
             const inputPlatform = args.url ? 'auto' : args.platform || 'auto';
             const data = await scanSingleTarget(inputPlatform, inputTarget, args.maxJobs);
+            return {
+                jsonrpc: '2.0',
+                id,
+                result: { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] },
+            };
+        }
+        if (params?.name === 'compare_companies_hiring_intent') {
+            const data = await compareCompaniesHiringIntent(args.targets || [], args.maxJobsPerCompany);
+            return {
+                jsonrpc: '2.0',
+                id,
+                result: { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] },
+            };
+        }
+        if (params?.name === 'detect_company_ats_board') {
+            const data = await detectCompanyAtsBoard(args.input || '', args.probeLive !== false);
+            return {
+                jsonrpc: '2.0',
+                id,
+                result: { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] },
+            };
+        }
+        if (params?.name === 'generate_signal_outreach_sequence') {
+            const data = generateSignalOutreachSequence(args);
             return {
                 jsonrpc: '2.0',
                 id,

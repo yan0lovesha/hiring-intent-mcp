@@ -8,7 +8,7 @@
 [![Node >= 20](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen.svg)](./package.json)
 [![Zero Dependencies](https://img.shields.io/badge/dependencies-0-blue.svg)](./package.json)
 
-> **Zero-dependency Model Context Protocol (MCP) Server & CLI (`v1.2.2`)** for real-time **9-ATS career board probing** (**Greenhouse**, **Lever**, **Ashby**, **Personio**, **Teamtailor**, **SmartRecruiters**, **Workable**, **Recruitee**, **Pinpoint**), **B2B tech-stack footprints**, **disclosed USD/EUR salary & equity bands**, and **executive buying signals** — backed by **16 production Cloud Pay-Per-Event APIs** (`https://mcp.apify.com/?tools=yan0lovesha/multi-ats-jobs-hiring-intent`) and **Agensi AI Agent Outbound Skills** for Clay, n8n, Make, and autonomous AI Agents.
+> **Zero-dependency Model Context Protocol (MCP) Server & CLI (`v1.3.0`)** for real-time **9-ATS career board probing** (**Greenhouse**, **Lever**, **Ashby**, **Personio**, **Teamtailor**, **SmartRecruiters**, **Workable**, **Recruitee**, **Pinpoint**), **multi-account buying dossiers**, **B2B tech-stack footprints**, **disclosed USD/EUR salary & equity bands**, and **signal-driven outbound sequences** — backed by **16 production Cloud Pay-Per-Event APIs** (`https://mcp.apify.com/?tools=yan0lovesha/multi-ats-jobs-hiring-intent`) and **Agensi AI Agent Outbound Skills** for Clay, n8n, Make, and autonomous AI Agents.
 
 ---
 
@@ -121,13 +121,30 @@ Using **Claude Code, Cursor, GitHub Copilot, Codex CLI, Windsurf, or OpenClaw**?
 
 ---
 
-## MCP Tools Exposed
+## MCP Tools Exposed (5 Zero-Dependency Operational Tools)
 
 1. **`scan_company_hiring_intent`**:
-   - Parameters: `url` *(optional career URL — auto-detects any of the 9 ATS platforms)*, or `platform` (`greenhouse` | `lever` | `ashby` | `personio` | `teamtailor` | `smartrecruiters` | `workable` | `recruitee` | `pinpoint` | `auto`) + `target` *(board slug)*, `maxJobs` *(1–10, default 5)*.
+   - Parameters: `url` *(career URL — auto-detects any of the 9 ATS platforms)*, or `platform` (`greenhouse` | `lever` | `ashby` | `personio` | `teamtailor` | `smartrecruiters` | `workable` | `recruitee` | `pinpoint` | `auto`) + `target` *(board slug)*, `maxJobs` *(1–10, default 5)*.
    - Returns: Open roles enriched with `intentScore` (`0–100`), `intentTier` (`HOT` | `WARM` | `MONITOR`), `techStackAll`, `signalCodes`, `disclosedSalary`, and ready-to-send `outreachHook`.
-2. **`list_cloud_b2b_lead_apis`**:
-   - Returns all 16 hosted Pay-Per-Event Apify Store Actors, `https://mcp.apify.com` integration identifiers, and Agensi AI Agent Skill links for high-volume scheduled batch workflows.
+2. **`compare_companies_hiring_intent`**:
+   - Parameters: `targets` *(array of 1–5 career URLs, `platform:slug` entries, or company slugs)*, `maxJobsPerCompany` *(1–8, default 4)*.
+   - Returns: Ranked Account Buying Dossiers sorted by `maxIntentScore` and `hotRoleCount`, with `accountTier`, `executiveRoles`, `aggregatedTechStack`, `topDisclosedSalary`, and `recommendedOutreachHook`.
+3. **`detect_company_ats_board`**:
+   - Parameters: `input` *(career URL or company slug)*, `probeLive` *(boolean, default `true`)*.
+   - Returns: Detected ATS platform(s), live board reachability, sampled open role titles, and compensation disclosure status across the 9 supported ATS endpoints.
+4. **`generate_signal_outreach_sequence`**:
+   - Parameters: `companyName`, `roleTitle`, `techStack` *(optional array)*, `disclosedSalary` *(optional)*, `buyerPersona` (`vp_engineering` | `cfo_finance` | `revops_gtm`), `valueProposition` *(optional)*.
+   - Returns: Concise 3-touch plain-text B2B outbound email sequence (`<= 75` words per email) plus a ready-to-paste Clay credit-saver filter formula.
+5. **`list_cloud_b2b_lead_apis`**:
+   - Parameters: `category` (`all` | `ats_hiring_intent` | `us_permits_contractors` | `us_fleet_govcon` | `us_healthcare_fda`).
+   - Returns: All 16 hosted Pay-Per-Event Apify Store Actors with `https://mcp.apify.com` `streamable-http` URLs, synchronous REST endpoints, Official MCP Registry & Glama links, and Agensi AI Agent Skill links.
+
+---
+
+## Feedback, Custom ATS Connectors & Enterprise Integration
+
+Have a question, want a new ATS/data source supported, or need a custom Clay / `n8n` outbound pipeline?
+- Open a thread in **[GitHub Discussions](https://github.com/yan0lovesha/hiring-intent-mcp/discussions)** or file an **[Issue](https://github.com/yan0lovesha/hiring-intent-mcp/issues)**.
 
 ---
 
