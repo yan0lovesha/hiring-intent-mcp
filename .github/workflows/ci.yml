@@ -33,6 +33,7 @@ jobs:
             assert.equal(srv.name, "io.github.yan0lovesha/hiring-intent-mcp");
             assert.equal(srv.version, pkg.version);
             assert.ok(srv.description.length > 0 && srv.description.length <= 100);
+            assert.ok(Array.isArray(srv.remotes) && srv.remotes.length > 0 && srv.remotes[0].type === "streamable-http");
             assert.ok(Array.isArray(glama.maintainers) && glama.maintainers.includes("yan0lovesha"));
             console.log("MCP directory metadata validated:", srv.name, srv.version);
           '

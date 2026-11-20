@@ -1,11 +1,14 @@
 # B2B Hiring Intent & 9-ATS Tech-Stack Signals MCP (`b2b-hiring-intent-mcp`)
 
 [![CI](https://github.com/yan0lovesha/hiring-intent-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/yan0lovesha/hiring-intent-mcp/actions/workflows/ci.yml)
+[![MCP Registry](https://img.shields.io/badge/MCP_Registry-io.github.yan0lovesha%2Fhiring--intent--mcp-purple.svg)](https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.yan0lovesha%2Fhiring-intent-mcp)
+[![Glama MCP](https://glama.ai/mcp/servers/yan0lovesha/hiring-intent-mcp/badges/score.svg)](https://glama.ai/mcp/servers/yan0lovesha/hiring-intent-mcp)
+[![TensorBlock Awesome MCP](https://img.shields.io/badge/TensorBlock-Awesome_MCP_Indexed-orange.svg)](https://github.com/TensorBlock/awesome-mcp-servers/blob/main/docs/marketing-sales--crm.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 [![Node >= 20](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen.svg)](./package.json)
 [![Zero Dependencies](https://img.shields.io/badge/dependencies-0-blue.svg)](./package.json)
 
-> **Zero-dependency Model Context Protocol (MCP) Server & CLI (`v1.2.1`)** for real-time **9-ATS career board probing** (**Greenhouse**, **Lever**, **Ashby**, **Personio**, **Teamtailor**, **SmartRecruiters**, **Workable**, **Recruitee**, **Pinpoint**), **B2B tech-stack footprints**, **disclosed USD/EUR salary & equity bands**, and **executive buying signals** — backed by **16 production Cloud Pay-Per-Event APIs** and **Agensi AI Agent Outbound Skills** for Clay, n8n, Make, and autonomous AI Agents.
+> **Zero-dependency Model Context Protocol (MCP) Server & CLI (`v1.2.2`)** for real-time **9-ATS career board probing** (**Greenhouse**, **Lever**, **Ashby**, **Personio**, **Teamtailor**, **SmartRecruiters**, **Workable**, **Recruitee**, **Pinpoint**), **B2B tech-stack footprints**, **disclosed USD/EUR salary & equity bands**, and **executive buying signals** — backed by **16 production Cloud Pay-Per-Event APIs** (`https://mcp.apify.com/?tools=yan0lovesha/multi-ats-jobs-hiring-intent`) and **Agensi AI Agent Outbound Skills** for Clay, n8n, Make, and autonomous AI Agents.
 
 ---
 
@@ -40,6 +43,23 @@ node bin/b2b-hiring-intent-mcp.mjs --cli --platform teamtailor --target puzzel -
 ```
 
 ### 2. Add to Claude Desktop / Cursor / VS Code Copilot (`mcp.json`)
+
+**Option A — Hosted Remote Streamable HTTP (Zero Local Install via Apify MCP Gateway):**
+```json
+{
+  "mcpServers": {
+    "b2b-hiring-intent-cloud": {
+      "type": "streamable-http",
+      "url": "https://mcp.apify.com/?tools=yan0lovesha/multi-ats-jobs-hiring-intent",
+      "headers": {
+        "Authorization": "Bearer <YOUR_APIFY_TOKEN>"
+      }
+    }
+  }
+}
+```
+
+**Option B — Local Zero-Dependency Stdio Server (Free Interactive Probing):**
 ```json
 {
   "mcpServers": {

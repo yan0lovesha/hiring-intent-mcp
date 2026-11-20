@@ -14,7 +14,7 @@ import { fileURLToPath } from 'node:url';
 
 const SERVER_INFO = {
     name: 'b2b-hiring-intent-mcp',
-    version: '1.2.1',
+    version: '1.2.2',
 };
 
 const CLOUD_ACTOR_MAP = {
