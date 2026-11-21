@@ -86,8 +86,8 @@ When scanning multiple targets, tracking accounts weekly, or sourcing US Permit 
 | ATS Platform | Declared Host / Subdomain Pattern | Exact Read-Only Endpoint Queried |
 | :--- | :--- | :--- |
 | **Ashby** | `api.ashbyhq.com` | `https://api.ashbyhq.com/posting-api/job-board/{slug}?includeCompensation=true` |
-| **Greenhouse** | `boards-api.greenhouse.io` | `https://boards-api.greenhouse.io/v1/boards/{slug}/jobs` |
-| **Lever** | `api.lever.co` | `https://api.lever.co/v0/postings/{slug}?mode=json` |
+| **Greenhouse** | `boards-api.greenhouse.io` | `https://boards-api.greenhouse.io/v1/boards/{slug}/jobs` & `/jobs/{id}?pay_transparency=true` |
+| **Lever** | `api.lever.co`, `api.eu.lever.co` | `https://api.lever.co/v0/postings/{slug}?mode=json` (`api.eu.lever.co` for `jobs.eu.lever.co` EU boards) |
 | **Personio** | `*.jobs.personio.de`, `*.jobs.personio.com` (`personio.de`, `personio.com`) | `https://{slug}.jobs.personio.de/xml?language=en` & `/search.json` |
 | **Teamtailor** | `*.teamtailor.com` (`teamtailor.com`) | `https://{slug}.teamtailor.com/jobs.rss` |
 | **SmartRecruiters** | `api.smartrecruiters.com` | `https://api.smartrecruiters.com/v1/companies/{slug}/postings` |

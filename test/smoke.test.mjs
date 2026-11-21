@@ -11,6 +11,7 @@ console.log('[1/4] Testing 9-ATS URL auto-detection...');
 assert.deepEqual(detectAtsTarget('https://boards.greenhouse.io/figma'), { platform: 'greenhouse', target: 'figma' });
 assert.deepEqual(detectAtsTarget('https://job-boards.greenhouse.io/stripe/jobs/123'), { platform: 'greenhouse', target: 'stripe' });
 assert.deepEqual(detectAtsTarget('https://jobs.lever.co/zoox'), { platform: 'lever', target: 'zoox' });
+assert.deepEqual(detectAtsTarget('https://jobs.eu.lever.co/personio'), { platform: 'lever', target: 'personio', region: 'eu' });
 assert.deepEqual(detectAtsTarget('https://jobs.ashbyhq.com/ramp'), { platform: 'ashby', target: 'ramp' });
 assert.deepEqual(detectAtsTarget('https://adsquare.jobs.personio.de'), { platform: 'personio', target: 'adsquare' });
 assert.deepEqual(detectAtsTarget('https://puzzel.teamtailor.com/jobs'), { platform: 'teamtailor', target: 'https://puzzel.teamtailor.com' });

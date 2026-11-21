@@ -52,6 +52,7 @@ DECLARED_NETWORK_HOSTS = (
     "api.ashbyhq.com",
     "boards-api.greenhouse.io",
     "api.lever.co",
+    "api.eu.lever.co",
     "jobs.personio.de",
     "jobs.personio.com",
     "teamtailor.com",
@@ -64,7 +65,7 @@ DECLARED_NETWORK_HOSTS = (
 ALLOWED_HOST_PATTERNS = (
     re.compile(r"^api\.ashbyhq\.com$", re.IGNORECASE),
     re.compile(r"^boards-api\.greenhouse\.io$", re.IGNORECASE),
-    re.compile(r"^api\.lever\.co$", re.IGNORECASE),
+    re.compile(r"^api(?:\.eu)?\.lever\.co$", re.IGNORECASE),
     re.compile(r"^[a-z0-9-]+\.jobs\.personio\.(?:de|com)$", re.IGNORECASE),
     re.compile(r"^[a-z0-9-]+\.teamtailor\.com$", re.IGNORECASE),
     re.compile(r"^api\.smartrecruiters\.com$", re.IGNORECASE),
@@ -561,7 +562,9 @@ def fetch_greenhouse(slug: str, max_jobs: int) -> dict | None:
     enriched = []
     for item in selected:
         jid = item.get("id")
-        d_raw = fetch_public_url(f"https://boards-api.greenhouse.io/v1/boards/{urllib.parse.quote(slug)}/jobs/{jid}")
+        d_raw = fetch_public_url(
+            f"https://boards-api.greenhouse.io/v1/boards/{urllib.parse.quote(slug)}/jobs/{jid}?pay_transparency=true"
+        )
         detail = json.loads(d_raw) if d_raw else item
         pay_ranges = detail.get("pay_input_ranges") or []
         sal = None
@@ -569,11 +572,15 @@ def fetch_greenhouse(slug: str, max_jobs: int) -> dict | None:
             pr = pay_ranges[0]
             min_c = pr.get("min_cents")
             max_c = pr.get("max_cents")
-            if min_c or max_c:
-                ccy = pr.get("currency_type") or "USD"
-                lo = f"{round(min_c / 100):,}" if min_c else ""
-                hi = f"{round(max_c / 100):,}" if max_c else ""
-                sal = f"{ccy} {lo} - {hi}".strip()
+            has_min = min_c is not None and min_c > 0
+            has_max = max_c is not None and max_c > 0
+            ccy = pr.get("currency_type") or "USD"
+            if has_min and has_max:
+                sal = f"{ccy} {round(min_c / 100):,} - {round(max_c / 100):,}"
+            elif has_min:
+                sal = f"{ccy} {round(min_c / 100):,}+"
+            elif has_max:
+                sal = f"Up to {ccy} {round(max_c / 100):,}"
         depts = detail.get("departments") or []
         dept_name = depts[0].get("name") if depts and isinstance(depts[0], dict) else "General"
         loc_name = (detail.get("location") or {}).get("name") or (item.get("location") or {}).get("name") or "Global"
@@ -598,9 +605,12 @@ def fetch_greenhouse(slug: str, max_jobs: int) -> dict | None:
     return {"platform": "greenhouse", "companyName": company_name, "totalOpenRoles": len(all_jobs), "jobs": enriched}
 
 
-def fetch_lever(slug: str, max_jobs: int) -> dict | None:
-    url = f"https://api.lever.co/v0/postings/{urllib.parse.quote(slug)}?mode=json&limit={max(max_jobs, 10)}"
-    raw = fetch_public_url(url)
+def fetch_lever(slug: str, max_jobs: int, region: str = "global") -> dict | None:
+    limit = max(max_jobs, 10)
+    primary_host = "api.eu.lever.co" if region == "eu" else "api.lever.co"
+    raw = fetch_public_url(f"https://{primary_host}/v0/postings/{urllib.parse.quote(slug)}?mode=json&limit={limit}")
+    if not raw and region != "eu":
+        raw = fetch_public_url(f"https://api.eu.lever.co/v0/postings/{urllib.parse.quote(slug)}?mode=json&limit={limit}")
     if not raw:
         return None
     arr = json.loads(raw)
@@ -610,12 +620,16 @@ def fetch_lever(slug: str, max_jobs: int) -> dict | None:
     for item in arr[:max_jobs]:
         sr = item.get("salaryRange") or {}
         sal = None
-        if sr.get("min") or sr.get("max"):
-            ccy = sr.get("currency") or "USD"
-            lo = f"{int(sr['min']):,}" if sr.get("min") else ""
-            hi = f"{int(sr['max']):,}" if sr.get("max") else ""
-            interval = sr.get("interval") or "per-year"
-            sal = f"{ccy} {lo} - {hi} ({interval})"
+        has_min = sr.get("min") is not None and sr.get("min") > 0
+        has_max = sr.get("max") is not None and sr.get("max") > 0
+        ccy = sr.get("currency") or "USD"
+        interval = sr.get("interval") or "per-year"
+        if has_min and has_max:
+            sal = f"{ccy} {int(sr['min']):,} - {int(sr['max']):,} ({interval})"
+        elif has_min:
+            sal = f"{ccy} {int(sr['min']):,}+ ({interval})"
+        elif has_max:
+            sal = f"Up to {ccy} {int(sr['max']):,} ({interval})"
         lists_text = "\n".join(
             f"{lst.get('text', '')}: {strip_html(lst.get('content', ''))}" for lst in (item.get("lists") or [])
         )
@@ -927,8 +941,13 @@ FETCHERS = {
 
 def scan_target(platform: str, raw_target: str, max_jobs: int) -> dict | None:
     slug = normalize_slug(raw_target)
+    is_eu_lever = bool(re.match(r"^https?://(?:jobs|api)\.eu\.lever\.co/", raw_target.strip(), re.IGNORECASE))
     if platform != "auto":
+        if platform == "lever":
+            return fetch_lever(slug, max_jobs, region="eu" if is_eu_lever else "global")
         return FETCHERS[platform](slug, max_jobs)
+    if is_eu_lever:
+        return fetch_lever(slug, max_jobs, region="eu")
 
     # Probe all 9 public ATS platforms concurrently and select the active board with most open roles
     candidates: list[dict] = []

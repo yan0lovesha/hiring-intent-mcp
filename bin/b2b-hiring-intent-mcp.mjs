@@ -197,9 +197,15 @@ export function detectAtsTarget(rawInput = '', explicitPlatform = '') {
                 if (parts[0] && parts[0] !== 'embed') return { platform: 'greenhouse', target: decodeURIComponent(parts[0]) };
             }
             if (host.endsWith('lever.co')) {
+                const isEu = host === 'jobs.eu.lever.co' || host === 'api.eu.lever.co' || host.endsWith('.eu.lever.co');
                 const pIdx = parts.indexOf('postings');
-                if (pIdx >= 0 && parts[pIdx + 1]) return { platform: 'lever', target: decodeURIComponent(parts[pIdx + 1]) };
-                if (parts[0]) return { platform: 'lever', target: decodeURIComponent(parts[0]) };
+                const slug =
+                    pIdx >= 0 && parts[pIdx + 1]
+                        ? decodeURIComponent(parts[pIdx + 1])
+                        : parts[0]
+                          ? decodeURIComponent(parts[0])
+                          : '';
+                if (slug) return isEu ? { platform: 'lever', target: slug, region: 'eu' } : { platform: 'lever', target: slug };
             }
             if (host.endsWith('ashbyhq.com')) {
                 const jIdx = parts.indexOf('job-board');
@@ -262,10 +268,17 @@ export async function scanSingleTarget(platform, target, maxJobs = 5) {
         });
         return jobs.slice(0, cap).map((item) => {
             const pr = (item.pay_input_ranges || [])[0];
+            const hasMin = pr && pr.min_cents !== null && pr.min_cents !== undefined && Number(pr.min_cents) > 0;
+            const hasMax = pr && pr.max_cents !== null && pr.max_cents !== undefined && Number(pr.max_cents) > 0;
+            const ccy = pr?.currency_type || 'USD';
             const sal =
-                pr && (pr.min_cents || pr.max_cents)
-                    ? `${pr.currency_type || 'USD'} $${Math.round((pr.min_cents || 0) / 100).toLocaleString('en-US')} - $${Math.round((pr.max_cents || 0) / 100).toLocaleString('en-US')}`
-                    : null;
+                hasMin && hasMax
+                    ? `${ccy} $${Math.round(Number(pr.min_cents) / 100).toLocaleString('en-US')} - $${Math.round(Number(pr.max_cents) / 100).toLocaleString('en-US')}`
+                    : hasMin
+                      ? `${ccy} $${Math.round(Number(pr.min_cents) / 100).toLocaleString('en-US')}+`
+                      : hasMax
+                        ? `Up to ${ccy} $${Math.round(Number(pr.max_cents) / 100).toLocaleString('en-US')}`
+                        : null;
             const desc = htmlToText(item.content || '');
             const job = {
                 atsPlatform: 'greenhouse',
@@ -281,18 +294,39 @@ export async function scanSingleTarget(platform, target, maxJobs = 5) {
     }
 
     if (p === 'lever') {
-        const slug = resolvedTarget.replace(/^https?:\/\/jobs(?:\.eu)?\.lever\.co\//i, '').split('/')[0].trim();
-        const r = await fetchSafe(`https://api.lever.co/v0/postings/${encodeURIComponent(slug)}?mode=json&limit=${Math.max(15, cap * 3)}`);
+        const isExplicitEu =
+            detected?.region === 'eu' ||
+            /^https?:\/\/(?:jobs|api)\.eu\.lever\.co\//i.test(String(target || '')) ||
+            /^eu:/i.test(resolvedTarget);
+        const slug = resolvedTarget
+            .replace(/^eu:/i, '')
+            .replace(/^https?:\/\/(?:jobs|api)(?:\.eu)?\.lever\.co\/(?:v0\/postings\/)?/i, '')
+            .split(/[/?#]/)[0]
+            .trim();
+        const limitParam = Math.max(15, cap * 3);
+        const primaryHost = isExplicitEu ? 'api.eu.lever.co' : 'api.lever.co';
+        let r = await fetchSafe(`https://${primaryHost}/v0/postings/${encodeURIComponent(slug)}?mode=json&limit=${limitParam}`);
+        if (!r.ok && !isExplicitEu) {
+            r = await fetchSafe(`https://api.eu.lever.co/v0/postings/${encodeURIComponent(slug)}?mode=json&limit=${limitParam}`);
+        }
         if (!r.ok) return [];
         const arr = JSON.parse(r.text);
         if (!Array.isArray(arr)) return [];
         arr.sort((a, b) => ((b.salaryRange?.min ? 1 : 0) - (a.salaryRange?.min ? 1 : 0)));
         return arr.slice(0, cap).map((item) => {
             const sr = item.salaryRange;
+            const hasMin = sr && sr.min !== null && sr.min !== undefined && Number(sr.min) > 0;
+            const hasMax = sr && sr.max !== null && sr.max !== undefined && Number(sr.max) > 0;
+            const ccy = sr?.currency || 'USD';
+            const interval = sr?.interval || 'per-year';
             const sal =
-                sr && (sr.min || sr.max)
-                    ? `${sr.currency || 'USD'} ${Number(sr.min || 0).toLocaleString('en-US')} - ${Number(sr.max || 0).toLocaleString('en-US')} (${sr.interval || 'per-year'})`
-                    : null;
+                hasMin && hasMax
+                    ? `${ccy} ${Number(sr.min).toLocaleString('en-US')} - ${Number(sr.max).toLocaleString('en-US')} (${interval})`
+                    : hasMin
+                      ? `${ccy} ${Number(sr.min).toLocaleString('en-US')}+ (${interval})`
+                      : hasMax
+                        ? `Up to ${ccy} ${Number(sr.max).toLocaleString('en-US')} (${interval})`
+                        : null;
             const listsText = (item.lists || []).map((l) => `${l.text || ''}: ${htmlToText(l.content || '')}`).join('\n');
             const fullDesc = [item.descriptionPlain || htmlToText(item.description || ''), listsText, item.additionalPlain || '']
                 .filter(Boolean)
@@ -481,7 +515,11 @@ export async function detectCompanyAtsBoard(rawInput = '', probeLive = true) {
 
     const direct = detectAtsTarget(cleaned);
     if (direct) {
-        const sample = probeLive ? await scanSingleTarget(direct.platform, direct.target, 3) : [];
+        const probeTarget =
+            direct.platform === 'lever' && direct.region === 'eu'
+                ? `https://jobs.eu.lever.co/${direct.target}`
+                : direct.target;
+        const sample = probeLive ? await scanSingleTarget(direct.platform, probeTarget, 3) : [];
         return {
             input: cleaned,
             detected: true,
@@ -490,6 +528,7 @@ export async function detectCompanyAtsBoard(rawInput = '', probeLive = true) {
                 {
                     platform: direct.platform,
                     target: direct.target,
+                    ...(direct.region ? { region: direct.region } : {}),
                     reachable: probeLive ? sample.length > 0 : null,
                     sampledOpenRoles: sample.length,
                     hasDisclosedCompensation: sample.some((j) => Boolean(j.intent?.disclosedSalary)),
