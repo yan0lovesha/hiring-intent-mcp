@@ -142,8 +142,9 @@ Using **Claude Code, Cursor, GitHub Copilot, Codex CLI, Windsurf, or OpenClaw**?
    ```bash
    npx skills add yan0lovesha/hiring-intent-mcp
    ```
-2. **Pro Outbound Execution Engine on [Agensi](https://www.agensi.io/creators/yan0lovesha):**
-   - **[B2B Signal-to-Cold-Email Autopilot Pro (Clay + n8n)](https://www.agensi.io/skills/b2b-signal-to-cold-email-autopilot-pro-clay-n8n)** — Converts raw ATS, permit, NPI clinic, and FDA 510(k) signals into **CFO / VP Eng / RevOps 3-touch plain-text sequences** (verified by a 16-rule `<=75w` anti-AI-slop linter), **Clay `intentScore >= 60` 70% credit-saver formulas**, and **import-ready `n8n` workflow JSON**.
+2. **Pro Outbound Execution Engine & Turnkey Automation Kits:**
+   - **[Hiring-Intent Cold Email Autopilot Kit ($39 One-Time on Polar)](https://buy.polar.sh/polar_cl_0QfhhrBCOodgewSKM54hZocWIncYifIlj59fg1UOqXV)** — Complete downloadable bundle: 14-node multi-ATS **`n8n` outbound workflow JSON**, **Clay.com 70% credit-saver HTTP API recipe**, zero-dependency **local MCP server**, and standalone interactive Signal Radar dashboard.
+   - **[B2B Signal-to-Cold-Email Autopilot Pro ($15 Skill on Agensi)](https://www.agensi.io/skills/b2b-signal-to-cold-email-autopilot-pro-clay-n8n)** — Converts raw ATS, permit, NPI clinic, and FDA 510(k) signals into **CFO / VP Eng / RevOps 3-touch plain-text sequences** (verified by a 16-rule `<=75w` anti-AI-slop linter), **Clay `intentScore >= 60` 70% credit-saver formulas**, and **import-ready `n8n` workflow JSON**.
 
 ---
 
