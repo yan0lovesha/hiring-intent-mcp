@@ -15,6 +15,14 @@
   "bin": {
     "b2b-hiring-intent-mcp": "./bin/b2b-hiring-intent-mcp.mjs"
   },
+  "files": [
+    "bin/",
+    "skills/",
+    "README.md",
+    "LICENSE",
+    "server.json",
+    "glama.json"
+  ],
   "keywords": [
     "mcp",
     "mcp-server",

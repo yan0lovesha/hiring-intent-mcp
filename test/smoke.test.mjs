@@ -122,7 +122,11 @@ assert.equal(cmp.comparedCount, 2);
 assert.equal(cmp.rankedDossiers.length, 2);
 proc.stdin.end();
 
-console.log('[3/4] Testing CLI --url auto-detection on Greenhouse (figma) & Lever (zoox)...');
+console.log('[3/4] Testing --help, --version & CLI --url auto-detection on Greenhouse (figma) & Lever (zoox)...');
+const helpOut = execFileSync(process.execPath, [bin, '--help'], { encoding: 'utf8' });
+assert.ok(helpOut.includes('npx -y github:yan0lovesha/hiring-intent-mcp') && helpOut.includes('mcp.apify.com'));
+const verOut = execFileSync(process.execPath, [bin, '--version'], { encoding: 'utf8' }).trim();
+assert.equal(verOut, '1.3.0');
 const ghOut = JSON.parse(execFileSync(process.execPath, [bin, '--cli', '--url', 'https://boards.greenhouse.io/figma', '--max', '2'], { encoding: 'utf8' }));
 assert.ok(ghOut.length > 0 && ghOut[0].atsPlatform === 'greenhouse');
 console.log(`  -> Live Greenhouse URL scan OK: ${ghOut[0].companyName} | ${ghOut[0].title} | Comp=${ghOut[0].intent.disclosedSalary}`);

@@ -12,60 +12,58 @@
 
 ---
 
-## Supported 9-ATS Real-Time Probing (Paste Any Career URL!)
+## Zero-Clone 10-Second Quick Start (`npx` or Hosted Remote MCP)
 
-| ATS Platform | Auto-Detected Career URLs | Native Compensation & Intelligence |
-| :--- | :--- | :--- |
-| **Greenhouse** *(New in v1.1)* | `boards.greenhouse.io/*`, `job-boards.greenhouse.io/*` | Native `?pay_transparency=true` (`pay_input_ranges`), offices, departments & tech stack |
-| **Lever** *(New in v1.1)* | `jobs.lever.co/*`, `jobs.eu.lever.co/*` | Structured `salaryRange` (`USD`/interval), `categories` & full requirements `lists` |
-| **Ashby** | `jobs.ashbyhq.com/*` | Structured USD Salary + Equity tiers (`?includeCompensation=true`) |
-| **Personio** | `*.jobs.personio.de`, `*.jobs.personio.com` | EU/DACH multi-language XML position feed + office & department signals |
-| **Teamtailor** | `*.teamtailor.com` | Nordics/UK `xmlns:tt` RSS feed with multi-city locations & department tags |
-| **SmartRecruiters** | `careers.smartrecruiters.com/*`, `jobs.smartrecruiters.com/*` | Global enterprise postings API |
-| **Workable** | `apply.workable.com/*`, `*.workable.com` | Single-request widget details feed |
-| **Recruitee (Tellent)** | `*.recruitee.com` | `/api/offers` structured salary & remote/hybrid flags |
-| **Pinpoint** | `*.pinpointhq.com` | `/postings.json` with direct Hiring Manager `reportingTo` line |
+No `git clone`, zero npm dependencies, and zero API keys required for interactive 9-ATS scans!
 
----
-
-## Quick Start (Local MCP Server — Zero Dependencies, Node 20+ or Docker)
-
-### 1. Instant 1-Click Career URL Scan (`--url`)
+### 1. Run Instantly from Terminal (`npx -y github:yan0lovesha/hiring-intent-mcp`)
 ```bash
-# Auto-detects Greenhouse, Lever, Ashby, Personio, Teamtailor, Workable, Recruitee, Pinpoint, or SmartRecruiters!
-node bin/b2b-hiring-intent-mcp.mjs --cli --url https://boards.greenhouse.io/figma --max 4
-node bin/b2b-hiring-intent-mcp.mjs --cli --url https://jobs.lever.co/zoox --max 4
-node bin/b2b-hiring-intent-mcp.mjs --cli --url https://jobs.ashbyhq.com/ramp --max 4
+# Inspect CLI options & MCP endpoints
+npx -y github:yan0lovesha/hiring-intent-mcp --help
 
-# Or pass explicit --platform & --target slug
-node bin/b2b-hiring-intent-mcp.mjs --cli --platform personio --target adsquare --max 4
-node bin/b2b-hiring-intent-mcp.mjs --cli --platform teamtailor --target puzzel --max 4
+# Auto-detect & scan any Greenhouse, Lever, Ashby, Personio, Teamtailor, Workable, Recruitee, Pinpoint, or SmartRecruiters URL
+npx -y github:yan0lovesha/hiring-intent-mcp --cli --url https://boards.greenhouse.io/figma --max 4
+npx -y github:yan0lovesha/hiring-intent-mcp --cli --url https://jobs.lever.co/zoox --max 4
+npx -y github:yan0lovesha/hiring-intent-mcp --cli --url https://jobs.ashbyhq.com/ramp --max 4
 ```
 
-### 2. Add to Claude Desktop / Cursor / VS Code Copilot (`mcp.json`)
+### 2. Copy-Paste MCP Config (Claude Desktop, Cursor & VS Code Copilot)
 
-**Option A — Hosted Remote Streamable HTTP (Zero Local Install via Apify MCP Gateway):**
+**Option A — Zero-Install Local Stdio MCP (`claude_desktop_config.json` / `.cursor/mcp.json`):**
 ```json
 {
   "mcpServers": {
-    "b2b-hiring-intent-cloud": {
-      "type": "streamable-http",
-      "url": "https://mcp.apify.com/?tools=yan0lovesha/multi-ats-jobs-hiring-intent",
-      "headers": {
-        "Authorization": "Bearer <YOUR_APIFY_TOKEN>"
-      }
+    "b2b-hiring-intent": {
+      "command": "npx",
+      "args": ["-y", "github:yan0lovesha/hiring-intent-mcp"]
     }
   }
 }
 ```
 
-**Option B — Local Zero-Dependency Stdio Server (Free Interactive Probing):**
+**VS Code GitHub Copilot (`.vscode/mcp.json`):**
+```json
+{
+  "servers": {
+    "b2b-hiring-intent": {
+      "type": "stdio",
+      "command": "npx",
+      "args": ["-y", "github:yan0lovesha/hiring-intent-mcp"]
+    }
+  }
+}
+```
+
+**Option B — Apify Hosted Remote MCP (`streamable-http` for 100–10,000+ Batch Scale & Cloud APIs):**
 ```json
 {
   "mcpServers": {
-    "b2b-hiring-intent": {
-      "command": "node",
-      "args": ["/path/to/hiring-intent-mcp/bin/b2b-hiring-intent-mcp.mjs"]
+    "b2b-hiring-intent-cloud": {
+      "type": "streamable-http",
+      "url": "https://mcp.apify.com/?tools=yan0lovesha/multi-ats-jobs-hiring-intent,yan0lovesha/greenhouse-jobs-hiring-intent,yan0lovesha/ashby-jobs-hiring-intent",
+      "headers": {
+        "Authorization": "Bearer <YOUR_APIFY_TOKEN>"
+      }
     }
   }
 }
@@ -82,30 +80,46 @@ Open [`demo/index.html`](./demo/index.html) in any browser to filter 50+ real sc
 
 ---
 
+## Supported 9-ATS Real-Time Probing (Paste Any Career URL!)
+
+| ATS Platform | Auto-Detected Career URLs | Native Compensation & Intelligence |
+| :--- | :--- | :--- |
+| **Greenhouse** | `boards.greenhouse.io/*`, `job-boards.greenhouse.io/*` | Native `?pay_transparency=true` (`pay_input_ranges`), offices, departments & tech stack |
+| **Lever** | `jobs.lever.co/*`, `jobs.eu.lever.co/*` | Structured `salaryRange` (`USD`/interval), `categories` & full requirements `lists` |
+| **Ashby** | `jobs.ashbyhq.com/*` | Structured USD Salary + Equity tiers (`?includeCompensation=true`) |
+| **Personio** | `*.jobs.personio.de`, `*.jobs.personio.com` | EU/DACH multi-language XML position feed + office & department signals |
+| **Teamtailor** | `*.teamtailor.com` | Nordics/UK `xmlns:tt` RSS feed with multi-city locations & department tags |
+| **SmartRecruiters** | `careers.smartrecruiters.com/*`, `jobs.smartrecruiters.com/*` | Global enterprise postings API |
+| **Workable** | `apply.workable.com/*`, `*.workable.com` | Single-request widget details feed |
+| **Recruitee (Tellent)** | `*.recruitee.com` | `/api/offers` structured salary & remote/hybrid flags |
+| **Pinpoint** | `*.pinpointhq.com` | `/postings.json` with direct Hiring Manager `reportingTo` line |
+
+---
+
 ## Need Scheduled Batch Scale (100–10,000+ Targets), XML-404 Fallbacks, or US Permit/FDA/Clinic Leads?
 
-The local open-core MCP server is ideal for inspecting 1–5 companies interactively. For **Clay.com waterfalls**, **scheduled n8n / Make outbound pipelines**, **custom career page ATS fingerprinting**, **Account-Level Company Dossiers**, and **US Federal/Municipal High-Ticket Lead Registries**, use our **16 Cloud Pay-Per-Event + Hosted MCP APIs on Apify Store** (`LIMITED_PERMISSIONS` native, pennies per run, zero monthly subscription):
+The local open-core MCP server is ideal for inspecting 1–5 companies interactively. For **Clay.com waterfalls**, **scheduled n8n / Make outbound pipelines**, **custom career page ATS fingerprinting**, **Account-Level Company Dossiers**, and **US Federal/Municipal High-Ticket Lead Registries**, use our **16 Cloud Pay-Per-Event + Hosted MCP APIs on Apify Store** (`LIMITED_PERMISSIONS` native, `256 MB` RAM, pennies per run, x402 agentic payment ready):
 
 👉 **Full Publisher Catalog**: **[https://apify.com/yan0lovesha](https://apify.com/yan0lovesha)**
 
 | # | Production Cloud API (Apify Store + Hosted MCP) | Target Market & Coverage | Key Intelligence Extracted |
 | :-: | :--- | :--- | :--- |
-| ⭐ | [**Greenhouse, Lever & Ashby Multi-ATS Hiring Intent API**](https://apify.com/yan0lovesha/multi-ats-jobs-hiring-intent) | **All 9 ATS Platforms Unified** (`Figma`, `Datadog`, `Zoox`, `Spotify`, `Ramp`, `Linear`+) | **Flagship 1-Click Mixed URL Feed**: unified schema, `pay_transparency` salary/equity, 125+ tech-stack tools & Company Dossiers |
-| 1 | [**Greenhouse Jobs, Salary & B2B Hiring Intent API**](https://apify.com/yan0lovesha/greenhouse-jobs-hiring-intent) | Global Unicorns & Public SaaS (`Cloudflare`, `Stripe`, `Datadog`, `Figma`) | Native `?pay_transparency=true` salary bands, departments, 125+ tech-stack tags & Company Dossiers |
-| 2 | [**Lever Jobs, Salary & B2B Hiring Intent API**](https://apify.com/yan0lovesha/lever-jobs-hiring-intent) | Growth Tech, FinTech & Mobility (`Zoox`, `Outreach`, `Spotify`, `Veeva`) | Structured `salaryRange`, full requirement `lists`, 0–100 intent scores & SDR hooks |
-| 3 | [**Ashby Jobs, Salary & B2B Hiring Intent API**](https://apify.com/yan0lovesha/ashby-jobs-hiring-intent) | North America YC & AI Unicorns (`OpenAI`, `Ramp`, `Linear`, `Vanta`, `Cohere`) | Structured USD Salary + Equity tiers, 125+ tech-stack tools, 0–100 score & Company Dossiers |
-| 4 | [**Personio Jobs & B2B Hiring Intent API**](https://apify.com/yan0lovesha/personio-jobs-hiring-intent) | DACH & Europe #1 HR/ATS (14,000+ companies) | Dual-channel XML + `/search.json` + JSON-LD fallback (solves XML 404s) + EU 2026 salary bands |
-| 5 | [**Teamtailor Jobs & B2B Hiring Signal API**](https://apify.com/yan0lovesha/teamtailor-jobs-hiring-signal) | UK & Nordics #1 ATS (10,000+ companies) | Multi-office `xmlns:tt` RSS + custom-domain JSON-LD fallback + SDR cold outreach hooks |
-| 6 | [**SmartRecruiters Enterprise Hiring Intent API**](https://apify.com/yan0lovesha/smartrecruiters-jobs-hiring-intent) | Global Enterprises (`Bosch`, `ServiceNow`, `Canva`, `Delivery Hero`) | Two-stage Listing + Full `jobAd` sections, compensation & enterprise tech-stack signals |
-| 7 | [**Workable Jobs & B2B Hiring Intent API**](https://apify.com/yan0lovesha/workable-jobs-hiring-intent) | Global Mid-Market & SaaS (27,000+ companies) | Sub-second single-request full JD extraction + v3/v2 fallback + Account Dossiers |
-| 8 | [**Recruitee (Tellent) Hiring Intent API**](https://apify.com/yan0lovesha/recruitee-jobs-hiring-intent) | Benelux, DACH & EU Scaleups (5,000+ companies) | Full `/api/offers` structured salary, hybrid/remote flags & 125+ tech-stack extractor |
-| 9 | [**Pinpoint ATS Hiring Manager & Intent API**](https://apify.com/yan0lovesha/pinpoint-jobs-hiring-intent) | Enterprise & Digital Health (`SmartThings`, `Digital Science`, `Article`) | Direct Hiring Manager reporting line (`reportingTo`) + placeholder-board protection |
-| 10 | [**US Building, Solar & Roofing Permits Leads API**](https://apify.com/yan0lovesha/us-building-solar-permits-leads) | US Municipal Socrata Open Data (`Seattle`, `Austin`, `Chicago`) | Commercial construction, Solar PV/Battery & Roofing permits with **Contractor Phones & Project Valuations ($)** |
-| 11 | [**US FMCSA Trucking Fleets & DOT Owners API**](https://apify.com/yan0lovesha/us-fmcsa-trucking-fleet-leads) | US DOT FMCSA Motor Carrier Census | Commercial fleet power units, safety status, **Named DOT Principals & Insurance Leads** |
-| 12 | [**US Federal Contract Awards & GovCon Leads API**](https://apify.com/yan0lovesha/us-federal-contracts-awards-leads) | Official US Federal USAspending Awards Feed | Newly awarded federal prime contractors, **Award Amounts ($), NAICS & Agency Buyers** |
-| 13 | [**US Medical & Dental Clinic Owners Leads API**](https://apify.com/yan0lovesha/us-npi-medical-dental-clinics-leads) | US Federal HHS CMS NPPES NPI-2 Registry (All 50 States) | Private Dental, MedSpa/Derm, Chiropractic & Mental Health **Clinic Owners + Direct Phone Numbers** |
-| 14 | [**FDA 510(k) Cleared Medical Device Leads API**](https://apify.com/yan0lovesha/fda-510k-medical-device-leads) | Official US FDA openFDA 510(k) `SESE` Clearances | Newly cleared MedTech manufacturers, **Named Regulatory Contacts**, addresses & SaMD/AI flags |
-| 15 | [**US Licensed HVAC, Electrical & General Contractor Leads API**](https://apify.com/yan0lovesha/us-contractor-licenses-leads) | US State Contractor Licensing Boards | Active licensed commercial HVAC, electrical, plumbing & general contractors with direct contacts |
+| ⭐ | [**Career Site & Multi-ATS Jobs Scraper API (9 ATS + Salary)**](https://apify.com/yan0lovesha/multi-ats-jobs-hiring-intent) | **All 9 ATS Platforms Unified** (`Figma`, `Datadog`, `Zoox`, `Spotify`, `Ramp`, `Linear`+) | **Flagship 1-Click Mixed URL Feed**: unified schema, `pay_transparency` salary/equity, 125+ tech-stack tools & Company Dossiers |
+| 1 | [**Greenhouse Jobs Scraper & Salary API (Tech Stack Signals)**](https://apify.com/yan0lovesha/greenhouse-jobs-hiring-intent) | Global Unicorns & Public SaaS (`Cloudflare`, `Stripe`, `Datadog`, `Figma`) | Native `?pay_transparency=true` salary bands, departments, 125+ tech-stack tags & Company Dossiers |
+| 2 | [**Lever Jobs Scraper & Salary API (US & EU Career Boards)**](https://apify.com/yan0lovesha/lever-jobs-hiring-intent) | Growth Tech, FinTech & Mobility (`Zoox`, `Outreach`, `Spotify`, `Veeva`) | Structured `salaryRange`, full requirement `lists`, 0–100 intent scores & SDR hooks |
+| 3 | [**Ashby Jobs Scraper & Salary/Equity API (YC & AI Companies)**](https://apify.com/yan0lovesha/ashby-jobs-hiring-intent) | North America YC & AI Unicorns (`OpenAI`, `Ramp`, `Linear`, `Vanta`, `Cohere`) | Structured USD Salary + Equity tiers, 125+ tech-stack tools, 0–100 score & Company Dossiers |
+| 4 | [**Personio Jobs Scraper & DACH/EU Career API (Hiring Signals)**](https://apify.com/yan0lovesha/personio-jobs-hiring-intent) | DACH & Europe #1 HR/ATS (14,000+ companies) | Dual-channel XML + `/search.json` + JSON-LD fallback (solves XML 404s) + EU 2026 salary bands |
+| 5 | [**Teamtailor Jobs Scraper & EU Career API (Hiring Signals)**](https://apify.com/yan0lovesha/teamtailor-jobs-hiring-signal) | UK & Nordics #1 ATS (10,000+ companies) | Multi-office `xmlns:tt` RSS + custom-domain JSON-LD fallback + SDR cold outreach hooks |
+| 6 | [**SmartRecruiters Jobs Scraper & Enterprise Career API**](https://apify.com/yan0lovesha/smartrecruiters-jobs-hiring-intent) | Global Enterprises (`Bosch`, `ServiceNow`, `Canva`, `Delivery Hero`) | Two-stage Listing + Full `jobAd` sections, compensation & enterprise tech-stack signals |
+| 7 | [**Workable Jobs Scraper & Career API (B2B Hiring Signals)**](https://apify.com/yan0lovesha/workable-jobs-hiring-intent) | Global Mid-Market & SaaS (27,000+ companies) | Sub-second single-request full JD extraction + v3/v2 fallback + Account Dossiers |
+| 8 | [**Recruitee Jobs Scraper & Career API (B2B Hiring Signals)**](https://apify.com/yan0lovesha/recruitee-jobs-hiring-intent) | Benelux, DACH & EU Scaleups (5,000+ companies) | Full `/api/offers` structured salary, hybrid/remote flags & 125+ tech-stack extractor |
+| 9 | [**Pinpoint Jobs Scraper & Salary API (B2B Hiring Signals)**](https://apify.com/yan0lovesha/pinpoint-jobs-hiring-intent) | Enterprise & Digital Health (`SmartThings`, `Digital Science`, `Article`) | Direct Hiring Manager reporting line (`reportingTo`) + placeholder-board protection |
+| 10 | [**US Building, Solar & Roofing Permits Scraper & Leads API**](https://apify.com/yan0lovesha/us-building-solar-permits-leads) | US Municipal Socrata Open Data (`Seattle`, `Austin`, `Chicago`) | Commercial construction, Solar PV/Battery & Roofing permits with **Contractor Phones & Project Valuations ($)** |
+| 11 | [**US FMCSA Trucking Fleet & DOT Carrier Scraper & Leads API**](https://apify.com/yan0lovesha/us-fmcsa-trucking-fleet-leads) | US DOT FMCSA Motor Carrier Census | Commercial fleet power units, safety status, **Named DOT Principals & Insurance Leads** |
+| 12 | [**US Federal Contracts & USAspending Scraper & Leads API**](https://apify.com/yan0lovesha/us-federal-contracts-awards-leads) | Official US Federal USAspending Awards Feed | Newly awarded federal prime contractors, **Award Amounts ($), NAICS & Agency Buyers** |
+| 13 | [**US NPI Medical & Dental Clinics Scraper & Leads API**](https://apify.com/yan0lovesha/us-npi-medical-dental-clinics-leads) | US Federal HHS CMS NPPES NPI-2 Registry (All 50 States) | Private Dental, MedSpa/Derm, Chiropractic & Mental Health **Clinic Owners + Direct Phone Numbers** |
+| 14 | [**FDA 510(k) Medical Device Clearance Scraper & Leads API**](https://apify.com/yan0lovesha/fda-510k-medical-device-leads) | Official US FDA openFDA 510(k) `SESE` Clearances | Newly cleared MedTech manufacturers, **Named Regulatory Contacts**, addresses & SaMD/AI flags |
+| 15 | [**US HVAC, Electrical & Contractor License Scraper & Leads API**](https://apify.com/yan0lovesha/us-contractor-licenses-leads) | US State Contractor Licensing Boards | Active licensed commercial HVAC, electrical, plumbing & general contractors with direct contacts |
 
 ---
 

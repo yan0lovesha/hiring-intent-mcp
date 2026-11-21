@@ -929,7 +929,33 @@ const isMain = (() => {
 })();
 
 if (isMain) {
-    if (process.argv.includes('--cli')) {
+    const argv = process.argv.slice(2);
+    if (argv.includes('--help') || argv.includes('-h')) {
+        process.stdout.write(
+            [
+                `${SERVER_INFO.name} v${SERVER_INFO.version} — Zero-Dependency 9-ATS Hiring Intent MCP Server & CLI`,
+                '',
+                'Usage:',
+                '  npx -y github:yan0lovesha/hiring-intent-mcp                                      # Start MCP stdio server (Claude Desktop, Cursor, VS Code)',
+                '  npx -y github:yan0lovesha/hiring-intent-mcp --cli --url <career_url> [--max 4]   # Scan any supported ATS career URL',
+                '  npx -y github:yan0lovesha/hiring-intent-mcp --cli --platform <ats> --target <id> # Scan explicit ATS slug',
+                '',
+                'Supported ATS Platforms (9):',
+                '  greenhouse, lever (US + EU), ashby, personio, teamtailor, smartrecruiters, workable, recruitee, pinpoint',
+                '',
+                'Hosted Cloud Batch & Remote MCP Gateway (100-10,000+ targets + US Permit/NPI/FDA/FMCSA APIs):',
+                '  https://mcp.apify.com/?tools=yan0lovesha/multi-ats-jobs-hiring-intent',
+                '  https://apify.com/yan0lovesha',
+                '',
+            ].join('\n'),
+        );
+        process.exit(0);
+    }
+    if (argv.includes('--version') || argv.includes('-v')) {
+        process.stdout.write(`${SERVER_INFO.version}\n`);
+        process.exit(0);
+    }
+    if (argv.includes('--cli') || argv.includes('--url') || argv.includes('--platform')) {
         const getArg = (k, d) => {
             const i = process.argv.indexOf(`--${k}`);
             return i >= 0 && process.argv[i + 1] ? process.argv[i + 1] : d;
