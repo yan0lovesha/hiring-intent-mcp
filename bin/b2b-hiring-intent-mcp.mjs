@@ -1,25 +1,28 @@
 #!/usr/bin/env node
 /**
- * b2b-hiring-intent-mcp v1.3.0 — Open-Core Zero-Dependency 9-ATS MCP Server & CLI
+ * b2b-hiring-intent-mcp v1.4.0 — Open-Core Zero-Dependency 10-ATS MCP Server & CLI
  *
- * Inspect, fingerprint, compare, and activate B2B hiring-intent signals across 9 ATS platforms
- * (Greenhouse, Lever, Ashby, Personio, Teamtailor, SmartRecruiters, Workable, Recruitee, Pinpoint)
+ * Inspect, fingerprint, compare, and activate B2B hiring-intent signals across 10 ATS platforms
+ * (Workday, Greenhouse, Lever, Ashby, Personio, Teamtailor, SmartRecruiters, Workable, Recruitee, Pinpoint)
  * locally over stdio MCP (`Claude Desktop`, `Cursor`, `VS Code Copilot`), or scale to 100–10,000+ targets
- * on schedule via our 16 hosted Cloud Pay-Per-Event APIs:
+ * on schedule via our 19 hosted Cloud Pay-Per-Event APIs:
  *   https://apify.com/yan0lovesha
  */
 
 import fs from 'node:fs';
+import https from 'node:https';
 import readline from 'node:readline';
 import { fileURLToPath } from 'node:url';
+import zlib from 'node:zlib';
 
 const SERVER_INFO = {
     name: 'b2b-hiring-intent-mcp',
-    version: '1.3.0',
+    version: '1.4.0',
 };
 
 const CLOUD_ACTOR_MAP = {
     multi_ats: 'yan0lovesha~multi-ats-jobs-hiring-intent',
+    workday: 'yan0lovesha~workday-jobs-scraper',
     greenhouse: 'yan0lovesha~greenhouse-jobs-hiring-intent',
     lever: 'yan0lovesha~lever-jobs-hiring-intent',
     ashby: 'yan0lovesha~ashby-jobs-hiring-intent',
@@ -29,6 +32,8 @@ const CLOUD_ACTOR_MAP = {
     workable: 'yan0lovesha~workable-jobs-hiring-intent',
     recruitee: 'yan0lovesha~recruitee-jobs-hiring-intent',
     pinpoint: 'yan0lovesha~pinpoint-jobs-hiring-intent',
+    google_ads_transparency: 'yan0lovesha~google-ads-transparency-scraper',
+    website_contact_finder: 'yan0lovesha~website-contact-email-finder',
     us_permits: 'yan0lovesha~us-building-solar-permits-leads',
     us_contractor_licenses: 'yan0lovesha~us-contractor-licenses-leads',
     us_fmcsa_trucking: 'yan0lovesha~us-fmcsa-trucking-fleet-leads',
@@ -152,13 +157,352 @@ function enrichIntent(job, structuredSalary = null) {
 
 async function fetchSafe(url) {
     const res = await fetch(url, {
-        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; B2BHiringIntentMCP/1.1)' },
+        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; B2BHiringIntentMCP/1.4)' },
         signal: AbortSignal.timeout(15000),
     });
     return { ok: res.ok, status: res.status, text: await res.text() };
 }
 
+const CHROME_TLS_CIPHERS = [
+    'TLS_AES_128_GCM_SHA256',
+    'TLS_AES_256_GCM_SHA384',
+    'TLS_CHACHA20_POLY1305_SHA256',
+    'ECDHE-ECDSA-AES128-GCM-SHA256',
+    'ECDHE-RSA-AES128-GCM-SHA256',
+    'ECDHE-ECDSA-AES256-GCM-SHA384',
+    'ECDHE-RSA-AES256-GCM-SHA384',
+].join(':');
+
+const SHARED_WORKDAY_AGENT = new https.Agent({
+    keepAlive: false,
+    maxSockets: 32,
+    ciphers: CHROME_TLS_CIPHERS,
+    ecdhCurve: 'X25519:prime256v1:secp384r1',
+    minVersion: 'TLSv1.2',
+    maxVersion: 'TLSv1.3',
+});
+
+const WORKDAY_ENTERPRISE_DIRECTORY = {
+    salesforce: ['Salesforce', 'salesforce', 'wd12', 'External_Career_Site'],
+    slack: ['Slack (Salesforce)', 'salesforce', 'wd12', 'Slack'],
+    tableau: ['Tableau (Salesforce)', 'salesforce', 'wd12', 'Tableau'],
+    capitalone: ['Capital One', 'capitalone', 'wd12', 'Capital_One'],
+    verizon: ['Verizon', 'verizon', 'wd12', 'verizon-careers'],
+    lilly: ['Eli Lilly', 'lilly', 'wd115', 'LLY'],
+    nordstrom: ['Nordstrom', 'nordstrom', 'wd501', 'nordstrom_careers'],
+    walmart: ['Walmart', 'walmart', 'wd504', 'WalmartExternal'],
+    accenture: ['Accenture', 'accenture', 'wd103', 'AccentureCareers'],
+    nvidia: ['NVIDIA', 'nvidia', 'wd5', 'NVIDIAExternalCareerSite'],
+    adobe: ['Adobe', 'adobe', 'wd5', 'external_experienced'],
+    crowdstrike: ['CrowdStrike', 'crowdstrike', 'wd5', 'crowdstrikecareers'],
+    workday: ['Workday', 'workday', 'wd5', 'Workday'],
+    mastercard: ['Mastercard', 'mastercard', 'wd1', 'CorporateCareers'],
+    cisco: ['Cisco', 'cisco', 'wd5', 'Cisco_Careers'],
+    dell: ['Dell Technologies', 'dell', 'wd1', 'External'],
+    boeing: ['Boeing', 'boeing', 'wd1', 'EXTERNAL_CAREERS'],
+    pfizer: ['Pfizer', 'pfizer', 'wd1', 'PfizerCareers'],
+    paloaltonetworks: ['Palo Alto Networks', 'paloaltonetworks', 'wd5', 'panwexternalcareers'],
+    intel: ['Intel', 'intel', 'wd1', 'External'],
+    broadcom: ['Broadcom', 'broadcom', 'wd1', 'External_Career'],
+    appliedmaterials: ['Applied Materials', 'amat', 'wd1', 'External'],
+    autodesk: ['Autodesk', 'autodesk', 'wd1', 'Ext'],
+    zoom: ['Zoom Communications', 'zoom', 'wd5', 'Zoom'],
+    motorolasolutions: ['Motorola Solutions', 'motorolasolutions', 'wd5', 'Careers'],
+    paypal: ['PayPal', 'paypal', 'wd1', 'jobs'],
+    morganstanley: ['Morgan Stanley', 'ms', 'wd5', 'External'],
+    blackrock: ['BlackRock', 'blackrock', 'wd1', 'BlackRock_Professional'],
+    bankofamerica: ['Bank of America', 'ghr', 'wd1', 'Lateral-US'],
+    citigroup: ['Citigroup', 'citi', 'wd5', '2'],
+    fidelity: ['Fidelity Investments', 'fmr', 'wd1', 'FidelityCareers'],
+    spglobal: ['S&P Global', 'spgi', 'wd5', 'SPGI_Careers'],
+    pwc: ['PwC', 'pwc', 'wd3', 'Global_Experienced_Careers'],
+    aig: ['AIG', 'aig', 'wd1', 'aig'],
+    target: ['Target', 'target', 'wd5', 'targetcareers'],
+    homedepot: ['The Home Depot', 'homedepot', 'wd5', 'CareerDepot'],
+    disney: ['The Walt Disney Company', 'disney', 'wd5', 'disneycareer'],
+    nike: ['Nike', 'nike', 'wd1', 'nke'],
+    amgen: ['Amgen', 'amgen', 'wd1', 'Careers'],
+    astrazeneca: ['AstraZeneca', 'astrazeneca', 'wd3', 'Careers'],
+    medtronic: ['Medtronic', 'medtronic', 'wd1', 'MedtronicCareers'],
+    cvshealth: ['CVS Health', 'cvshealth', 'wd1', 'CVS_Health_Careers'],
+    cigna: ['The Cigna Group', 'cigna', 'wd5', 'cignacareers'],
+    humana: ['Humana', 'humana', 'wd5', 'Humana_External_Career_Site'],
+    '3m': ['3M', '3m', 'wd1', 'Search'],
+    caterpillar: ['Caterpillar', 'cat', 'wd5', 'CaterpillarCareers'],
+    geaerospace: ['GE Aerospace', 'geaerospace', 'wd5', 'GE_ExternalSite'],
+    rtx: ['RTX (Raytheon)', 'globalhr', 'wd5', 'REC_RTX_Ext_Gateway'],
+    tranetechnologies: ['Trane Technologies', 'tranetechnologies', 'wd12', 'Trane_Technologies_Careers'],
+    otis: ['Otis Worldwide', 'otis', 'wd504', 'REC_Ext_Gateway'],
+    shi: ['SHI International', 'shi', 'wd12', 'shicareers'],
+    livenation: ['Live Nation Entertainment', 'livenation', 'wd503', 'LNExternalSite'],
+    danaher: ['Danaher', 'danaher', 'wd1', 'DanaherJobs'],
+    stryker: ['Stryker', 'stryker', 'wd1', 'StrykerCareers'],
+    thermofisher: ['Thermo Fisher Scientific', 'thermofisher', 'wd5', 'ThermoFisherCareers'],
+    unilever: ['Unilever', 'unilever', 'wd3', 'Unilever_Experienced_Professionals'],
+    siemens: ['Siemens', 'siemens', 'wd3', 'Jobs'],
+    shell: ['Shell', 'shell', 'wd3', 'ShellCareers'],
+    roche: ['Roche', 'roche', 'wd3', 'roche-ext'],
+    novartis: ['Novartis', 'novartis', 'wd3', 'Novartis_Careers'],
+    barclays: ['Barclays', 'barclays', 'wd3', 'External_Career_Site_Barclays'],
+};
+
+const WORKDAY_ALIASES = {
+    elililly: 'lilly',
+    paloalto: 'paloaltonetworks',
+    panw: 'paloaltonetworks',
+    amat: 'appliedmaterials',
+    motorola: 'motorolasolutions',
+    ms: 'morganstanley',
+    bofa: 'bankofamerica',
+    ghr: 'bankofamerica',
+    citi: 'citigroup',
+    fmr: 'fidelity',
+    spgi: 'spglobal',
+    thehomedepot: 'homedepot',
+    waltdisney: 'disney',
+    cvs: 'cvshealth',
+    mmm: '3m',
+    cat: 'caterpillar',
+    ge: 'geaerospace',
+    raytheon: 'rtx',
+    globalhr: 'rtx',
+    trane: 'tranetechnologies',
+    delltechnologies: 'dell',
+};
+
+const WORKDAY_LOCALE_SEGMENT_RE = /^[a-z]{2}(?:-[a-zA-Z]{2,4})?$/;
+
+function buildWorkdayTarget(companySlug, companyName, tenant, wdCluster, site, originOverride) {
+    const origin = originOverride || `https://${tenant}.${wdCluster}.myworkdayjobs.com`;
+    const isMyWorkdaySite = origin.includes('.myworkdaysite.com');
+    const careerSiteUrl = isMyWorkdaySite ? `${origin}/recruiting/${tenant}/${site}` : `${origin}/${site}`;
+    const cxsBaseUrl = `${origin}/wday/cxs/${tenant}/${site}`;
+    return {
+        companySlug,
+        companyName,
+        tenant,
+        wdCluster,
+        site,
+        origin,
+        careerSiteUrl,
+        cxsBaseUrl,
+        cxsJobsUrl: `${cxsBaseUrl}/jobs`,
+    };
+}
+
+function findWorkdayDirMatch(tenant, site) {
+    const tLower = tenant.toLowerCase();
+    const sLower = site.toLowerCase();
+    for (const [slug, [companyName, t, wdCluster, s]] of Object.entries(WORKDAY_ENTERPRISE_DIRECTORY)) {
+        if (t.toLowerCase() === tLower && s.toLowerCase() === sLower) {
+            return { slug, companyName, tenant: t, wdCluster, site: s };
+        }
+    }
+    return null;
+}
+
+function humanizeTenantName(tenant) {
+    return tenant.replace(/[-_]+/g, ' ').replace(/\b[a-z]/g, (ch) => ch.toUpperCase());
+}
+
+export function resolveWorkdayBoardTarget(raw = '') {
+    const trimmed = String(raw || '').trim();
+    if (!trimmed) return null;
+
+    const shorthand = trimmed.match(/^(wd\d+)\/([a-zA-Z0-9_-]+)\/([a-zA-Z0-9_-]+)\/?$/i);
+    if (shorthand) {
+        const wdCluster = shorthand[1].toLowerCase();
+        const tenant = shorthand[2];
+        const site = shorthand[3];
+        const matched = findWorkdayDirMatch(tenant, site);
+        return buildWorkdayTarget(
+            matched ? matched.slug : tenant.toLowerCase(),
+            matched ? matched.companyName : humanizeTenantName(tenant),
+            matched ? matched.tenant : tenant,
+            wdCluster,
+            site,
+        );
+    }
+
+    if (/myworkday(?:jobs|site)\.com/i.test(trimmed)) {
+        const withScheme = /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+        let parsed;
+        try {
+            parsed = new URL(withScheme);
+        } catch {
+            return null;
+        }
+        const hostLower = parsed.hostname.toLowerCase();
+        const rawSegments = parsed.pathname.split('/').map((s) => s.trim()).filter(Boolean);
+
+        const wdJobsHost = hostLower.match(/^([a-z0-9-]+)\.(wd\d+)\.myworkdayjobs\.com$/);
+        if (wdJobsHost) {
+            let tenant = wdJobsHost[1];
+            const wdCluster = wdJobsHost[2];
+            let site;
+            if (rawSegments[0]?.toLowerCase() === 'wday' && rawSegments[1]?.toLowerCase() === 'cxs') {
+                tenant = rawSegments[2] || tenant;
+                site = rawSegments[3];
+            } else {
+                const segs = [...rawSegments];
+                if (segs.length >= 2 && WORKDAY_LOCALE_SEGMENT_RE.test(segs[0])) segs.shift();
+                site = segs[0];
+            }
+            if (!site) return null;
+            const matched = findWorkdayDirMatch(tenant, site);
+            return buildWorkdayTarget(
+                matched ? matched.slug : tenant.toLowerCase(),
+                matched ? matched.companyName : humanizeTenantName(tenant),
+                matched ? matched.tenant : tenant,
+                wdCluster,
+                site,
+            );
+        }
+
+        const wdSiteHost = hostLower.match(/^(wd\d+)\.myworkdaysite\.com$/);
+        if (wdSiteHost) {
+            const wdCluster = wdSiteHost[1];
+            const segs = [...rawSegments];
+            if (segs.length >= 3 && WORKDAY_LOCALE_SEGMENT_RE.test(segs[0])) segs.shift();
+            let tenant;
+            let site;
+            if (segs[0]?.toLowerCase() === 'wday' && segs[1]?.toLowerCase() === 'cxs') {
+                tenant = segs[2];
+                site = segs[3];
+            } else if (segs[0]?.toLowerCase() === 'recruiting') {
+                tenant = segs[1];
+                site = segs[2];
+            }
+            if (!tenant || !site) return null;
+            const matched = findWorkdayDirMatch(tenant, site);
+            return buildWorkdayTarget(
+                matched ? matched.slug : tenant.toLowerCase(),
+                matched ? matched.companyName : humanizeTenantName(tenant),
+                matched ? matched.tenant : tenant,
+                wdCluster,
+                site,
+                `https://${wdCluster}.myworkdaysite.com`,
+            );
+        }
+        return null;
+    }
+
+    if (/^https?:\/\//i.test(trimmed) || trimmed.includes('/')) return null;
+
+    const key = trimmed.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const canonical = WORKDAY_ALIASES[key] || key;
+    const entry = WORKDAY_ENTERPRISE_DIRECTORY[canonical];
+    if (!entry) return null;
+    return buildWorkdayTarget(canonical, entry[0], entry[1], entry[2], entry[3]);
+}
+
+async function fetchWorkdayEndpoint(url, { method = 'GET', body, timeoutMs = 10000 } = {}) {
+    const payload = body !== undefined ? Buffer.from(body, 'utf8') : null;
+    return new Promise((resolve) => {
+        let parsedUrl;
+        try {
+            parsedUrl = new URL(url);
+        } catch (err) {
+            resolve({ ok: false, status: 0, text: '', error: String(err) });
+            return;
+        }
+        const req = https.request(
+            {
+                protocol: parsedUrl.protocol,
+                hostname: parsedUrl.hostname,
+                port: parsedUrl.port || 443,
+                path: parsedUrl.pathname + parsedUrl.search,
+                method,
+                agent: SHARED_WORKDAY_AGENT,
+                timeout: timeoutMs,
+                headers: {
+                    Accept: 'application/json',
+                    'Accept-Encoding': 'gzip, deflate, br',
+                    'Accept-Language': 'en-US,en;q=0.9',
+                    'User-Agent':
+                        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+                    ...(payload
+                        ? { 'Content-Type': 'application/json', 'Content-Length': String(payload.length) }
+                        : {}),
+                },
+            },
+            (res) => {
+                const chunks = [];
+                res.on('data', (chunk) => chunks.push(chunk));
+                res.on('end', () => {
+                    const status = res.statusCode ?? 0;
+                    const location = typeof res.headers.location === 'string' ? res.headers.location : '';
+                    if ((status === 302 || status === 303) && /maintenance-page/i.test(location)) {
+                        resolve({ ok: false, status, text: '', isMaintenance: true });
+                        return;
+                    }
+                    const rawBuf = Buffer.concat(chunks);
+                    const enc = String(res.headers['content-encoding'] || '').toLowerCase();
+                    let text = '';
+                    try {
+                        if (enc === 'gzip') text = zlib.gunzipSync(rawBuf).toString('utf8');
+                        else if (enc === 'deflate') text = zlib.inflateSync(rawBuf).toString('utf8');
+                        else if (enc === 'br') text = zlib.brotliDecompressSync(rawBuf).toString('utf8');
+                        else text = rawBuf.toString('utf8');
+                    } catch {
+                        text = rawBuf.toString('utf8');
+                    }
+                    resolve({ ok: status >= 200 && status < 300, status, text });
+                });
+            },
+        );
+        req.on('timeout', () => req.destroy(new Error(`Timeout after ${timeoutMs}ms`)));
+        req.on('error', (err) => resolve({ ok: false, status: 0, text: '', error: String(err) }));
+        if (payload) req.write(payload);
+        req.end();
+    });
+}
+
+function parseWorkdayCompToken(raw = '') {
+    const cleaned = raw.trim().toLowerCase();
+    if (!cleaned) return null;
+    if (cleaned.endsWith('k')) {
+        const n = Number.parseFloat(cleaned.slice(0, -1).trim());
+        return Number.isFinite(n) ? Math.round(n * 1000) : null;
+    }
+    const n = Number.parseFloat(cleaned.replace(/,/g, ''));
+    return Number.isFinite(n) ? Math.round(n) : null;
+}
+
+function extractWorkdaySalarySummary(plainText = '') {
+    if (!plainText) return null;
+    const symToIso = { $: 'USD', '€': 'EUR', '£': 'GBP' };
+    const annualRe =
+        /(?:\b(USD|CAD|AUD|EUR|GBP|CHF)\s*)?([$€£])?\s*(\d{2,3}(?:,\d{3})+(?:\.\d{1,2})?|\d{2,3}(?:\.\d+)?\s*[kK])\s*\+?\s*(?:-|–|—|to)\s*(?:\b(?:USD|CAD|AUD|EUR|GBP|CHF)\s*)?[$€£]?\s*(\d{2,3}(?:,\d{3})+(?:\.\d{1,2})?|\d{2,3}(?:\.\d+)?\s*[kK])\s*\+?(?:\s*(USD|CAD|AUD|EUR|GBP|CHF))?/gi;
+    let m;
+    while ((m = annualRe.exec(plainText)) !== null) {
+        if (!m[1] && !m[2] && !m[5]) continue;
+        const min = parseWorkdayCompToken(m[3]);
+        const max = parseWorkdayCompToken(m[4]);
+        if (min === null || max === null || max < min || min < 22000 || max > 1500000) continue;
+        const prefix = plainText.slice(Math.max(0, m.index - 35), m.index).toLowerCase();
+        if (/\b(?:bonus|commission|incentive)\s+(?:of|range|is)\s*$/.test(prefix)) continue;
+        const ccy = (m[1] || m[5] || symToIso[m[2]] || 'USD').toUpperCase();
+        const sym = ccy === 'EUR' ? '€' : ccy === 'GBP' ? '£' : '$';
+        return `${ccy} ${sym}${min.toLocaleString('en-US')} - ${sym}${max.toLocaleString('en-US')} / yr`;
+    }
+    const hourlyRe =
+        /(?:\b(USD|CAD|AUD|EUR|GBP)\s*)?([$€£])\s*(\d{2,3}(?:\.\d{1,2})?)\s*(?:-|–|—|to)\s*(?:\b(?:USD|CAD|AUD|EUR|GBP)\s*)?[$€£]?\s*(\d{2,3}(?:\.\d{1,2})?)\s*(?:USD|CAD|AUD|EUR|GBP)?\s*(?:per\s+hour|\/\s*hr\b|\/\s*hour\b|an\s+hour|hourly)/i;
+    const hm = plainText.match(hourlyRe);
+    if (hm) {
+        const min = Number.parseFloat(hm[3]);
+        const max = Number.parseFloat(hm[4]);
+        if (Number.isFinite(min) && Number.isFinite(max) && max >= min && min >= 10 && max <= 400) {
+            const ccy = (hm[1] || symToIso[hm[2]] || 'USD').toUpperCase();
+            const sym = ccy === 'EUR' ? '€' : ccy === 'GBP' ? '£' : '$';
+            return `${ccy} ${sym}${min.toFixed(2)} - ${sym}${max.toFixed(2)} / hr`;
+        }
+    }
+    return null;
+}
+
 const SUPPORTED_PLATFORMS = new Set([
+    'workday',
     'greenhouse',
     'lever',
     'ashby',
@@ -180,6 +524,20 @@ export function detectAtsTarget(rawInput = '', explicitPlatform = '') {
         const prefix = colonMatch[1].toLowerCase();
         if (SUPPORTED_PLATFORMS.has(prefix)) {
             return detectAtsTarget(colonMatch[2].trim(), prefix);
+        }
+    }
+
+    if (/myworkday(?:jobs|site)\.com/i.test(trimmed) || /^wd\d+\/[a-zA-Z0-9_-]+\/[a-zA-Z0-9_-]+\/?$/i.test(trimmed)) {
+        const wd = resolveWorkdayBoardTarget(trimmed);
+        if (wd) {
+            const dirEntry = WORKDAY_ENTERPRISE_DIRECTORY[wd.companySlug];
+            const isCanonicalDir =
+                dirEntry &&
+                dirEntry[1].toLowerCase() === wd.tenant.toLowerCase() &&
+                dirEntry[2].toLowerCase() === wd.wdCluster.toLowerCase() &&
+                dirEntry[3].toLowerCase() === wd.site.toLowerCase() &&
+                !wd.origin.includes('.myworkdaysite.com');
+            return { platform: 'workday', target: isCanonicalDir ? wd.companySlug : wd.careerSiteUrl };
         }
     }
 
@@ -488,12 +846,69 @@ export async function scanSingleTarget(platform, target, maxJobs = 5) {
         });
     }
 
+    if (p === 'workday') {
+        const wd = resolveWorkdayBoardTarget(resolvedTarget) || resolveWorkdayBoardTarget(String(target || ''));
+        if (!wd) return [];
+        const listRes = await fetchWorkdayEndpoint(wd.cxsJobsUrl, {
+            method: 'POST',
+            body: JSON.stringify({ appliedFacets: {}, limit: Math.min(20, cap), offset: 0, searchText: '' }),
+        });
+        if (!listRes.ok) return [];
+        let parsed;
+        try {
+            parsed = JSON.parse(listRes.text);
+        } catch {
+            return [];
+        }
+        const postings = (parsed.jobPostings || []).filter((x) => x.externalPath || x.title).slice(0, cap);
+        if (!postings.length) return [];
+
+        const enriched = await Promise.all(
+            postings.map(async (item) => {
+                let info = {};
+                let orgName = '';
+                if (item.externalPath) {
+                    const detRes = await fetchWorkdayEndpoint(`${wd.cxsBaseUrl}${item.externalPath}`, { method: 'GET' });
+                    if (detRes.ok) {
+                        try {
+                            const detJson = JSON.parse(detRes.text);
+                            info = detJson.jobPostingInfo || {};
+                            orgName = String(detJson.hiringOrganization?.name || '').replace(/^\d+\s+/, '').trim();
+                        } catch {
+                            // keep listing fallback
+                        }
+                    }
+                }
+                const rawTitle = decodeEntities(info.title || item.title || 'Untitled Position').trim();
+                const title = /^XMLNAME--/i.test(rawTitle)
+                    ? rawTitle.replace(/^XMLNAME--/i, '').replace(/--/g, ' - ').replace(/-/g, ' ').replace(/\s+/g, ' ').trim()
+                    : rawTitle;
+                const desc = htmlToText(info.jobDescription || '');
+                const sal = extractWorkdaySalarySummary(desc);
+                const jobUrl = info.externalUrl || (item.externalPath ? `${wd.careerSiteUrl}${item.externalPath}` : wd.careerSiteUrl);
+                const companyName = WORKDAY_ENTERPRISE_DIRECTORY[wd.companySlug] ? wd.companyName : orgName || wd.companyName;
+                const job = {
+                    atsPlatform: 'workday',
+                    companyName,
+                    title,
+                    department: 'General',
+                    location: (info.location || item.locationsText || 'Global').trim(),
+                    jobUrl,
+                    descriptionText: desc.slice(0, 900),
+                };
+                return { ...job, intent: enrichIntent(job, sal) };
+            }),
+        );
+        return enriched;
+    }
+
     return [];
 }
 
 const CLOUD_CATALOG_CATEGORIES = {
     ats_hiring_intent: [
         'multi_ats',
+        'workday',
         'greenhouse',
         'lever',
         'ashby',
@@ -504,6 +919,7 @@ const CLOUD_CATALOG_CATEGORIES = {
         'recruitee',
         'pinpoint',
     ],
+    ad_spy_contact_enrichment: ['google_ads_transparency', 'website_contact_finder'],
     us_permits_contractors: ['us_permits', 'us_contractor_licenses'],
     us_fleet_govcon: ['us_fmcsa_trucking', 'us_federal_contracts'],
     us_healthcare_fda: ['us_npi_clinics', 'fda_510k'],
@@ -549,7 +965,18 @@ export async function detectCompanyAtsBoard(rawInput = '', probeLive = true) {
         return { input: cleaned, detected: false, candidateSlug: slug, boards: [] };
     }
 
-    const candidates = ['greenhouse', 'lever', 'ashby', 'workable', 'recruitee', 'pinpoint', 'personio', 'teamtailor', 'smartrecruiters'];
+    const candidates = [
+        'workday',
+        'greenhouse',
+        'lever',
+        'ashby',
+        'workable',
+        'recruitee',
+        'pinpoint',
+        'personio',
+        'teamtailor',
+        'smartrecruiters',
+    ];
     const checks = await Promise.all(
         candidates.map(async (plat) => {
             try {
@@ -698,23 +1125,36 @@ const TOOLS = [
     {
         name: 'scan_company_hiring_intent',
         description:
-            'Scan a single company career board across 9 ATS platforms (greenhouse, lever, ashby, personio, teamtailor, smartrecruiters, workable, recruitee, pinpoint) via career URL (`url`) or (`platform` + `target`) to extract open jobs, tech stack, disclosed salaries, and B2B buying intent scores.',
+            'Scan a single company career board across 10 ATS platforms (workday, greenhouse, lever, ashby, personio, teamtailor, smartrecruiters, workable, recruitee, pinpoint) via career URL (`url`) or (`platform` + `target`) to extract open jobs, tech stack, disclosed salaries, and B2B buying intent scores.',
         inputSchema: {
             type: 'object',
             properties: {
                 url: {
                     type: 'string',
                     description:
-                        'Full career board URL (auto-detects boards.greenhouse.io/*, job-boards.greenhouse.io/*, jobs.lever.co/*, jobs.ashbyhq.com/*, *.jobs.personio.de/*, *.teamtailor.com/*, careers.smartrecruiters.com/*, apply.workable.com/*, *.recruitee.com/*, *.pinpointhq.com/*).',
+                        'Full career board URL (auto-detects *.myworkdayjobs.com/*, *.myworkdaysite.com/*, boards.greenhouse.io/*, job-boards.greenhouse.io/*, jobs.lever.co/*, jobs.ashbyhq.com/*, *.jobs.personio.de/*, *.teamtailor.com/*, careers.smartrecruiters.com/*, apply.workable.com/*, *.recruitee.com/*, *.pinpointhq.com/*).',
                 },
                 platform: {
                     type: 'string',
-                    enum: ['auto', 'greenhouse', 'lever', 'ashby', 'personio', 'teamtailor', 'smartrecruiters', 'workable', 'recruitee', 'pinpoint'],
+                    enum: [
+                        'auto',
+                        'workday',
+                        'greenhouse',
+                        'lever',
+                        'ashby',
+                        'personio',
+                        'teamtailor',
+                        'smartrecruiters',
+                        'workable',
+                        'recruitee',
+                        'pinpoint',
+                    ],
                     description: 'ATS platform identifier (defaults to auto when url is passed).',
                 },
                 target: {
                     type: 'string',
-                    description: 'Company ATS board slug or career URL (e.g. figma, zoox, ramp, adsquare, puzzel, viva, channable, smartthings, Canva).',
+                    description:
+                        'Company ATS board slug or career URL (e.g. nvidia, salesforce, figma, zoox, ramp, adsquare, puzzel, viva, channable, smartthings, Canva).',
                 },
                 maxJobs: { type: 'number', default: 5, minimum: 1, maximum: 10, description: 'Maximum open roles to enrich (1-10).' },
             },
@@ -723,7 +1163,7 @@ const TOOLS = [
     {
         name: 'compare_companies_hiring_intent',
         description:
-            'Scan and rank up to 5 company career URLs or slugs in parallel across all 9 ATS platforms, returning prioritized Account Buying Dossiers with maxIntentScore, hotRoleCount, executive hires, aggregated tech stack, and disclosed salary bands.',
+            'Scan and rank up to 5 company career URLs or slugs in parallel across all 10 ATS platforms (including Workday Fortune 500 boards), returning prioritized Account Buying Dossiers with maxIntentScore, hotRoleCount, executive hires, aggregated tech stack, and disclosed salary bands.',
         inputSchema: {
             type: 'object',
             required: ['targets'],
@@ -733,7 +1173,8 @@ const TOOLS = [
                     items: { type: 'string' },
                     minItems: 1,
                     maxItems: 5,
-                    description: 'List of 1 to 5 career URLs, platform:slug strings (e.g. "greenhouse:figma", "ashby:ramp"), or company slugs.',
+                    description:
+                        'List of 1 to 5 career URLs, platform:slug strings (e.g. "workday:nvidia", "greenhouse:figma", "ashby:ramp"), or company slugs.',
                 },
                 maxJobsPerCompany: {
                     type: 'number',
@@ -748,14 +1189,15 @@ const TOOLS = [
     {
         name: 'detect_company_ats_board',
         description:
-            'Identify which of the 9 supported ATS platforms powers a career URL, or probe a company slug live across Greenhouse, Lever, Ashby, Workable, Recruitee, Pinpoint, Personio, Teamtailor, and SmartRecruiters to find active job boards and compensation availability.',
+            'Identify which of the 10 supported ATS platforms powers a career URL, or probe a company slug live across Workday (55+ Fortune 500 boards), Greenhouse, Lever, Ashby, Workable, Recruitee, Pinpoint, Personio, Teamtailor, and SmartRecruiters to find active job boards and compensation availability.',
         inputSchema: {
             type: 'object',
             required: ['input'],
             properties: {
                 input: {
                     type: 'string',
-                    description: 'Company career URL (e.g. https://boards.greenhouse.io/figma) or company slug (e.g. ramp, zoox, figma).',
+                    description:
+                        'Company career URL (e.g. https://nvidia.wd5.myworkdayjobs.com/NVIDIAExternalCareerSite, https://boards.greenhouse.io/figma) or company slug (e.g. nvidia, salesforce, ramp, zoox, figma).',
                 },
                 probeLive: {
                     type: 'boolean',
@@ -797,13 +1239,20 @@ const TOOLS = [
     {
         name: 'list_cloud_b2b_lead_apis',
         description:
-            'List our 16 hosted Cloud Pay-Per-Event B2B Lead & Hiring Intent APIs (9-ATS Unified API, dedicated ATS APIs, US Solar/Building Permits, Licensed Contractors, FMCSA Trucking Fleets, Federal Contract Awards, NPI Medical/Dental Clinics, FDA 510k MedTech) with streamable-http MCP URLs and REST invocation endpoints.',
+            'List all 19 hosted Cloud Pay-Per-Event B2B Lead, Ad Spy, Contact Enrichment & Hiring Intent APIs (10-ATS Unified API, Workday Fortune 500 Jobs & Salary API, Google Ads Transparency & Evergreen Ad Spy API, Website Contact/Work Email/DNS MX & 70+ Tech Stack API, dedicated ATS APIs, and US Permit/Contractor/FMCSA/GovCon/NPI/FDA 510k APIs) with streamable-http MCP URLs and REST invocation endpoints.',
         inputSchema: {
             type: 'object',
             properties: {
                 category: {
                     type: 'string',
-                    enum: ['all', 'ats_hiring_intent', 'us_permits_contractors', 'us_fleet_govcon', 'us_healthcare_fda'],
+                    enum: [
+                        'all',
+                        'ats_hiring_intent',
+                        'ad_spy_contact_enrichment',
+                        'us_permits_contractors',
+                        'us_fleet_govcon',
+                        'us_healthcare_fda',
+                    ],
                     default: 'all',
                     description: 'Optional vertical filter for Cloud PPE APIs.',
                 },
@@ -891,7 +1340,7 @@ async function handleRpc(msg) {
                 result: { content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] },
             };
         }
-        if (params?.name === 'compare_companies_hiring_intent') {
+        if (params?.name === 'compare_companies_hiring_intent' || params?.name === 'compare_companies_hiring_dossier') {
             const data = await compareCompaniesHiringIntent(args.targets || [], args.maxJobsPerCompany);
             return {
                 jsonrpc: '2.0',
@@ -933,17 +1382,17 @@ if (isMain) {
     if (argv.includes('--help') || argv.includes('-h')) {
         process.stdout.write(
             [
-                `${SERVER_INFO.name} v${SERVER_INFO.version} — Zero-Dependency 9-ATS Hiring Intent MCP Server & CLI`,
+                `${SERVER_INFO.name} v${SERVER_INFO.version} — Zero-Dependency 10-ATS Hiring Intent MCP Server & CLI`,
                 '',
                 'Usage:',
                 '  npx -y github:yan0lovesha/hiring-intent-mcp                                      # Start MCP stdio server (Claude Desktop, Cursor, VS Code)',
                 '  npx -y github:yan0lovesha/hiring-intent-mcp --cli --url <career_url> [--max 4]   # Scan any supported ATS career URL',
                 '  npx -y github:yan0lovesha/hiring-intent-mcp --cli --platform <ats> --target <id> # Scan explicit ATS slug',
                 '',
-                'Supported ATS Platforms (9):',
-                '  greenhouse, lever (US + EU), ashby, personio, teamtailor, smartrecruiters, workable, recruitee, pinpoint',
+                'Supported ATS Platforms (10):',
+                '  workday (55+ Fortune 500 + *.myworkdayjobs.com), greenhouse, lever (US + EU), ashby, personio, teamtailor, smartrecruiters, workable, recruitee, pinpoint',
                 '',
-                'Hosted Cloud Batch & Remote MCP Gateway (100-10,000+ targets + US Permit/NPI/FDA/FMCSA APIs):',
+                'Hosted Cloud Batch & Remote MCP Gateway (19 PPE APIs — 100-10,000+ targets + Google Ads Spy + Contact/Email Finder + US Leads):',
                 '  https://mcp.apify.com/?tools=yan0lovesha/multi-ats-jobs-hiring-intent',
                 '  https://apify.com/yan0lovesha',
                 '',

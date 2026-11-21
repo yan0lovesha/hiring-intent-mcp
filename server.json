@@ -1,9 +1,9 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.yan0lovesha/hiring-intent-mcp",
-  "title": "B2B Hiring Intent & 9-ATS Tech-Stack Signals MCP",
-  "description": "Extract B2B hiring intent, 125+ tech-stack tags & salary bands across 9 ATS & US lead APIs.",
-  "version": "1.3.0",
+  "title": "B2B Hiring Intent & 10-ATS Tech-Stack Signals MCP",
+  "description": "Extract B2B hiring intent, 125+ tech-stack tags & salary bands across 10 ATS & 19 B2B APIs.",
+  "version": "1.4.0",
   "websiteUrl": "https://apify.com/yan0lovesha",
   "repository": {
     "url": "https://github.com/yan0lovesha/hiring-intent-mcp",
