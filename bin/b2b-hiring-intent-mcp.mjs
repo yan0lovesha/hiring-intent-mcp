@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /**
- * b2b-hiring-intent-mcp v1.4.0 — Open-Core Zero-Dependency 10-ATS MCP Server & CLI
+ * b2b-hiring-intent-mcp v1.5.0 — Open-Core Zero-Dependency 10-ATS MCP Server & CLI
  *
  * Inspect, fingerprint, compare, and activate B2B hiring-intent signals across 10 ATS platforms
  * (Workday, Greenhouse, Lever, Ashby, Personio, Teamtailor, SmartRecruiters, Workable, Recruitee, Pinpoint)
  * locally over stdio MCP (`Claude Desktop`, `Cursor`, `VS Code Copilot`), or scale to 100–10,000+ targets
- * on schedule via our 19 hosted Cloud Pay-Per-Event APIs:
+ * on schedule via our 21 hosted Cloud Pay-Per-Event APIs:
  *   https://apify.com/yan0lovesha
  */
 
@@ -17,7 +17,7 @@ import zlib from 'node:zlib';
 
 const SERVER_INFO = {
     name: 'b2b-hiring-intent-mcp',
-    version: '1.4.0',
+    version: '1.5.0',
 };
 
 const CLOUD_ACTOR_MAP = {
@@ -33,7 +33,9 @@ const CLOUD_ACTOR_MAP = {
     recruitee: 'yan0lovesha~recruitee-jobs-hiring-intent',
     pinpoint: 'yan0lovesha~pinpoint-jobs-hiring-intent',
     google_ads_transparency: 'yan0lovesha~google-ads-transparency-scraper',
+    linkedin_ad_library: 'yan0lovesha~linkedin-ad-library-scraper',
     website_contact_finder: 'yan0lovesha~website-contact-email-finder',
+    apple_app_store: 'yan0lovesha~apple-app-store-scraper',
     us_permits: 'yan0lovesha~us-building-solar-permits-leads',
     us_contractor_licenses: 'yan0lovesha~us-contractor-licenses-leads',
     us_fmcsa_trucking: 'yan0lovesha~us-fmcsa-trucking-fleet-leads',
@@ -919,7 +921,12 @@ const CLOUD_CATALOG_CATEGORIES = {
         'recruitee',
         'pinpoint',
     ],
-    ad_spy_contact_enrichment: ['google_ads_transparency', 'website_contact_finder'],
+    ad_spy_contact_enrichment: [
+        'google_ads_transparency',
+        'linkedin_ad_library',
+        'website_contact_finder',
+        'apple_app_store',
+    ],
     us_permits_contractors: ['us_permits', 'us_contractor_licenses'],
     us_fleet_govcon: ['us_fmcsa_trucking', 'us_federal_contracts'],
     us_healthcare_fda: ['us_npi_clinics', 'fda_510k'],
@@ -1239,7 +1246,7 @@ const TOOLS = [
     {
         name: 'list_cloud_b2b_lead_apis',
         description:
-            'List all 19 hosted Cloud Pay-Per-Event B2B Lead, Ad Spy, Contact Enrichment & Hiring Intent APIs (10-ATS Unified API, Workday Fortune 500 Jobs & Salary API, Google Ads Transparency & Evergreen Ad Spy API, Website Contact/Work Email/DNS MX & 70+ Tech Stack API, dedicated ATS APIs, and US Permit/Contractor/FMCSA/GovCon/NPI/FDA 510k APIs) with streamable-http MCP URLs and REST invocation endpoints.',
+            'List all 21 hosted Cloud Pay-Per-Event B2B Lead, Ad Spy, App Store, Contact Enrichment & Hiring Intent APIs (10-ATS Unified API, Workday Fortune 500 Jobs & Salary API, LinkedIn Ad Library B2B Ads Spy API, Google Ads Transparency API, Apple App Store & iOS Reviews API, Website Contact/Work Email/DNS MX & 70+ Tech Stack API, dedicated ATS APIs, and US Permit/Contractor/FMCSA/GovCon/NPI/FDA 510k APIs) with streamable-http MCP URLs and REST invocation endpoints.',
         inputSchema: {
             type: 'object',
             properties: {
@@ -1392,7 +1399,7 @@ if (isMain) {
                 'Supported ATS Platforms (10):',
                 '  workday (55+ Fortune 500 + *.myworkdayjobs.com), greenhouse, lever (US + EU), ashby, personio, teamtailor, smartrecruiters, workable, recruitee, pinpoint',
                 '',
-                'Hosted Cloud Batch & Remote MCP Gateway (19 PPE APIs — 100-10,000+ targets + Google Ads Spy + Contact/Email Finder + US Leads):',
+                'Hosted Cloud Batch & Remote MCP Gateway (21 PPE APIs — 100-10,000+ targets + LinkedIn/Google Ads Spy + iOS App Store + Contact Finder + US Leads):',
                 '  https://mcp.apify.com/?tools=yan0lovesha/multi-ats-jobs-hiring-intent',
                 '  https://apify.com/yan0lovesha',
                 '',

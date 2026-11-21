@@ -30,7 +30,7 @@ assert.deepEqual(detectAtsTarget('https://bannerhealth.wd108.myworkdayjobs.com/e
 assert.deepEqual(detectAtsTarget('workday:nvidia'), { platform: 'workday', target: 'nvidia' });
 assert.equal(resolveWorkdayBoardTarget('nvidia')?.cxsJobsUrl, 'https://nvidia.wd5.myworkdayjobs.com/wday/cxs/nvidia/NVIDIAExternalCareerSite/jobs');
 
-console.log('[2/5] Testing Open-Core MCP stdio server (v1.4.0, 5 tools, 19 Cloud PPE APIs)...');
+console.log('[2/5] Testing Open-Core MCP stdio server (v1.5.0, 5 tools, 21 Cloud PPE APIs)...');
 const proc = spawn(process.execPath, [bin], { stdio: ['pipe', 'pipe', 'inherit'] });
 const replies = new Map();
 let buf = '';
@@ -59,7 +59,7 @@ const waitId = async (id) => {
 proc.stdin.write(JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'initialize', params: {} }) + '\n');
 const r1 = await waitId(1);
 assert.equal(r1.result.serverInfo.name, 'b2b-hiring-intent-mcp');
-assert.equal(r1.result.serverInfo.version, '1.4.0');
+assert.equal(r1.result.serverInfo.version, '1.5.0');
 
 proc.stdin.write(JSON.stringify({ jsonrpc: '2.0', id: 10, method: 'tools/list', params: {} }) + '\n');
 const rTools = await waitId(10);
@@ -68,12 +68,14 @@ assert.equal(rTools.result.tools.length, 5);
 proc.stdin.write(JSON.stringify({ jsonrpc: '2.0', id: 2, method: 'tools/call', params: { name: 'list_cloud_b2b_lead_apis', arguments: {} } }) + '\n');
 const r2 = await waitId(2);
 const catalog = JSON.parse(r2.result.content[0].text);
-assert.equal(Object.keys(catalog.actors).length, 19);
-assert.equal(Object.keys(catalog.endpoints).length, 19);
+assert.equal(Object.keys(catalog.actors).length, 21);
+assert.equal(Object.keys(catalog.endpoints).length, 21);
 assert.equal(catalog.actors.multi_ats, 'yan0lovesha~multi-ats-jobs-hiring-intent');
 assert.equal(catalog.actors.workday, 'yan0lovesha~workday-jobs-scraper');
 assert.equal(catalog.actors.google_ads_transparency, 'yan0lovesha~google-ads-transparency-scraper');
+assert.equal(catalog.actors.linkedin_ad_library, 'yan0lovesha~linkedin-ad-library-scraper');
 assert.equal(catalog.actors.website_contact_finder, 'yan0lovesha~website-contact-email-finder');
+assert.equal(catalog.actors.apple_app_store, 'yan0lovesha~apple-app-store-scraper');
 assert.equal(catalog.actors.us_contractor_licenses, 'yan0lovesha~us-contractor-licenses-leads');
 assert.equal(catalog.actors.greenhouse, 'yan0lovesha~greenhouse-jobs-hiring-intent');
 assert.equal(catalog.actors.lever, 'yan0lovesha~lever-jobs-hiring-intent');
@@ -90,7 +92,12 @@ proc.stdin.write(
 );
 const r21 = await waitId(21);
 const enrichCatalog = JSON.parse(r21.result.content[0].text);
-assert.deepEqual(Object.keys(enrichCatalog.endpoints).sort(), ['google_ads_transparency', 'website_contact_finder']);
+assert.deepEqual(Object.keys(enrichCatalog.endpoints).sort(), [
+    'apple_app_store',
+    'google_ads_transparency',
+    'linkedin_ad_library',
+    'website_contact_finder',
+]);
 
 proc.stdin.write(
     JSON.stringify({
@@ -152,7 +159,7 @@ console.log('[3/5] Testing --help, --version & CLI --url auto-detection on Green
 const helpOut = execFileSync(process.execPath, [bin, '--help'], { encoding: 'utf8' });
 assert.ok(helpOut.includes('npx -y github:yan0lovesha/hiring-intent-mcp') && helpOut.includes('mcp.apify.com') && helpOut.includes('workday'));
 const verOut = execFileSync(process.execPath, [bin, '--version'], { encoding: 'utf8' }).trim();
-assert.equal(verOut, '1.4.0');
+assert.equal(verOut, '1.5.0');
 const ghOut = JSON.parse(execFileSync(process.execPath, [bin, '--cli', '--url', 'https://boards.greenhouse.io/figma', '--max', '2'], { encoding: 'utf8' }));
 assert.ok(ghOut.length > 0 && ghOut[0].atsPlatform === 'greenhouse');
 console.log(`  -> Live Greenhouse URL scan OK: ${ghOut[0].companyName} | ${ghOut[0].title} | Comp=${ghOut[0].intent.disclosedSalary}`);
@@ -181,4 +188,4 @@ console.log('[5/5] Testing Open-Core CLI live Ashby scan (ramp)...');
 const out = JSON.parse(execFileSync(process.execPath, [bin, '--cli', '--platform', 'ashby', '--target', 'ramp', '--max', '2'], { encoding: 'utf8' }));
 assert.ok(out.length > 0);
 console.log(`  -> Live Ashby scan OK: ${out[0].companyName} | ${out[0].title} | Comp=${out[0].intent.disclosedSalary}`);
-console.log('OPEN-CORE REPO v1.4.0 SMOKE TESTS PASSED!');
+console.log('OPEN-CORE REPO v1.5.0 SMOKE TESTS PASSED!');
