@@ -1,13 +1,8 @@
-name: Publish to Official MCP Registry
+name: Publish to Official MCP Registry (manual fallback)
 
+# Tagged releases publish to npm and the registry in order via release.yml.
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - 'server.json'
-      - '.github/workflows/publish-mcp-registry.yml'
 
 jobs:
   publish:
