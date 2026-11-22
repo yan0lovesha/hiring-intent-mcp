@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * b2b-hiring-intent-mcp v1.6.1 — Open-Core Zero-Dependency 10-ATS MCP Server & CLI
+ * b2b-hiring-intent-mcp v1.6.2 — Open-Core Zero-Dependency 10-ATS MCP Server & CLI
  *
  * Inspect, fingerprint, compare, and activate B2B hiring-intent signals across 10 ATS platforms
  * (Workday, Greenhouse, Lever, Ashby, Personio, Teamtailor, SmartRecruiters, Workable, Recruitee, Pinpoint)
@@ -17,7 +17,7 @@ import zlib from 'node:zlib';
 
 const SERVER_INFO = {
     name: 'b2b-hiring-intent-mcp',
-    version: '1.6.1',
+    version: '1.6.2',
 };
 
 const CLOUD_ACTOR_MAP = {

@@ -1,6 +1,6 @@
 {
   "name": "b2b-hiring-intent-mcp",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "mcpName": "io.github.yan0lovesha/hiring-intent-mcp",
   "type": "module",
   "description": "Zero-dependency Open-Core MCP Server & CLI for B2B Hiring Intent, 125+ Tech-Stack Signals, Disclosed Salaries & B2B Enrichment across 10 Global ATS platforms (Workday, Greenhouse, Lever, Ashby, Personio, Teamtailor, SmartRecruiters, Workable, Recruitee, Pinpoint) + 18 Cloud PPE APIs.",

@@ -117,7 +117,7 @@ assert.ok(
 );
 assert.ok(cleanClauseSeq.touches[0].body.includes('opened an AI Infrastructure Lead role'));
 
-console.log('[3/6] Testing Open-Core MCP stdio server (v1.6.1, 5 annotated tools, 18 Cloud PPE APIs, malformed JSON resilience)...');
+console.log('[3/6] Testing Open-Core MCP stdio server (v1.6.2, 5 annotated tools, 18 Cloud PPE APIs, malformed JSON resilience)...');
 const proc = spawn(process.execPath, [bin], { stdio: ['pipe', 'pipe', 'inherit'] });
 const replies = new Map();
 const parseErrors = [];
@@ -155,7 +155,7 @@ proc.stdin.write('completely_non_json_garbage_line\n');
 proc.stdin.write(JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'initialize', params: {} }) + '\n');
 const r1 = await waitId(1);
 assert.equal(r1.result.serverInfo.name, 'b2b-hiring-intent-mcp');
-assert.equal(r1.result.serverInfo.version, '1.6.1');
+assert.equal(r1.result.serverInfo.version, '1.6.2');
 assert.equal(parseErrors.length, 2, 'Expected 2 JSON-RPC -32700 Parse error responses without crashing');
 assert.equal(parseErrors[0].error.code, -32700);
 
@@ -285,7 +285,7 @@ console.log('[4/6] Testing --help, --version & CLI --url full-JD enrichment on G
 const helpOut = execFileSync(process.execPath, [bin, '--help'], { encoding: 'utf8' });
 assert.ok(helpOut.includes('npx -y github:yan0lovesha/hiring-intent-mcp') && helpOut.includes('18 PPE APIs') && helpOut.includes('workday'));
 const verOut = execFileSync(process.execPath, [bin, '--version'], { encoding: 'utf8' }).trim();
-assert.equal(verOut, '1.6.1');
+assert.equal(verOut, '1.6.2');
 const ghOut = JSON.parse(execFileSync(process.execPath, [bin, '--cli', '--url', 'https://boards.greenhouse.io/figma', '--max', '5'], { encoding: 'utf8' }));
 assert.ok(ghOut.length > 0 && ghOut[0].atsPlatform === 'greenhouse');
 assert.ok(ghOut.some((j) => j.intent.techStackAll.length > 0), 'Expected non-empty techStack on full-JD Figma Greenhouse scan');
@@ -322,4 +322,4 @@ const out = JSON.parse(execFileSync(process.execPath, [bin, '--cli', '--platform
 assert.ok(out.length > 0);
 assert.ok(out.some((j) => j.intent.techStackAll.length > 0), 'Expected non-empty techStack on full-JD Ramp Ashby scan');
 console.log(`  -> Live Ashby scan OK: ${out[0].companyName} | ${out[0].title} | Comp=${out[0].intent.disclosedSalary}`);
-console.log('OPEN-CORE REPO v1.6.1 SMOKE TESTS PASSED!');
+console.log('OPEN-CORE REPO v1.6.2 SMOKE TESTS PASSED!');

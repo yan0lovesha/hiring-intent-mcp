@@ -3,12 +3,23 @@
   "name": "io.github.yan0lovesha/hiring-intent-mcp",
   "title": "B2B Hiring Intent & 10-ATS Tech-Stack Signals MCP",
   "description": "Extract B2B hiring intent, 125+ tech-stack tags & salary bands across 10 ATS & 18 B2B APIs.",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "websiteUrl": "https://apify.com/yan0lovesha",
   "repository": {
     "url": "https://github.com/yan0lovesha/hiring-intent-mcp",
     "source": "github"
   },
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "b2b-hiring-intent-mcp",
+      "version": "1.6.2",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ],
   "remotes": [
     {
       "type": "streamable-http",

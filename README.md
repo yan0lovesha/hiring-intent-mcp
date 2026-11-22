@@ -8,7 +8,7 @@
 [![Node >= 20](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen.svg)](./package.json)
 [![Zero Dependencies](https://img.shields.io/badge/dependencies-0-blue.svg)](./package.json)
 
-> **Zero-dependency Model Context Protocol (MCP) Server & CLI (`v1.6.1`)** for real-time **10-ATS career board probing** (**Workday**, **Greenhouse**, **Lever**, **Ashby**, **Personio**, **Teamtailor**, **SmartRecruiters**, **Workable**, **Recruitee**, **Pinpoint**), **multi-account buying dossiers**, **125+ B2B tech-stack footprints**, **disclosed USD/EUR salary & equity bands**, and **signal-driven outbound sequences** — backed by **18 production Cloud Pay-Per-Event APIs** (`https://mcp.apify.com/?tools=yan0lovesha/multi-ats-jobs-hiring-intent`) and **Agensi AI Agent Outbound Skills** for Clay, n8n, Make, and autonomous AI Agents.
+> **Zero-dependency Model Context Protocol (MCP) Server & CLI (`v1.6.2`)** for real-time **10-ATS career board probing** (**Workday**, **Greenhouse**, **Lever**, **Ashby**, **Personio**, **Teamtailor**, **SmartRecruiters**, **Workable**, **Recruitee**, **Pinpoint**), **multi-account buying dossiers**, **125+ B2B tech-stack footprints**, **disclosed USD/EUR salary & equity bands**, and **signal-driven outbound sequences** — backed by **18 production Cloud Pay-Per-Event APIs** (`https://mcp.apify.com/?tools=yan0lovesha/multi-ats-jobs-hiring-intent`) and **Agensi AI Agent Outbound Skills** for Clay, n8n, Make, and autonomous AI Agents.
 
 ---
 
@@ -143,7 +143,7 @@ Using **Claude Code, Cursor, GitHub Copilot, Codex CLI, Windsurf, or OpenClaw**?
    npx skills add yan0lovesha/hiring-intent-mcp
    ```
 2. **Pro Outbound Execution Engine & Turnkey Automation Kits:**
-   - **[Hiring-Intent Cold Email Autopilot Kit ($29 One-Time on Polar)](https://buy.polar.sh/polar_cl_0QfhhrBCOodgewSKM54hZocWIncYifIlj59fg1UOqXV)** — Complete downloadable `v2.0.0` bundle: n8n Cloud/2.x **`n8n` outbound workflow JSONs** (Instantly v2, Smartlead, HubSpot v3 + Domain Contact & Hunter waterfall), **Clay.com 10-ATS 70% credit-saver HTTP API recipe**, zero-dependency **10-ATS local MCP server (`v1.6.1`)**, 150+ real hiring-intent leads CSV/JSON, and standalone interactive Signal Radar dashboard.
+   - **[Hiring-Intent Cold Email Autopilot Kit ($29 One-Time on Polar)](https://buy.polar.sh/polar_cl_0QfhhrBCOodgewSKM54hZocWIncYifIlj59fg1UOqXV)** — Complete downloadable `v2.0.0` bundle: n8n Cloud/2.x **`n8n` outbound workflow JSONs** (Instantly v2, Smartlead, HubSpot v3 + Domain Contact & Hunter waterfall), **Clay.com 10-ATS 70% credit-saver HTTP API recipe**, zero-dependency **10-ATS local MCP server (`v1.6.2`)**, 150+ real hiring-intent leads CSV/JSON, and standalone interactive Signal Radar dashboard.
    - **[B2B Signal-to-Cold-Email Autopilot Pro ($15 Skill on Agensi)](https://www.agensi.io/skills/b2b-signal-to-cold-email-autopilot-pro-clay-n8n)** — Converts raw 10-ATS, FMCSA, GovCon, NPI clinic, and FDA 510(k) signals into **CFO / VP Eng / RevOps 3-touch plain-text sequences** (verified by a deterministic `<=75w` anti-AI-slop linter), **Clay `intentScore >= 60` 70% credit-saver + contact waterfall formulas**, and **import-ready `n8n` workflow JSON**.
 
 ---
