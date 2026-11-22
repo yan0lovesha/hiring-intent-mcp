@@ -18,6 +18,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Require every npm package listed in server.json to be live
+        run: |
+          set -euo pipefail
+          node -e '
+            const srv = require("./server.json");
+            for (const p of srv.packages || []) {
+              if (p.registryType === "npm") console.log(`${p.identifier}@${p.version}`);
+            }
+          ' > npm-specs.txt
+          while read -r spec; do
+            [ -z "$spec" ] && continue
+            npm view "$spec" version >/dev/null 2>&1 || { echo "::error::$spec is not live on npm yet (approve the staged version first)"; exit 1; }
+          done < npm-specs.txt
+
       - name: Install cosign
         uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
 

@@ -52,18 +52,31 @@ jobs:
         run: npm test
 
       - name: Publish to npm via trusted publishing (OIDC, no stored token)
+        id: npm
         run: |
           set -euo pipefail
           if npm view "b2b-hiring-intent-mcp@${PKG_VERSION}" version >/dev/null 2>&1; then
-            echo "b2b-hiring-intent-mcp@${PKG_VERSION} already on npm; skipping npm publish"
+            echo "b2b-hiring-intent-mcp@${PKG_VERSION} already live on npm"
+            echo "mode=live" >> "$GITHUB_OUTPUT"
+          elif npm publish --access public; then
+            echo "mode=live" >> "$GITHUB_OUTPUT"
           else
-            npm publish --access public
+            echo "::warning::Direct npm publish was refused; falling back to npm stage publish (needs maintainer 2FA approval on npmjs.com)."
+            npm stage publish --access public
+            echo "mode=staged" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Await maintainer approval of the staged npm version
+        if: steps.npm.outputs.mode == 'staged'
+        run: |
+          echo "::notice::b2b-hiring-intent-mcp@${PKG_VERSION} is staged. Approve it at npmjs.com (Staged Packages), then run the 'Publish to Official MCP Registry (manual fallback)' workflow."
+
       - name: Install cosign
+        if: steps.npm.outputs.mode == 'live'
         uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
 
       - name: Download and verify mcp-publisher
+        if: steps.npm.outputs.mode == 'live'
         run: |
           set -euo pipefail
           os="$(uname -s | tr '[:upper:]' '[:lower:]')"
@@ -83,9 +96,11 @@ jobs:
           rm -f "$archive" "$archive.sigstore.json"
 
       - name: Validate server.json
+        if: steps.npm.outputs.mode == 'live'
         run: ./mcp-publisher validate
 
       - name: Publish server to Official MCP Registry
+        if: steps.npm.outputs.mode == 'live'
         run: |
           ./mcp-publisher login github-oidc
           ./mcp-publisher publish

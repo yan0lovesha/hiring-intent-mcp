@@ -13,7 +13,7 @@
     "url": "https://github.com/yan0lovesha/hiring-intent-mcp/issues"
   },
   "bin": {
-    "b2b-hiring-intent-mcp": "./bin/b2b-hiring-intent-mcp.mjs"
+    "b2b-hiring-intent-mcp": "bin/b2b-hiring-intent-mcp.mjs"
   },
   "files": [
     "bin/",
