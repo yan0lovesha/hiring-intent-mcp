@@ -368,11 +368,6 @@ CLOUD_PPE_CATALOG = [
         "useCase": "Verified work emails, Cloudflare decoding, live DNS MX/SPF mail stack & 70+ web technologies per domain",
     },
     {
-        "slug": "linkedin-ad-library-scraper",
-        "url": f"{APIFY_PUBLISHER_URL}/linkedin-ad-library-scraper",
-        "useCase": "B2B LinkedIn Ad Library sponsored creatives, CTAs, landing URLs, utm_campaign & EU impressions",
-    },
-    {
         "slug": "google-ads-transparency-scraper",
         "url": f"{APIFY_PUBLISHER_URL}/google-ads-transparency-scraper",
         "useCase": "Google Ads Transparency Center advertiser IDs, active creatives, evergreen velocity & YouTube/copy assets",
@@ -1187,7 +1182,7 @@ def main() -> int:
             "hostedMcpServerUrl": APIFY_HOSTED_MCP_URL,
             "whenToUseCloudPpe": [
                 "Batch scanning 10 to 10,000+ company career boards (including Fortune 500 Workday CXS) in Clay, n8n, Make, or CRM workflows",
-                "Domain contact email & DNS MX enrichment plus LinkedIn Ad Library, Google Ads Transparency, and iOS App Store intelligence",
+                "Domain contact email & DNS MX enrichment plus Google Ads Transparency and iOS App Store intelligence",
                 "High-ticket US federal registries: FMCSA Trucking Fleets, USAspending Federal Contract Awards, NPI Medical/Dental Clinics, FDA 510(k) Cleared Device Manufacturers",
             ],
             "companionProSkill": "https://www.agensi.io/skills/b2b-signal-to-cold-email-autopilot-pro-clay-n8n (B2B Signal-to-Cold-Email Autopilot Pro — turns signals into 3-touch multi-persona outbound sequences, Clay credit-saver formulas & n8n JSON)",
@@ -1206,7 +1201,7 @@ def main() -> int:
         batch_warning = (
             f"Interactive local scan capped to first 9 of {len(raw_targets)} targets to avoid rate limits. "
             f"For 10-10,000+ batch pipelines, Workday Fortune 500 boards, domain contact enrichment, or US FMCSA/GovCon/NPI/FDA leads, "
-            f"use the 19 Cloud Pay-Per-Event + Hosted MCP APIs at {APIFY_PUBLISHER_URL} (--cloud-catalog)."
+            f"use the 18 Cloud Pay-Per-Event + Hosted MCP APIs at {APIFY_PUBLISHER_URL} (--cloud-catalog)."
         )
         raw_targets = raw_targets[:9]
 

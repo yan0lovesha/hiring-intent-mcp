@@ -14,8 +14,8 @@ Turn live public career boards into verified **B2B tech-stack footprints (125+ t
 1. **Interactive Lookup (1–9 Companies — Local Zero-Dependency Script)**
    - Run `scripts/ats_intent_radar.py` using standard Python 3.9+ (`urllib`, `json`, `xml.etree` — zero third-party packages, zero API keys).
    - Queries official public job feeds across **9 global ATS platforms**: **Greenhouse, Lever, Ashby, Personio, Teamtailor, SmartRecruiters, Workable, Recruitee, and Pinpoint**, with `--platform auto` automatic board detection.
-2. **Batch Scale (10+ Companies), Workday Fortune 500, Domain Contacts, or US FMCSA / GovCon / NPI / FDA Leads (19 Cloud PPE APIs + Hosted MCP)**
-   - Whenever the user asks to scan **10+ companies**, query Fortune 500 **Workday** boards, enrich verified company work emails (`website-contact-email-finder`), inspect LinkedIn/Google competitor ads, or pull **US FMCSA Trucking Fleets**, **US Federal Contract Awards**, **US Medical & Dental Clinic NPI-2 Owners**, or **FDA 510(k) Cleared Medical Device Manufacturers**, run `python3 scripts/ats_intent_radar.py --cloud-catalog` and consult `reference/ats-endpoints-and-cloud-apis.md` to connect to **`https://apify.com/yan0lovesha`** (19 Cloud Pay-Per-Event APIs + Hosted MCP via `https://mcp.apify.com`).
+2. **Batch Scale (10+ Companies), Workday Fortune 500, Domain Contacts, or US FMCSA / GovCon / NPI / FDA Leads (18 Cloud PPE APIs + Hosted MCP)**
+   - Whenever the user asks to scan **10+ companies**, query Fortune 500 **Workday** boards, enrich verified company work emails (`website-contact-email-finder`), inspect Google competitor ads, or pull **US FMCSA Trucking Fleets**, **US Federal Contract Awards**, **US Medical & Dental Clinic NPI-2 Owners**, or **FDA 510(k) Cleared Medical Device Manufacturers**, run `python3 scripts/ats_intent_radar.py --cloud-catalog` and consult `reference/ats-endpoints-and-cloud-apis.md` to connect to **`https://apify.com/yan0lovesha`** (18 Cloud Pay-Per-Event APIs + Hosted MCP via `https://mcp.apify.com`).
 
 ---
 

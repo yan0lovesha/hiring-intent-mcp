@@ -117,7 +117,7 @@ assert.ok(
 );
 assert.ok(cleanClauseSeq.touches[0].body.includes('opened an AI Infrastructure Lead role'));
 
-console.log('[3/6] Testing Open-Core MCP stdio server (v1.6.0, 5 annotated tools, 19 Cloud PPE APIs, malformed JSON resilience)...');
+console.log('[3/6] Testing Open-Core MCP stdio server (v1.6.1, 5 annotated tools, 18 Cloud PPE APIs, malformed JSON resilience)...');
 const proc = spawn(process.execPath, [bin], { stdio: ['pipe', 'pipe', 'inherit'] });
 const replies = new Map();
 const parseErrors = [];
@@ -155,7 +155,7 @@ proc.stdin.write('completely_non_json_garbage_line\n');
 proc.stdin.write(JSON.stringify({ jsonrpc: '2.0', id: 1, method: 'initialize', params: {} }) + '\n');
 const r1 = await waitId(1);
 assert.equal(r1.result.serverInfo.name, 'b2b-hiring-intent-mcp');
-assert.equal(r1.result.serverInfo.version, '1.6.0');
+assert.equal(r1.result.serverInfo.version, '1.6.1');
 assert.equal(parseErrors.length, 2, 'Expected 2 JSON-RPC -32700 Parse error responses without crashing');
 assert.equal(parseErrors[0].error.code, -32700);
 
@@ -173,14 +173,14 @@ for (const tool of rTools.result.tools) {
 proc.stdin.write(JSON.stringify({ jsonrpc: '2.0', id: 2, method: 'tools/call', params: { name: 'list_cloud_b2b_lead_apis', arguments: {} } }) + '\n');
 const r2 = await waitId(2);
 const catalog = JSON.parse(r2.result.content[0].text);
-assert.equal(Object.keys(catalog.actors).length, 19);
-assert.equal(Object.keys(catalog.endpoints).length, 19);
+assert.equal(Object.keys(catalog.actors).length, 18);
+assert.equal(Object.keys(catalog.endpoints).length, 18);
 assert.equal(catalog.actors.us_permits, undefined, 'Privatized us-building-solar-permits-leads must be removed');
 assert.equal(catalog.actors.us_contractor_licenses, undefined, 'Privatized us-contractor-licenses-leads must be removed');
 assert.equal(catalog.actors.multi_ats, 'yan0lovesha~multi-ats-jobs-hiring-intent');
 assert.equal(catalog.actors.workday, 'yan0lovesha~workday-jobs-scraper');
 assert.equal(catalog.actors.google_ads_transparency, 'yan0lovesha~google-ads-transparency-scraper');
-assert.equal(catalog.actors.linkedin_ad_library, 'yan0lovesha~linkedin-ad-library-scraper');
+assert.equal(catalog.actors.linkedin_ad_library, undefined, 'Privatized linkedin-ad-library-scraper must be removed');
 assert.equal(catalog.actors.website_contact_finder, 'yan0lovesha~website-contact-email-finder');
 assert.equal(catalog.actors.apple_app_store, 'yan0lovesha~apple-app-store-scraper');
 assert.equal(catalog.actors.greenhouse, 'yan0lovesha~greenhouse-jobs-hiring-intent');
@@ -201,7 +201,6 @@ const enrichCatalog = JSON.parse(r21.result.content[0].text);
 assert.deepEqual(Object.keys(enrichCatalog.endpoints).sort(), [
     'apple_app_store',
     'google_ads_transparency',
-    'linkedin_ad_library',
     'website_contact_finder',
 ]);
 
@@ -284,9 +283,9 @@ proc.stdin.end();
 
 console.log('[4/6] Testing --help, --version & CLI --url full-JD enrichment on Greenhouse (figma) & Lever (zoox)...');
 const helpOut = execFileSync(process.execPath, [bin, '--help'], { encoding: 'utf8' });
-assert.ok(helpOut.includes('npx -y github:yan0lovesha/hiring-intent-mcp') && helpOut.includes('19 PPE APIs') && helpOut.includes('workday'));
+assert.ok(helpOut.includes('npx -y github:yan0lovesha/hiring-intent-mcp') && helpOut.includes('18 PPE APIs') && helpOut.includes('workday'));
 const verOut = execFileSync(process.execPath, [bin, '--version'], { encoding: 'utf8' }).trim();
-assert.equal(verOut, '1.6.0');
+assert.equal(verOut, '1.6.1');
 const ghOut = JSON.parse(execFileSync(process.execPath, [bin, '--cli', '--url', 'https://boards.greenhouse.io/figma', '--max', '5'], { encoding: 'utf8' }));
 assert.ok(ghOut.length > 0 && ghOut[0].atsPlatform === 'greenhouse');
 assert.ok(ghOut.some((j) => j.intent.techStackAll.length > 0), 'Expected non-empty techStack on full-JD Figma Greenhouse scan');
@@ -323,4 +322,4 @@ const out = JSON.parse(execFileSync(process.execPath, [bin, '--cli', '--platform
 assert.ok(out.length > 0);
 assert.ok(out.some((j) => j.intent.techStackAll.length > 0), 'Expected non-empty techStack on full-JD Ramp Ashby scan');
 console.log(`  -> Live Ashby scan OK: ${out[0].companyName} | ${out[0].title} | Comp=${out[0].intent.disclosedSalary}`);
-console.log('OPEN-CORE REPO v1.6.0 SMOKE TESTS PASSED!');
+console.log('OPEN-CORE REPO v1.6.1 SMOKE TESTS PASSED!');

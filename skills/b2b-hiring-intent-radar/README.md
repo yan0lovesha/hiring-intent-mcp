@@ -16,7 +16,7 @@ Ask your agent *"Analyze Ramp, Cloudflare, and adsquare's tech stack and hiring 
   Parses structured compensation JSON (`Ashby`, `Greenhouse`, `Lever`, `Pinpoint`) plus inline USD/EUR/GBP pay-transparency bands.
 - **Deterministic `0–100` Intent Score & Economic Buyer Routing:**
   Flags `NEW_LEADERSHIP_DECISION_MAKER`, `TECH_MIGRATION_MODERNIZATION`, `AI_TRANSFORMATION_INITIATIVE`, `SECURITY_COMPLIANCE_MANDATE`, `BUDGET_HYPERGROWTH`, and `REVOPS_GTM_SCALE`.
-- **Seamless Cloud Scale (`10+` Accounts, Workday Fortune 500 & 19 Cloud PPE APIs):**
+- **Seamless Cloud Scale (`10+` Accounts, Workday Fortune 500 & 18 Cloud PPE APIs):**
   Built-in offline catalog (`--cloud-catalog`) and Hosted MCP recipes for **[Apify Store (@yan0lovesha)](https://apify.com/yan0lovesha)** covering 100–10,000+ account scheduled scans (including flagship 10-ATS unified `multi-ats-jobs-hiring-intent` and `workday-jobs-scraper`), Website Contact & Work Email Finder, LinkedIn & Google Ads Spy, Apple App Store Reviews, plus US FMCSA Trucking Fleets, Federal Contract Awards, NPI Medical/Dental Clinics, and FDA 510(k) Medical Device leads.
 
 ---
