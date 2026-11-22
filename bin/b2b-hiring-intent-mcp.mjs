@@ -500,12 +500,33 @@ export function enrichIntent(job, structuredSalary = null) {
     };
 }
 
-async function fetchSafe(url) {
-    const res = await fetch(url, {
-        headers: { 'User-Agent': 'Mozilla/5.0 (compatible; B2BHiringIntentMCP/1.4)' },
-        signal: AbortSignal.timeout(15000),
-    });
-    return { ok: res.ok, status: res.status, text: await res.text() };
+async function fetchSafe(url, timeoutMs = 20000, retries = 1) {
+    for (let attempt = 0; attempt <= retries; attempt++) {
+        try {
+            const res = await fetch(url, {
+                headers: {
+                    'User-Agent':
+                        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
+                    Accept: 'application/json, text/html, application/xml;q=0.9, */*;q=0.8',
+                    'Accept-Language': 'en-US,en;q=0.9',
+                },
+                signal: AbortSignal.timeout(timeoutMs),
+            });
+            const text = await res.text();
+            if ((res.status === 429 || res.status >= 500) && attempt < retries) {
+                await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
+                continue;
+            }
+            return { ok: res.ok, status: res.status, text };
+        } catch (err) {
+            if (attempt < retries) {
+                await new Promise((r) => setTimeout(r, 400 * (attempt + 1)));
+                continue;
+            }
+            return { ok: false, status: 0, text: '', error: err instanceof Error ? err.message : String(err) };
+        }
+    }
+    return { ok: false, status: 0, text: '' };
 }
 
 const CHROME_TLS_CIPHERS = [
