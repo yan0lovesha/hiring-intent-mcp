@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /**
- * b2b-hiring-intent-mcp v1.5.0 — Open-Core Zero-Dependency 10-ATS MCP Server & CLI
+ * b2b-hiring-intent-mcp v1.6.0 — Open-Core Zero-Dependency 10-ATS MCP Server & CLI
  *
  * Inspect, fingerprint, compare, and activate B2B hiring-intent signals across 10 ATS platforms
  * (Workday, Greenhouse, Lever, Ashby, Personio, Teamtailor, SmartRecruiters, Workable, Recruitee, Pinpoint)
  * locally over stdio MCP (`Claude Desktop`, `Cursor`, `VS Code Copilot`), or scale to 100–10,000+ targets
- * on schedule via our 21 hosted Cloud Pay-Per-Event APIs:
+ * on schedule via our 19 hosted Cloud Pay-Per-Event APIs:
  *   https://apify.com/yan0lovesha
  */
 
@@ -17,7 +17,7 @@ import zlib from 'node:zlib';
 
 const SERVER_INFO = {
     name: 'b2b-hiring-intent-mcp',
-    version: '1.5.0',
+    version: '1.6.0',
 };
 
 const CLOUD_ACTOR_MAP = {
@@ -36,55 +36,359 @@ const CLOUD_ACTOR_MAP = {
     linkedin_ad_library: 'yan0lovesha~linkedin-ad-library-scraper',
     website_contact_finder: 'yan0lovesha~website-contact-email-finder',
     apple_app_store: 'yan0lovesha~apple-app-store-scraper',
-    us_permits: 'yan0lovesha~us-building-solar-permits-leads',
-    us_contractor_licenses: 'yan0lovesha~us-contractor-licenses-leads',
     us_fmcsa_trucking: 'yan0lovesha~us-fmcsa-trucking-fleet-leads',
     us_federal_contracts: 'yan0lovesha~us-federal-contracts-awards-leads',
     us_npi_clinics: 'yan0lovesha~us-npi-medical-dental-clinics-leads',
     fda_510k: 'yan0lovesha~fda-510k-medical-device-leads',
 };
 
-const TECH_PATTERNS = [
-    ['Salesforce', 'crm_sales', /\bsalesforce\b|\bsfdc\b/i],
-    ['HubSpot', 'crm_sales', /\bhubspot\b/i],
-    ['Gong', 'crm_sales', /\bgong\.io\b|\bgong\s+(?:revenue|intelligence)/i],
-    ['AWS', 'cloud_infra', /\baws\b|\bamazon\s+web\s+services\b/i],
-    ['Microsoft Azure', 'cloud_infra', /\bazure\b/i],
-    ['Google Cloud (GCP)', 'cloud_infra', /\bgcp\b|\bgoogle\s+cloud\b/i],
-    ['Kubernetes', 'cloud_infra', /\bkubernetes\b|\bk8s\b/i],
-    ['Docker', 'cloud_infra', /\bdocker\b/i],
-    ['Terraform', 'cloud_infra', /\bterraform\b/i],
-    ['Datadog', 'cloud_infra', /\bdatadog\b/i],
-    ['Snowflake', 'data_analytics', /\bsnowflake\b/i],
-    ['Databricks', 'data_analytics', /\bdatabricks\b/i],
-    ['BigQuery', 'data_analytics', /\bbigquery\b/i],
-    ['dbt', 'data_analytics', /\bdbt\b/i],
-    ['Apache Airflow', 'data_analytics', /\bairflow\b/i],
-    ['Apache Kafka', 'data_analytics', /\bkafka\b/i],
-    ['PostgreSQL', 'data_analytics', /\bpostgresql\b|\bpostgres\b/i],
-    ['OpenAI / GPT', 'ai_llm', /\bopenai\b|\bgpt-4[o]?\b|\bgpt-5\b/i],
-    ['Anthropic / Claude', 'ai_llm', /\banthropic\b|\bclaude\s+(?:3|4|sonnet|opus)/i],
-    ['LangChain / LangGraph', 'ai_llm', /\blangchain\b|\blanggraph\b/i],
-    ['PyTorch', 'ai_llm', /\bpytorch\b/i],
-    ['TypeScript', 'devtools_engineering', /\btypescript\b/i],
-    ['Python', 'devtools_engineering', /\bpython\b/i],
-    ['Go (Golang)', 'devtools_engineering', /\bgolang\b/i],
-    ['Rust', 'devtools_engineering', /\brust\b(?!\s*(?:free|proof))/i],
-    ['C# / .NET', 'devtools_engineering', /(?:^|[\s,/(])c#(?=$|[\s,/.)])|(?:^|[\s,/(])\.net(?:\s*(?:core|framework|8|9))?\b|\basp\.net\b/i],
-    ['React', 'devtools_engineering', /\breact(?:\.js|js)?\b/i],
-    ['Node.js', 'devtools_engineering', /\bnode\.?js\b/i],
-    ['SAP', 'erp_finance', /\bsap\b/i],
-    ['NetSuite', 'erp_finance', /\bnetsuite\b/i],
-    ['Stripe', 'erp_finance', /\bstripe\b/i],
-    ['Okta / Auth0', 'security_compliance', /\bokta\b|\bauth0\b/i],
-    ['ISO 27001 / SOC 2', 'security_compliance', /\biso\s*[/-]?\s*27001\b|\bsoc\s*2\b/i],
+// 150+ enterprise software & compliance rules across 9 B2B categories
+export const TECH_RULES = [
+    // 1. CRM & Sales / RevOps
+    { name: 'Salesforce', category: 'crm_sales', pattern: /\bsalesforce\b|\bsfdc\b/i },
+    { name: 'HubSpot', category: 'crm_sales', pattern: /\bhubspot\b/i },
+    { name: 'Pipedrive', category: 'crm_sales', pattern: /\bpipedrive\b/i },
+    { name: 'Dynamics 365', category: 'crm_sales', pattern: /\bdynamics\s*365\b|\bms\s*dynamics\b/i },
+    { name: 'Gong', category: 'crm_sales', pattern: /\bgong\.io\b|\bgong\s+(?:revenue|call|intelligence|platform|crm|recordings?)/i },
+    {
+        name: 'Outreach',
+        category: 'crm_sales',
+        pattern:
+            /\boutreach\.io\b|\boutreach\s+(?:sequences?|cadences?|sales\s+engagement)\b|(?:hubspot|salesforce|salesloft|apollo|gong|clay)[,\s/+&]+(?:[a-z0-9.]+\s*,\s*)*outreach\b|\boutreach[,\s/+&]+(?:salesloft|gong|apollo|hubspot|salesforce|clay)\b/i,
+    },
+    { name: 'Salesloft', category: 'crm_sales', pattern: /\bsalesloft\b/i },
+    {
+        name: 'Clay',
+        category: 'crm_sales',
+        pattern:
+            /\bclay\.com\b|\bclay\s+(?:tables?|waterfalls?|enrichment|gent)\b|(?:apollo|hubspot|outreach|instantly|smartlead|crm|zapier|n8n|make)[,\s/+&]+(?:[a-z0-9.]+\s*,\s*)*clay\b|\bclay[,\s/+&]+(?:apollo|instantly|smartlead|outreach|hubspot|n8n)\b/i,
+    },
+    { name: 'Apollo.io', category: 'crm_sales', pattern: /\bapollo\.io\b|(?:cognism|zoominfo|sales\s+navigator|clay|outreach)[,\s/+&]+apollo\b/i },
+    { name: 'Cognism', category: 'crm_sales', pattern: /\bcognism\b/i },
+    { name: 'ZoomInfo', category: 'crm_sales', pattern: /\bzoominfo\b/i },
+    { name: 'LinkedIn Sales Navigator', category: 'crm_sales', pattern: /\bsales\s+navigator\b/i },
+    { name: '6sense', category: 'crm_sales', pattern: /\b6sense\b/i },
+    { name: 'Clari', category: 'crm_sales', pattern: /\bclari\b/i },
+    { name: 'DealHub', category: 'crm_sales', pattern: /\bdealhub\b/i },
+    { name: 'Instantly / Smartlead', category: 'crm_sales', pattern: /\binstantly\.ai\b|\bsmartlead(?:\.ai)?\b/i },
+
+    // 2. Cloud & Infrastructure
+    { name: 'AWS', category: 'cloud_infra', pattern: /\baws\b|\bamazon\s+web\s+services\b|\bec2\b|\blambda\b|\bs3\b|\beks\b/i },
+    { name: 'Microsoft Azure', category: 'cloud_infra', pattern: /\bazure\b|\baks\b/i },
+    { name: 'Google Cloud (GCP)', category: 'cloud_infra', pattern: /\bgcp\b|\bgoogle\s+cloud\b|\bgke\b/i },
+    { name: 'Kubernetes', category: 'cloud_infra', pattern: /\bkubernetes\b|\bk8s\b|\beks\b|\bgke\b|\baks\b/i },
+    { name: 'Docker', category: 'cloud_infra', pattern: /\bdocker\b|\bcontainerization\b/i },
+    { name: 'Terraform', category: 'cloud_infra', pattern: /\bterraform\b/i },
+    { name: 'OpenTofu', category: 'cloud_infra', pattern: /\bopentofu\b/i },
+    { name: 'Pulumi', category: 'cloud_infra', pattern: /\bpulumi\b/i },
+    { name: 'Ansible', category: 'cloud_infra', pattern: /\bansible\b/i },
+    { name: 'Cloudflare', category: 'cloud_infra', pattern: /\bcloudflare\b/i },
+    { name: 'Fastly', category: 'cloud_infra', pattern: /\bfastly\b/i },
+    { name: 'Datadog', category: 'cloud_infra', pattern: /\bdatadog\b/i },
+    { name: 'Grafana', category: 'cloud_infra', pattern: /\bgrafana\b/i },
+    { name: 'Prometheus', category: 'cloud_infra', pattern: /\bprometheus\b/i },
+    { name: 'OpenTelemetry', category: 'cloud_infra', pattern: /\bopentelemetry\b|\botel\b/i },
+    { name: 'New Relic', category: 'cloud_infra', pattern: /\bnew\s*relic\b/i },
+    { name: 'ArgoCD', category: 'cloud_infra', pattern: /\bargo\s*cd\b/i },
+    { name: 'Helm', category: 'cloud_infra', pattern: /\bhelm\s+charts?\b|(?:kubernetes|k8s|argocd)[,\s/+&]+helm\b/i },
+    { name: 'Vercel', category: 'cloud_infra', pattern: /\bvercel\b/i },
+
+    // 3. Data & Analytics
+    { name: 'Snowflake', category: 'data_analytics', pattern: /\bsnowflake\b/i },
+    { name: 'Databricks', category: 'data_analytics', pattern: /\bdatabricks\b|\bdelta\s+lake\b/i },
+    { name: 'BigQuery', category: 'data_analytics', pattern: /\bbigquery\b/i },
+    { name: 'Redshift', category: 'data_analytics', pattern: /\bredshift\b/i },
+    { name: 'dbt', category: 'data_analytics', pattern: /\bdbt\b/i },
+    { name: 'Apache Airflow', category: 'data_analytics', pattern: /\bairflow\b/i },
+    { name: 'Dagster', category: 'data_analytics', pattern: /\bdagster\b/i },
+    { name: 'Prefect', category: 'data_analytics', pattern: /\bprefect\b/i },
+    { name: 'Apache Kafka', category: 'data_analytics', pattern: /\bkafka\b|\bconfluent\b/i },
+    { name: 'Redpanda', category: 'data_analytics', pattern: /\bredpanda\b/i },
+    { name: 'Apache Spark', category: 'data_analytics', pattern: /\bapache\s+spark\b|\bpyspark\b|(?:hadoop|kafka|databricks|flink|airflow)[,\s/+&]+spark\b/i },
+    { name: 'Apache Flink', category: 'data_analytics', pattern: /\bapache\s+flink\b|(?:kafka|spark)[,\s/+&]+flink\b|\bflink\b/i },
+    { name: 'Looker', category: 'data_analytics', pattern: /\blooker\b/i },
+    { name: 'Tableau', category: 'data_analytics', pattern: /\btableau\b/i },
+    { name: 'Power BI', category: 'data_analytics', pattern: /\bpower\s*bi\b/i },
+    { name: 'Metabase', category: 'data_analytics', pattern: /\bmetabase\b/i },
+    { name: 'Fivetran', category: 'data_analytics', pattern: /\bfivetran\b/i },
+    { name: 'Airbyte', category: 'data_analytics', pattern: /\bairbyte\b/i },
+    { name: 'ClickHouse', category: 'data_analytics', pattern: /\bclickhouse\b/i },
+    { name: 'PostgreSQL', category: 'data_analytics', pattern: /\bpostgresql\b|\bpostgres\b/i },
+    { name: 'MySQL / MariaDB', category: 'data_analytics', pattern: /\bmysql\b|\bmariadb\b/i },
+    { name: 'MongoDB', category: 'data_analytics', pattern: /\bmongodb\b/i },
+    { name: 'Redis', category: 'data_analytics', pattern: /\bredis\b/i },
+    { name: 'Elasticsearch', category: 'data_analytics', pattern: /\belasticsearch\b|\bopensearch\b/i },
+
+    // 4. AI / ML / LLM Stack
+    { name: 'OpenAI / GPT', category: 'ai_llm', pattern: /\bopenai\b|\bgpt-4[o]?\b|\bgpt-5\b|\bchatgpt\b/i },
+    { name: 'Anthropic / Claude', category: 'ai_llm', pattern: /\banthropic\b|\bclaude\s+(?:3|4|sonnet|opus|code|api|models?)\b/i },
+    { name: 'Google Gemini / Vertex AI', category: 'ai_llm', pattern: /\bvertex\s+ai\b|\bgemini\s+(?:1\.5|2\.0|pro|flash|api|models?)\b/i },
+    { name: 'AWS Bedrock', category: 'ai_llm', pattern: /\b(?:aws|amazon)\s+bedrock\b/i },
+    { name: 'LangChain / LangGraph', category: 'ai_llm', pattern: /\blangchain\b|\blanggraph\b/i },
+    { name: 'LlamaIndex', category: 'ai_llm', pattern: /\bllamaindex\b/i },
+    { name: 'Pinecone', category: 'ai_llm', pattern: /\bpinecone\b/i },
+    { name: 'Qdrant', category: 'ai_llm', pattern: /\bqdrant\b/i },
+    { name: 'Weaviate', category: 'ai_llm', pattern: /\bweaviate\b|\bmilvus\b/i },
+    { name: 'pgvector', category: 'ai_llm', pattern: /\bpgvector\b/i },
+    { name: 'PyTorch', category: 'ai_llm', pattern: /\bpytorch\b/i },
+    { name: 'TensorFlow', category: 'ai_llm', pattern: /\btensorflow\b/i },
+    { name: 'Hugging Face', category: 'ai_llm', pattern: /\bhugging\s*face\b/i },
+    { name: 'vLLM', category: 'ai_llm', pattern: /\bvllm\b/i },
+    { name: 'CUDA / TensorRT', category: 'ai_llm', pattern: /\bcuda\b|\btensorrt\b|\btriton\s+inference\b/i },
+    { name: 'RAG / Agentic AI', category: 'ai_llm', pattern: /\bretrieval[- ]augmented\s+generation\b|\bllm\s+agents?\b|\bagentic\s+ai\b|\bmcp\s+servers?\b/i },
+    { name: 'MLOps', category: 'ai_llm', pattern: /\bmlops\b|\bmlflow\b|\bkubeflow\b|\bweights\s*(?:&|and)\s*biases\b|\bwandb\b/i },
+
+    // 5. DevTools, Languages & Frameworks
+    { name: 'TypeScript', category: 'devtools_engineering', pattern: /\btypescript\b/i },
+    { name: 'JavaScript', category: 'devtools_engineering', pattern: /\bjavascript\b|\bes6\b/i },
+    { name: 'Python', category: 'devtools_engineering', pattern: /\bpython\b/i },
+    {
+        name: 'Go (Golang)',
+        category: 'devtools_engineering',
+        pattern: /\bgolang\b|(?:python|rust|java|c\+\+|typescript|kotlin|node\.?js)[,\s/+&]+go\b|\bgo[,\s/+&]+(?:python|rust|java|typescript|kubernetes)\b/i,
+    },
+    { name: 'Rust', category: 'devtools_engineering', pattern: /\brust\b(?!\s*(?:free|proof|belt))/i },
+    { name: 'Java', category: 'devtools_engineering', pattern: /\bjava\b(?!\s*script)/i },
+    { name: 'C++', category: 'devtools_engineering', pattern: /(?:^|[\s,/(])c\+\+(?=$|[\s,/.)])/i },
+    { name: 'C# / .NET', category: 'devtools_engineering', pattern: /(?:^|[\s,/(])c#(?=$|[\s,/.)])|(?:^|[\s,/(])\.net(?:\s*(?:core|framework|8|9))?\b|\basp\.net\b|\bcsharp\b/i },
+    { name: 'Ruby on Rails', category: 'devtools_engineering', pattern: /\bruby\s+on\s+rails\b|\brails\b|\bruby\b/i },
+    { name: 'PHP', category: 'devtools_engineering', pattern: /\bphp\b/i },
+    { name: 'Symfony / Laravel', category: 'devtools_engineering', pattern: /\bsymfony\b|\blaravel\b/i },
+    { name: 'Kotlin', category: 'devtools_engineering', pattern: /\bkotlin\b/i },
+    { name: 'Swift', category: 'devtools_engineering', pattern: /\bswift\b(?!\s+(?:action|response|resolution))|\bswiftui\b/i },
+    { name: 'React', category: 'devtools_engineering', pattern: /\breact(?:\.js|js)?\b|\breact\s+native\b/i },
+    { name: 'Next.js', category: 'devtools_engineering', pattern: /\bnext\.?js\b/i },
+    { name: 'Vue.js', category: 'devtools_engineering', pattern: /\bvue(?:\.js|js)?\b|\bnuxt\b/i },
+    { name: 'Angular', category: 'devtools_engineering', pattern: /\bangular\b/i },
+    { name: 'Node.js', category: 'devtools_engineering', pattern: /\bnode\.?js\b|\bnest\.?js\b/i },
+    { name: 'Spring Boot', category: 'devtools_engineering', pattern: /\bspring\s*boot\b/i },
+    { name: 'FastAPI / Django', category: 'devtools_engineering', pattern: /\bfastapi\b|\bdjango\b/i },
+    { name: 'GraphQL', category: 'devtools_engineering', pattern: /\bgraphql\b/i },
+    { name: 'gRPC', category: 'devtools_engineering', pattern: /\bgrpc\b|\bprotobuf\b/i },
+    { name: 'RabbitMQ', category: 'devtools_engineering', pattern: /\brabbitmq\b/i },
+    { name: 'GitHub Actions', category: 'devtools_engineering', pattern: /\bgithub\s+actions\b/i },
+    { name: 'GitLab CI', category: 'devtools_engineering', pattern: /\bgitlab\s*(?:ci|cd)?\b/i },
+    { name: 'Sentry', category: 'devtools_engineering', pattern: /\bsentry\b/i },
+    { name: 'Playwright / Cypress', category: 'devtools_engineering', pattern: /\bplaywright\b|\bcypress\b/i },
+
+    // 6. ERP, ITSM, Finance & Billing
+    { name: 'SAP', category: 'erp_finance', pattern: /\bsap\b(?:\s+s\/4hana|\s+hana|\s+business\s+one|\s+fi|\s+erp)?/i },
+    { name: 'Oracle NetSuite', category: 'erp_finance', pattern: /\bnetsuite\b/i },
+    { name: 'ServiceNow', category: 'erp_finance', pattern: /\bservicenow\b/i },
+    { name: 'DATEV', category: 'erp_finance', pattern: /\bdatev\b/i },
+    { name: 'Workday', category: 'erp_finance', pattern: /\bworkday\b/i },
+    { name: 'Stripe', category: 'erp_finance', pattern: /\bstripe\b/i },
+    { name: 'Adyen', category: 'erp_finance', pattern: /\badyen\b/i },
+    { name: 'Chargebee / Zuora', category: 'erp_finance', pattern: /\bchargebee\b|\bzuora\b/i },
+    { name: 'Coupa / Zip', category: 'erp_finance', pattern: /\bcoupa\b|\bziphq\b/i },
+    { name: 'Spendesk / Moss / Payhawk', category: 'erp_finance', pattern: /\bspendesk\b|\bpayhawk\b|\bgetmoss\b|(?:datev|netsuite|sap)[,\s/+&]+moss\b/i },
+    { name: 'Xero / QuickBooks', category: 'erp_finance', pattern: /\bxero\b|\bquickbooks\b|\bexact\s+online\b/i },
+    { name: 'Anaplan / Pigment', category: 'erp_finance', pattern: /\banaplan\b|\bpigment\b/i },
+
+    // 7. Security, Governance & Compliance
+    { name: 'Okta', category: 'security_compliance', pattern: /\bokta\b/i },
+    { name: 'Auth0', category: 'security_compliance', pattern: /\bauth0\b/i },
+    { name: 'CrowdStrike', category: 'security_compliance', pattern: /\bcrowdstrike\b/i },
+    { name: 'SentinelOne', category: 'security_compliance', pattern: /\bsentinelone\b/i },
+    { name: 'Snyk', category: 'security_compliance', pattern: /\bsnyk\b/i },
+    {
+        name: 'Wiz',
+        category: 'security_compliance',
+        pattern: /\bwiz\.io\b|\bwiz\s+(?:cloud|security|cnapp|csp)\b|(?:snyk|crowdstrike|orca|lacework|prisma|okta|datadog)[,\s/+&]+wiz\b|\bwiz[,\s/+&]+(?:snyk|crowdstrike|orca|lacework|prisma)\b/i,
+    },
+    { name: 'Vanta', category: 'security_compliance', pattern: /\bvanta\b/i },
+    { name: 'Drata', category: 'security_compliance', pattern: /\bdrata\b/i },
+    { name: 'HashiCorp Vault', category: 'security_compliance', pattern: /\bhashicorp\s+vault\b|\bvault\s+secrets?\b/i },
+    { name: 'Palo Alto Prisma', category: 'security_compliance', pattern: /\bprisma\s+cloud\b|\bpalo\s+alto\s+networks\b/i },
+    { name: 'Splunk', category: 'security_compliance', pattern: /\bsplunk\b/i },
+    { name: 'ISO 27001', category: 'security_compliance', pattern: /\biso\s*[/-]?\s*27001\b/i },
+    { name: 'SOC 2', category: 'security_compliance', pattern: /\bsoc\s*2\b/i },
+    { name: 'HIPAA', category: 'security_compliance', pattern: /\bhipaa\b/i },
+    { name: 'FedRAMP', category: 'security_compliance', pattern: /\bfedramp\b|\bcmmc\b/i },
+    { name: 'NIS2 / DORA', category: 'security_compliance', pattern: /\bnis\s*2\b|\bdora\s+(?:regulation|compliance)\b/i },
+    { name: 'CSRD / ESG Reporting', category: 'security_compliance', pattern: /\bcsrd\b|\besrs\b|\bghg\s+protocol\b/i },
+
+    // 8. Marketing, Product, CX & Collaboration
+    { name: 'Marketo / Pardot', category: 'marketing_product', pattern: /\bmarketo\b|\bpardot\b/i },
+    { name: 'Braze', category: 'marketing_product', pattern: /\bbraze\b/i },
+    { name: 'Klaviyo', category: 'marketing_product', pattern: /\bklaviyo\b/i },
+    { name: 'Segment', category: 'marketing_product', pattern: /\btwilio\s+segment\b|\bsegment\.com\b|(?:amplitude|mixpanel|braze|rudderstack)[,\s/+&]+segment\b/i },
+    { name: 'Amplitude', category: 'marketing_product', pattern: /\bamplitude\b/i },
+    { name: 'Mixpanel', category: 'marketing_product', pattern: /\bmixpanel\b/i },
+    { name: 'PostHog', category: 'marketing_product', pattern: /\bposthog\b/i },
+    { name: 'Google Analytics / GTM', category: 'marketing_product', pattern: /\bga4\b|\bgoogle\s+analytics\b|\bgoogle\s+tag\s+manager\b/i },
+    { name: 'Zendesk', category: 'marketing_product', pattern: /\bzendesk\b/i },
+    { name: 'Intercom', category: 'marketing_product', pattern: /\bintercom\b/i },
+    { name: 'Gainsight / Planhat', category: 'marketing_product', pattern: /\bgainsight\b|\bplanhat\b/i },
+    { name: 'Figma', category: 'marketing_product', pattern: /\bfigma\b/i },
+    { name: 'Jira / Confluence', category: 'marketing_product', pattern: /\bjira\b|\bconfluence\b/i },
+    { name: 'Linear', category: 'marketing_product', pattern: /(?:jira|notion|figma|github)[,\s/+&]+linear\b|\blinear\.app\b/i },
+    { name: 'Notion', category: 'marketing_product', pattern: /\bnotion\b/i },
+    { name: 'Slack', category: 'marketing_product', pattern: /\bslack\b/i },
+    { name: 'Shopify', category: 'marketing_product', pattern: /\bshopify\b/i },
+
+    // 9. HR & People Tech
+    { name: 'Personio', category: 'hr_people', pattern: /\bpersonio\b/i },
+    { name: 'Teamtailor', category: 'hr_people', pattern: /\bteamtailor\b/i },
+    { name: 'Greenhouse', category: 'hr_people', pattern: /\bgreenhouse\b/i },
+    { name: 'Lever', category: 'hr_people', pattern: /\blever\s+ats\b|(?:greenhouse|ashby|workday)[,\s/+&]+lever\b/i },
+    { name: 'Ashby', category: 'hr_people', pattern: /\bashby\b/i },
+    { name: 'Rippling / Deel', category: 'hr_people', pattern: /\brippling\b|\bdeel\b|\bremote\.com\b/i },
+    { name: 'HiBob / BambooHR', category: 'hr_people', pattern: /\bhibob\b|\bbamboohr\b/i },
 ];
 
 const SIGNAL_PATTERNS = [
-    ['BUDGET_EXPANSION', 22, /\b(?:rapidly\s+growing|scaling\s+rapidly|hyper[- ]?growth|newly\s+created\s+role|expanding\s+(?:our|the)\s+team|series\s+[a-d])\b/i],
-    ['TECH_MIGRATION_MODERNIZATION', 26, /\b(?:greenfield|from\s+scratch|0\s+to\s+1|cloud\s+migration|migrating|moderniz(?:e|ing)|re-?platform|shared\s+data\s+platform)\b/i],
-    ['AI_TRANSFORMATION_INITIATIVE', 22, /\b(?:ai[- ]native|genai|generative\s+ai|conversational\s+intelligence|mlops|llm\s+agent)\b/i],
+    [
+        'BUDGET_EXPANSION',
+        22,
+        /\b(?:rapidly\s+growing|scaling\s+rapidly|hyper[- ]?growth|newly\s+created\s+(?:role|position)|expanding\s+(?:our|the)\s+team|series\s+[a-d]\b|international\s+expansion|entering\s+new\s+markets|growing\s+fast|scale[- ]?up\s+phase)\b/i,
+    ],
+    [
+        'TECH_MIGRATION_MODERNIZATION',
+        26,
+        /\b(?:greenfield|from\s+scratch|0\s+to\s+1|zero\s+to\s+one|cloud\s+migration|migrating\s+(?:from|to)|moderniz(?:e|ing)\s+(?:our|legacy)|re-?platform(?:ing)?|re-?architect(?:ing)?|shared\s+data\s+platform|next[- ]generation\s+platform)\b/i,
+    ],
+    [
+        'COMPLIANCE_SECURITY_MANDATE',
+        20,
+        /\b(?:iso\s*[/-]?\s*27001|soc\s*2|nis\s*2|dora\s+compliance|csrd|eu\s+ai\s+act|fedramp|cmmc|regulatory\s+compliance|audit\s+readiness|carbon\s+accounting)\b/i,
+    ],
+    [
+        'AI_TRANSFORMATION_INITIATIVE',
+        22,
+        /\b(?:ai[- ]native|genai|generative\s+ai|llm\s+(?:pipeline|agent|application|infrastructure)|conversational\s+intelligence|model\s+compression|rag\s+(?:architecture|pipeline)|mlops|ai\s+transformation|agentic\s+ai)\b/i,
+    ],
+    [
+        'URGENT_HIRING_VELOCITY',
+        14,
+        /\b(?:start\s+date\s*:\s*asap|desired\s+start\s+date\s*\n*\s*asap|immediate\s+start|start\s+immediately|ab\s+sofort|earliest\s+possible\s+start)\b/i,
+    ],
 ];
+
+const LEGAL_COMPANY_STOPWORDS = new Set([
+    'inc',
+    'incorporated',
+    'llc',
+    'ltd',
+    'limited',
+    'gmbh',
+    'corp',
+    'corporation',
+    'company',
+    'co',
+    'ag',
+    'se',
+    'plc',
+    'ab',
+    'bv',
+    'sa',
+    'sas',
+    'technologies',
+    'technology',
+    'tech',
+    'software',
+    'systems',
+    'labs',
+    'group',
+    'holdings',
+    'international',
+    'global',
+    'the',
+]);
+
+const BRAND_VENDOR_ALIASES = {
+    aws: ['amazon', 'aws'],
+    'microsoft azure': ['microsoft', 'azure'],
+    'google cloud (gcp)': ['google', 'gcp', 'alphabet'],
+    'google gemini / vertex ai': ['google', 'gemini', 'alphabet'],
+    'google analytics / gtm': ['google', 'alphabet'],
+    'aws bedrock': ['amazon', 'aws'],
+    'dynamics 365': ['microsoft'],
+    'power bi': ['microsoft'],
+    'github actions': ['github', 'microsoft'],
+    'linkedin sales navigator': ['linkedin', 'microsoft'],
+    'oracle netsuite': ['oracle', 'netsuite'],
+    'palo alto prisma': ['paloalto', 'paloaltonetworks'],
+    'jira / confluence': ['atlassian', 'jira', 'confluence'],
+    segment: ['twilio', 'segment'],
+    looker: ['google', 'looker'],
+    tableau: ['salesforce', 'tableau'],
+    slack: ['salesforce', 'slack'],
+    'marketo / pardot': ['adobe', 'salesforce', 'marketo', 'pardot'],
+};
+
+export function isEmployerSelfBrand(toolName = '', companyName = '', companySlug = '', atsPlatform = '') {
+    const toolLower = String(toolName || '').toLowerCase().trim();
+    if (!toolLower) return false;
+
+    const hostAts = String(atsPlatform || '').toLowerCase().trim();
+    if (hostAts && toolLower === hostAts) return true;
+
+    const rawCompanyTokens = `${companyName || ''} ${companySlug || ''}`
+        .toLowerCase()
+        .split(/[^a-z0-9+#]+/)
+        .filter((tok) => tok.length >= 3 && !LEGAL_COMPANY_STOPWORDS.has(tok));
+    if (!rawCompanyTokens.length) return false;
+
+    const companySet = new Set(rawCompanyTokens);
+    const compactCompany = rawCompanyTokens.join('');
+    if (compactCompany.length >= 4) companySet.add(compactCompany);
+
+    const toolTokens = toolLower
+        .split(/[^a-z0-9+#]+/)
+        .filter((tok) => tok.length >= 3 && !['ats', 'ci', 'cd', 'cloud', 'reporting', 'esg'].includes(tok));
+    const aliasTokens = BRAND_VENDOR_ALIASES[toolLower] || [];
+    for (const tok of [...toolTokens, ...aliasTokens]) {
+        if (companySet.has(tok)) return true;
+    }
+    return false;
+}
+
+export function stripBoilerplateFooter(text = '') {
+    const raw = String(text || '');
+    if (!raw) return '';
+    const footerRe =
+        /\b(?:equal\s+opportunity\s+employer|is\s+an\s+equal\s+opportunity|e-?verify\s+participant|applicant\s+privacy\s+(?:notice|policy)|without\s+regard\s+to\s+race[\s,]+color|all\s+qualified\s+applicants\s+will\s+receive\s+consideration|pursuant\s+to\s+the\s+(?:san\s+francisco|los\s+angeles)\s+fair\s+chance|reasonable\s+accommodation\s+to\s+qualified\s+individuals)\b/i;
+    const match = footerRe.exec(raw);
+    if (match && match.index >= Math.min(280, Math.floor(raw.length * 0.35))) {
+        return raw.slice(0, match.index).trim();
+    }
+    return raw;
+}
+
+export function withIndefiniteArticle(phrase = '') {
+    const trimmed = String(phrase || '').trim();
+    if (!trimmed) return 'a role';
+    if (/^(?:a|an|the)\s+/i.test(trimmed)) return trimmed;
+    const firstToken = trimmed.replace(/^[^A-Za-z0-9]+/, '').split(/[\s/-]+/)[0] || '';
+    if (!firstToken) return `a ${trimmed}`;
+    if (/^(?:AE|AI|EM|ERP|FPA|FP&A|HR|IT|LLM|ML|MLOps|NLP|OKR|R&D|RFP|ROI|SDK|SEO|SLA|SMB|SQL|SRE|SSO)(?:$|\b)/i.test(firstToken) && firstToken === firstToken.toUpperCase()) {
+        return `an ${trimmed}`;
+    }
+    if (/^(?:iOS|MLOps)\b/.test(firstToken)) return `an ${trimmed}`;
+    if (/^(?:uni|use|usu|utt|eu[a-z]|one\b)/i.test(firstToken)) return `a ${trimmed}`;
+    if (/^(?:honest|hour|heir)/i.test(firstToken)) return `an ${trimmed}`;
+    return /^[aeiou]/i.test(firstToken) ? `an ${trimmed}` : `a ${trimmed}`;
+}
+
+function normalizeValueClause(rawValue = '', fallback = 'ship faster without adding headcount') {
+    let s = String(rawValue || '').trim() || fallback;
+    s = s.replace(/[.!?\s]+$/g, '').trim();
+    s = s.replace(/^(?:we\s+help\s+(?:[a-z0-9/& -]+\s+)?(?:teams|orgs|organizations|companies|leaders|engineers)\s+(?:to\s+)?)/i, '');
+    if (/^(?:we|our\s+(?:platform|product|team|solution|software|tool))\s+/i.test(s)) {
+        s = s.replace(/^(?:we|our\s+(?:platform|product|team|solution|software|tool))\s+/i, '');
+        s = s.replace(
+            /^(cuts|reduces|automates|eliminates|saves|helps|accelerates|streamlines|trims|lowers|improves|boosts)\b/i,
+            (verb) => verb.slice(0, -1).toLowerCase(),
+        );
+    }
+    s = s.replace(/^to\s+/i, '');
+    const firstWord = s.split(/\s+/)[0] || '';
+    if (firstWord.length > 1 && firstWord !== firstWord.toUpperCase()) {
+        s = s[0].toLowerCase() + s.slice(1);
+    }
+    return s || fallback;
+}
 
 function decodeEntities(raw = '') {
     let s = raw.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1');
@@ -123,18 +427,51 @@ function xmlAllBlocks(xml, tag) {
     return out;
 }
 
-function enrichIntent(job, structuredSalary = null) {
-    const corpus = `${job.title}\n${job.department || ''}\n${job.descriptionText || ''}`;
-    const techStackAll = [];
-    for (const [name, , re] of TECH_PATTERNS) {
-        if (re.test(corpus)) techStackAll.push(name);
+export function normalizeSeniority(title = '') {
+    const lower = String(title || '').toLowerCase();
+    if (/\b(?:chief|ceo|cto|cfo|cmo|cro|coo|ciso|cpo|vp\b|vice\s+president|svp\b|evp\b|managing\s+director|geschäftsführer)\b/.test(lower)) {
+        return 'c_level_vp';
     }
+    if (/\b(?:head\s+of|director|general\s+manager|bereichsleiter|abteilungsleiter)\b/.test(lower)) {
+        return 'director_head';
+    }
+    if (/\b(?:team\s*lead|tech\s*lead|staff\b|principal|founding|lead\s+(?:engineer|developer|architect|data|product|designer))\b/.test(lower)) {
+        return 'lead_principal';
+    }
+    if (/\b(?:senior|sr\.?)\b/.test(lower)) {
+        return 'senior';
+    }
+    if (/\b(?:junior|jr\.?|intern|internship|werkstudent|working\s+student|trainee|graduate|entry[\s-]*level)\b/.test(lower)) {
+        return 'junior_intern';
+    }
+    return 'mid_regular';
+}
+
+export function enrichIntent(job, structuredSalary = null) {
+    const cleanedDesc = stripBoilerplateFooter(job.descriptionText || '');
+    const corpus = `${job.title || ''}\n${job.department || ''}\n${cleanedDesc}`;
+    const techStackAll = [];
+    const techStackByCategory = {};
+
+    for (const rule of TECH_RULES) {
+        if (isEmployerSelfBrand(rule.name, job.companyName, job.companySlug, job.atsPlatform)) {
+            continue;
+        }
+        if (rule.pattern.test(corpus)) {
+            techStackAll.push(rule.name);
+            if (!techStackByCategory[rule.category]) techStackByCategory[rule.category] = [];
+            techStackByCategory[rule.category].push(rule.name);
+        }
+    }
+
+    const seniorityNormalized = normalizeSeniority(job.title);
+    const isDecisionMakerHire = seniorityNormalized === 'c_level_vp' || seniorityNormalized === 'director_head';
 
     const signalCodes = [];
     let score = 18 + Math.min(28, techStackAll.length * 5);
-    if (/\b(chief|cto|cfo|vp|vice\s+president|head\s+of|director|team\s*lead|staff\b|principal)\b/i.test(job.title)) {
+    if (isDecisionMakerHire) {
         signalCodes.push('NEW_LEADERSHIP_DECISION_MAKER');
-        score += 24;
+        score += seniorityNormalized === 'c_level_vp' ? 28 : 24;
     }
     for (const [code, weight, re] of SIGNAL_PATTERNS) {
         if (re.test(corpus)) {
@@ -142,18 +479,24 @@ function enrichIntent(job, structuredSalary = null) {
             score += weight;
         }
     }
-    if (structuredSalary) score += 8;
+
+    const effectiveSalary = structuredSalary || extractWorkdaySalarySummary(job.descriptionText || '');
+    if (effectiveSalary) score += 8;
 
     const intentScore = Math.min(100, score);
     const intentTier = intentScore >= 70 ? 'HOT' : intentScore >= 45 ? 'WARM' : 'MONITOR';
     const topTools = techStackAll.slice(0, 3).join(', ');
+    const rolePhrase = withIndefiniteArticle(job.title || 'role');
     return {
         intentScore,
         intentTier,
+        seniorityNormalized,
+        isDecisionMakerHire,
         techStackAll,
+        techStackByCategory,
         signalCodes,
-        disclosedSalary: structuredSalary,
-        outreachHook: `Noticed ${job.companyName} is hiring a ${job.title}${job.location ? ` in ${job.location}` : ''}${topTools ? ` working with ${topTools}` : ''}.`,
+        disclosedSalary: effectiveSalary,
+        outreachHook: `Noticed ${job.companyName} is hiring ${rolePhrase}${job.location ? ` in ${job.location}` : ''}${topTools ? ` working with ${topTools}` : ''}.`,
     };
 }
 
@@ -607,8 +950,31 @@ export function detectAtsTarget(rawInput = '', explicitPlatform = '') {
     return null;
 }
 
+function candidateRolePriority(title = '', hasComp = false) {
+    const t = String(title || '');
+    let score = hasComp ? 2 : 0;
+    if (/\b(?:chief|ceo|cto|cfo|ciso|cro|cmo|cpo|vp\b|vice\s+president|svp\b|evp\b|head\s+of|director)\b/i.test(t)) {
+        score += 4;
+    }
+    if (
+        /\b(?:engineer|engineering|architect|platform|infrastructure|devops|sre\b|data|analytics|scientist|machine\s+learning|ai\b|ml\b|security|infosec|grc\b|revops|revenue\s+operations|gtm\s+engineer|cloud|systems|developer)\b/i.test(
+            t,
+        )
+    ) {
+        score += 3;
+    }
+    return score;
+}
+
+function rankAndCapEnrichedJobs(enrichedJobs, cap) {
+    return [...enrichedJobs]
+        .sort((a, b) => (b.intent?.intentScore || 0) - (a.intent?.intentScore || 0))
+        .slice(0, cap);
+}
+
 export async function scanSingleTarget(platform, target, maxJobs = 5) {
     const cap = Math.min(10, Math.max(1, Number(maxJobs || 5)));
+    const poolCap = Math.max(cap * 3, 18);
     const detected = detectAtsTarget(target, platform && platform !== 'auto' ? platform : '');
     const p = detected ? detected.platform : String(platform || 'ashby').toLowerCase();
     const resolvedTarget = detected ? detected.target : String(target || '').trim();
@@ -621,12 +987,12 @@ export async function scanSingleTarget(platform, target, maxJobs = 5) {
         );
         if (!r.ok) return [];
         const j = JSON.parse(r.text);
-        const jobs = [...(j.jobs || [])].sort((a, b) => {
-            const pA = a.pay_input_ranges?.length ? 1 : 0;
-            const pB = b.pay_input_ranges?.length ? 1 : 0;
-            return pB - pA;
-        });
-        return jobs.slice(0, cap).map((item) => {
+        const jobs = [...(j.jobs || [])].sort(
+            (a, b) =>
+                candidateRolePriority(b.title, Boolean(b.pay_input_ranges?.length)) -
+                candidateRolePriority(a.title, Boolean(a.pay_input_ranges?.length)),
+        );
+        const enriched = jobs.slice(0, poolCap).map((item) => {
             const pr = (item.pay_input_ranges || [])[0];
             const hasMin = pr && pr.min_cents !== null && pr.min_cents !== undefined && Number(pr.min_cents) > 0;
             const hasMax = pr && pr.max_cents !== null && pr.max_cents !== undefined && Number(pr.max_cents) > 0;
@@ -640,17 +1006,20 @@ export async function scanSingleTarget(platform, target, maxJobs = 5) {
                         ? `Up to ${ccy} $${Math.round(Number(pr.max_cents) / 100).toLocaleString('en-US')}`
                         : null;
             const desc = htmlToText(item.content || '');
-            const job = {
+            const fullJob = {
                 atsPlatform: 'greenhouse',
+                companySlug: slug,
                 companyName: item.company_name || slug,
                 title: item.title,
                 department: item.departments?.[0]?.name || 'General',
                 location: item.location?.name || item.offices?.[0]?.name || 'Global',
                 jobUrl: item.absolute_url || `https://boards.greenhouse.io/${slug}/jobs/${item.id}`,
-                descriptionText: desc.slice(0, 900),
+                descriptionText: desc,
             };
-            return { ...job, intent: enrichIntent(job, sal) };
+            const intent = enrichIntent(fullJob, sal);
+            return { ...fullJob, descriptionText: desc.slice(0, 900), intent };
         });
+        return rankAndCapEnrichedJobs(enriched, cap);
     }
 
     if (p === 'lever') {
@@ -663,7 +1032,7 @@ export async function scanSingleTarget(platform, target, maxJobs = 5) {
             .replace(/^https?:\/\/(?:jobs|api)(?:\.eu)?\.lever\.co\/(?:v0\/postings\/)?/i, '')
             .split(/[/?#]/)[0]
             .trim();
-        const limitParam = Math.max(15, cap * 3);
+        const limitParam = Math.max(30, cap * 5);
         const primaryHost = isExplicitEu ? 'api.eu.lever.co' : 'api.lever.co';
         let r = await fetchSafe(`https://${primaryHost}/v0/postings/${encodeURIComponent(slug)}?mode=json&limit=${limitParam}`);
         if (!r.ok && !isExplicitEu) {
@@ -672,8 +1041,12 @@ export async function scanSingleTarget(platform, target, maxJobs = 5) {
         if (!r.ok) return [];
         const arr = JSON.parse(r.text);
         if (!Array.isArray(arr)) return [];
-        arr.sort((a, b) => ((b.salaryRange?.min ? 1 : 0) - (a.salaryRange?.min ? 1 : 0)));
-        return arr.slice(0, cap).map((item) => {
+        arr.sort(
+            (a, b) =>
+                candidateRolePriority(b.text, Boolean(b.salaryRange?.min)) -
+                candidateRolePriority(a.text, Boolean(a.salaryRange?.min)),
+        );
+        const enriched = arr.slice(0, poolCap).map((item) => {
             const sr = item.salaryRange;
             const hasMin = sr && sr.min !== null && sr.min !== undefined && Number(sr.min) > 0;
             const hasMax = sr && sr.max !== null && sr.max !== undefined && Number(sr.max) > 0;
@@ -691,17 +1064,20 @@ export async function scanSingleTarget(platform, target, maxJobs = 5) {
             const fullDesc = [item.descriptionPlain || htmlToText(item.description || ''), listsText, item.additionalPlain || '']
                 .filter(Boolean)
                 .join('\n');
-            const job = {
+            const fullJob = {
                 atsPlatform: 'lever',
+                companySlug: slug,
                 companyName: slug,
                 title: item.text,
                 department: item.categories?.department || item.categories?.team || 'General',
                 location: item.categories?.location || 'Global',
                 jobUrl: item.hostedUrl,
-                descriptionText: fullDesc.slice(0, 900),
+                descriptionText: fullDesc,
             };
-            return { ...job, intent: enrichIntent(job, sal) };
+            const intent = enrichIntent(fullJob, sal);
+            return { ...fullJob, descriptionText: fullDesc.slice(0, 900), intent };
         });
+        return rankAndCapEnrichedJobs(enriched, cap);
     }
 
     if (p === 'ashby') {
@@ -709,19 +1085,28 @@ export async function scanSingleTarget(platform, target, maxJobs = 5) {
         const r = await fetchSafe(`https://api.ashbyhq.com/posting-api/job-board/${encodeURIComponent(slug)}?includeCompensation=true`);
         if (!r.ok) return [];
         const j = JSON.parse(r.text);
-        return (j.jobs || []).slice(0, cap).map((item) => {
+        const jobs = [...(j.jobs || [])].sort(
+            (a, b) =>
+                candidateRolePriority(b.title, Boolean(b.compensation?.compensationTierSummary)) -
+                candidateRolePriority(a.title, Boolean(a.compensation?.compensationTierSummary)),
+        );
+        const enriched = jobs.slice(0, poolCap).map((item) => {
             const sal = item.compensation?.compensationTierSummary || item.compensation?.scrapeableCompensationSalarySummary || null;
-            const job = {
+            const fullDesc = item.descriptionPlain || htmlToText(item.descriptionHtml || '');
+            const fullJob = {
                 atsPlatform: 'ashby',
+                companySlug: slug,
                 companyName: j.organizationName || slug,
                 title: item.title,
                 department: item.department || item.team || 'General',
                 location: item.location || 'Remote',
                 jobUrl: item.jobUrl,
-                descriptionText: (item.descriptionPlain || htmlToText(item.descriptionHtml || '')).slice(0, 900),
+                descriptionText: fullDesc,
             };
-            return { ...job, intent: enrichIntent(job, sal) };
+            const intent = enrichIntent(fullJob, sal);
+            return { ...fullJob, descriptionText: fullDesc.slice(0, 900), intent };
         });
+        return rankAndCapEnrichedJobs(enriched, cap);
     }
 
     if (p === 'personio') {
@@ -732,16 +1117,18 @@ export async function scanSingleTarget(platform, target, maxJobs = 5) {
             return xmlAllBlocks(xmlRes.text, 'position').slice(0, cap).map((pos) => {
                 const id = xmlTag(pos, 'id');
                 const desc = htmlToText(xmlAllBlocks(pos, 'jobDescription').map((b) => xmlTag(b, 'value')).join('\n'));
-                const job = {
+                const fullJob = {
                     atsPlatform: 'personio',
+                    companySlug: slug,
                     companyName: xmlTag(pos, 'subcompany') || slug,
                     title: xmlTag(pos, 'name'),
                     department: xmlTag(pos, 'department') || 'General',
                     location: xmlTag(pos, 'office') || 'Europe',
                     jobUrl: `${baseUrl}/job/${id}?language=en`,
-                    descriptionText: desc.slice(0, 900),
+                    descriptionText: desc,
                 };
-                return { ...job, intent: enrichIntent(job) };
+                const intent = enrichIntent(fullJob);
+                return { ...fullJob, descriptionText: desc.slice(0, 900), intent };
             });
         }
         return [];
@@ -749,21 +1136,24 @@ export async function scanSingleTarget(platform, target, maxJobs = 5) {
 
     if (p === 'teamtailor') {
         const baseUrl = /^https?:\/\//i.test(resolvedTarget) ? new URL(resolvedTarget).origin : `https://${resolvedTarget.trim()}.teamtailor.com`;
+        const slug = new URL(baseUrl).hostname.replace(/\.teamtailor\.com$/i, '');
         const rss = await fetchSafe(`${baseUrl}/jobs.rss`);
         if (!rss.ok) return [];
         const companyName = xmlTag(rss.text.split('<item>')[0] || '', 'title') || resolvedTarget;
         return xmlAllBlocks(rss.text, 'item').slice(0, cap).map((item) => {
             const desc = htmlToText(xmlTag(item, 'description'));
-            const job = {
+            const fullJob = {
                 atsPlatform: 'teamtailor',
+                companySlug: slug,
                 companyName,
                 title: xmlTag(item, 'title'),
                 department: xmlTag(item, 'tt:department') || 'General',
                 location: xmlTag(item, 'tt:name') || 'Europe',
                 jobUrl: xmlTag(item, 'link'),
-                descriptionText: desc.slice(0, 900),
+                descriptionText: desc,
             };
-            return { ...job, intent: enrichIntent(job) };
+            const intent = enrichIntent(fullJob);
+            return { ...fullJob, descriptionText: desc.slice(0, 900), intent };
         });
     }
 
@@ -773,17 +1163,19 @@ export async function scanSingleTarget(platform, target, maxJobs = 5) {
         if (!r.ok) return [];
         const j = JSON.parse(r.text);
         return (j.jobs || []).slice(0, cap).map((item) => {
-            const desc = htmlToText(item.description || '');
-            const job = {
+            const desc = htmlToText(`${item.description || ''}\n${item.requirements || ''}`);
+            const fullJob = {
                 atsPlatform: 'workable',
+                companySlug: slug,
                 companyName: j.name || slug,
                 title: item.title,
                 department: item.department || 'General',
                 location: [item.city, item.country].filter(Boolean).join(', '),
                 jobUrl: item.url,
-                descriptionText: desc.slice(0, 900),
+                descriptionText: desc,
             };
-            return { ...job, intent: enrichIntent(job) };
+            const intent = enrichIntent(fullJob);
+            return { ...fullJob, descriptionText: desc.slice(0, 900), intent };
         });
     }
 
@@ -794,16 +1186,19 @@ export async function scanSingleTarget(platform, target, maxJobs = 5) {
         const j = JSON.parse(r.text);
         return (j.offers || []).slice(0, cap).map((o) => {
             const desc = htmlToText(`${o.description || ''}\n${o.requirements || ''}`);
-            const job = {
+            const sal = o.min_salary || o.max_salary ? `${o.salary_currency || 'EUR'} ${o.min_salary || ''}-${o.max_salary || ''}` : null;
+            const fullJob = {
                 atsPlatform: 'recruitee',
+                companySlug: slug,
                 companyName: o.company_name || slug,
                 title: o.title,
                 department: o.department || 'General',
                 location: o.location || o.city || 'Europe',
                 jobUrl: o.careers_url,
-                descriptionText: desc.slice(0, 900),
+                descriptionText: desc,
             };
-            return { ...job, intent: enrichIntent(job) };
+            const intent = enrichIntent(fullJob, sal);
+            return { ...fullJob, descriptionText: desc.slice(0, 900), intent };
         });
     }
 
@@ -815,17 +1210,20 @@ export async function scanSingleTarget(platform, target, maxJobs = 5) {
         const arr = Array.isArray(parsed) ? parsed : parsed.data || [];
         return arr.slice(0, cap).map((item) => {
             const desc = htmlToText(`${item.description || ''}\n${item.skills_knowledge_expertise || ''}`);
-            const job = {
+            const sal = item.compensation_visible && item.compensation ? String(item.compensation) : null;
+            const fullJob = {
                 atsPlatform: 'pinpoint',
+                companySlug: slug,
                 companyName: slug,
                 title: item.title,
                 department: item.job?.department?.name || 'General',
                 location: item.location?.name || 'Global',
                 reportingTo: item.reporting_to || null,
                 jobUrl: item.url,
-                descriptionText: desc.slice(0, 900),
+                descriptionText: desc,
             };
-            return { ...job, intent: enrichIntent(job) };
+            const intent = enrichIntent(fullJob, sal);
+            return { ...fullJob, descriptionText: desc.slice(0, 900), intent };
         });
     }
 
@@ -834,18 +1232,44 @@ export async function scanSingleTarget(platform, target, maxJobs = 5) {
         const r = await fetchSafe(`https://api.smartrecruiters.com/v1/companies/${encodeURIComponent(slug)}/postings?limit=${cap}`);
         if (!r.ok) return [];
         const j = JSON.parse(r.text);
-        return (j.content || []).slice(0, cap).map((item) => {
-            const job = {
-                atsPlatform: 'smartrecruiters',
-                companyName: item.company?.name || slug,
-                title: item.name,
-                department: item.department?.label || 'General',
-                location: [item.location?.city, item.location?.country?.toUpperCase()].filter(Boolean).join(', '),
-                jobUrl: `https://jobs.smartrecruiters.com/${slug}/${item.id}`,
-                descriptionText: '',
-            };
-            return { ...job, intent: enrichIntent(job) };
-        });
+        const items = (j.content || []).slice(0, cap);
+        return Promise.all(
+            items.map(async (item) => {
+                let desc = '';
+                try {
+                    const det = await fetchSafe(
+                        `https://api.smartrecruiters.com/v1/companies/${encodeURIComponent(slug)}/postings/${encodeURIComponent(item.id)}`,
+                    );
+                    if (det.ok) {
+                        const dj = JSON.parse(det.text);
+                        const sections = dj.jobAd?.sections || {};
+                        desc = htmlToText(
+                            [
+                                sections.jobDescription?.text,
+                                sections.qualifications?.text,
+                                sections.additionalInformation?.text,
+                            ]
+                                .filter(Boolean)
+                                .join('\n'),
+                        );
+                    }
+                } catch {
+                    // fallback to listing metadata
+                }
+                const fullJob = {
+                    atsPlatform: 'smartrecruiters',
+                    companySlug: slug,
+                    companyName: item.company?.name || slug,
+                    title: item.name,
+                    department: item.department?.label || 'General',
+                    location: [item.location?.city, item.location?.country?.toUpperCase()].filter(Boolean).join(', '),
+                    jobUrl: `https://jobs.smartrecruiters.com/${slug}/${item.id}`,
+                    descriptionText: desc,
+                };
+                const intent = enrichIntent(fullJob);
+                return { ...fullJob, descriptionText: desc.slice(0, 900), intent };
+            }),
+        );
     }
 
     if (p === 'workday') {
@@ -889,16 +1313,18 @@ export async function scanSingleTarget(platform, target, maxJobs = 5) {
                 const sal = extractWorkdaySalarySummary(desc);
                 const jobUrl = info.externalUrl || (item.externalPath ? `${wd.careerSiteUrl}${item.externalPath}` : wd.careerSiteUrl);
                 const companyName = WORKDAY_ENTERPRISE_DIRECTORY[wd.companySlug] ? wd.companyName : orgName || wd.companyName;
-                const job = {
+                const fullJob = {
                     atsPlatform: 'workday',
+                    companySlug: wd.companySlug,
                     companyName,
                     title,
                     department: 'General',
                     location: (info.location || item.locationsText || 'Global').trim(),
                     jobUrl,
-                    descriptionText: desc.slice(0, 900),
+                    descriptionText: desc,
                 };
-                return { ...job, intent: enrichIntent(job, sal) };
+                const intent = enrichIntent(fullJob, sal);
+                return { ...fullJob, descriptionText: desc.slice(0, 900), intent };
             }),
         );
         return enriched;
@@ -927,7 +1353,6 @@ const CLOUD_CATALOG_CATEGORIES = {
         'website_contact_finder',
         'apple_app_store',
     ],
-    us_permits_contractors: ['us_permits', 'us_contractor_licenses'],
     us_fleet_govcon: ['us_fmcsa_trucking', 'us_federal_contracts'],
     us_healthcare_fda: ['us_npi_clinics', 'fda_510k'],
 };
@@ -1074,41 +1499,54 @@ export async function compareCompaniesHiringIntent(targets = [], maxJobsPerCompa
     };
 }
 
-export function generateSignalOutreachSequence({
-    companyName = 'Acme Corp',
-    roleTitle = 'Senior Platform Engineer',
-    techStack = [],
-    disclosedSalary = '',
-    buyerPersona = 'vp_engineering',
-    valueProposition = 'cut onboarding & tooling ramp time by 40%',
-} = {}) {
-    const cleanCompany = String(companyName || 'your team').trim();
-    const cleanRole = String(roleTitle || 'new engineering role').trim();
+export function generateSignalOutreachSequence(args = {}) {
+    const {
+        companyName,
+        roleTitle = 'Senior Platform Engineer',
+        techStack = [],
+        disclosedSalary = '',
+        buyerPersona = 'vp_engineering',
+        valueProposition = 'cut onboarding and tooling ramp time by 40%',
+    } = args || {};
+
+    const cleanCompany = typeof companyName === 'string' ? companyName.trim() : '';
+    if (!cleanCompany) {
+        return {
+            isError: true,
+            error: 'VALIDATION_ERROR',
+            field: 'companyName',
+            message:
+                'Missing required parameter "companyName". Pass a real target company name (e.g. {"companyName": "Ramp", "roleTitle": "Staff Data Platform Engineer"}).',
+        };
+    }
+
+    const cleanRole = String(roleTitle || 'Senior Platform Engineer').trim() || 'Senior Platform Engineer';
+    const roleWithArticle = withIndefiniteArticle(cleanRole);
     const stackList = (Array.isArray(techStack) ? techStack : String(techStack || '').split(','))
         .map((s) => String(s || '').trim())
-        .filter(Boolean)
+        .filter((s) => Boolean(s) && !isEmployerSelfBrand(s, cleanCompany, cleanCompany, ''))
         .slice(0, 3);
     const stackPhrase = stackList.length ? stackList.join(' + ') : 'your core stack';
-    const cleanValue = String(valueProposition || 'ship faster without adding headcount').trim();
+    const cleanValue = normalizeValueClause(valueProposition, 'ship faster without adding headcount');
     const salaryNote = disclosedSalary ? ` (especially at the ${disclosedSalary} band)` : '';
 
     const personaAngles = {
         vp_engineering: {
-            subject1: `${cleanCompany}'s ${cleanRole} search`,
-            touch1: `Saw ${cleanCompany} opened a ${cleanRole} role working across ${stackPhrase}. While that seat fills, teams usually hit delivery bottlenecks on the exact workflows that hire will own. We help engineering orgs ${cleanValue} before new hires even finish onboarding. Worth a 10-minute sanity check next week?`,
-            touch2: `Quick follow-up on the ${cleanRole} req — are you prioritizing ${stackPhrase} throughput this quarter, or keeping capacity flat until the role is filled? Happy to share a 2-minute teardown tailored to ${cleanCompany}.`,
+            subject1: `${cleanCompany.toLowerCase()} ${cleanRole.toLowerCase()} search`,
+            touch1: `Saw ${cleanCompany} opened ${roleWithArticle} role working across ${stackPhrase}. While that seat fills, teams usually hit delivery bottlenecks on the exact workflows that hire will own. We help engineering orgs ${cleanValue} before new hires finish onboarding. Worth sending a one-page architecture note?`,
+            touch2: `Quick follow-up on the ${cleanRole} req: are you prioritizing ${stackPhrase} throughput this quarter, or keeping capacity flat until the role is filled? Happy to share a two-minute teardown tailored to ${cleanCompany}.`,
             touch3: `Closing the loop so I don't clutter your inbox. If scaling ${stackPhrase} velocity comes back to the top of ${cleanCompany}'s roadmap, let me know and I'll send over the benchmark notes.`,
         },
         cfo_finance: {
-            subject1: ` hiring ROI / ${cleanRole} at ${cleanCompany}`,
-            touch1: `Noticed ${cleanCompany} is budgeting for a ${cleanRole}${salaryNote}. Most finance leaders we work with look to automate the manual ${stackPhrase} workload alongside new headcount so OPEX scales sub-linearly. We help teams ${cleanValue}. Open to a brief cost-comparison note?`,
-            touch2: `Following up briefly — even trimming 30 days of ramp friction around your ${stackPhrase} workflow typically pays back within a quarter. Happy to send the unit-economics breakdown if helpful.`,
+            subject1: `hiring roi / ${cleanRole.toLowerCase()}`,
+            touch1: `Noticed ${cleanCompany} is budgeting for ${roleWithArticle}${salaryNote}. Most finance leaders we work with automate manual ${stackPhrase} workloads alongside new headcount so OPEX scales sub-linearly. We help teams ${cleanValue}. Open to a brief payback-comparison note?`,
+            touch2: `Following up briefly: even trimming 30 days of ramp friction around your ${stackPhrase} workflow typically pays back within one quarter. Happy to send the unit-economics breakdown if helpful.`,
             touch3: `Last note from me. Whenever headcount efficiency around ${cleanCompany}'s ${stackPhrase} stack becomes a focus, feel free to reply here.`,
         },
         revops_gtm: {
-            subject1: `${cleanCompany} GTM signal (${cleanRole})`,
-            touch1: `Spotted ${cleanCompany} hiring a ${cleanRole} with ${stackPhrase} in the stack. Usually that signals a pipeline or operational push this quarter. We help GTM and RevOps teams ${cleanValue} without rebuilding existing workflows. Open to seeing how similar teams wire this up?`,
-            touch2: `Quick bump on ${cleanCompany}'s ${cleanRole} buildout — happy to share the exact workflow template teams use on top of ${stackPhrase} if that saves your team setup hours.`,
+            subject1: `${cleanCompany.toLowerCase()} gtm signal`,
+            touch1: `Spotted ${cleanCompany} hiring ${roleWithArticle} with ${stackPhrase} in the stack. Usually that signals an active pipeline or operational push. We help GTM and RevOps teams ${cleanValue} without rebuilding existing workflows. Open to seeing how peer teams wire this up?`,
+            touch2: `Quick follow-up on ${cleanCompany}'s ${cleanRole} buildout: happy to share the exact workflow template teams use on top of ${stackPhrase} if that saves your team setup hours.`,
             touch3: `Signing off on this thread for now. Reach out anytime if automating ${stackPhrase} handoffs moves up the priority list at ${cleanCompany}.`,
         },
     };
@@ -1128,11 +1566,18 @@ export function generateSignalOutreachSequence({
     };
 }
 
+const READ_ONLY_ANNOTATIONS = {
+    readOnlyHint: true,
+    destructiveHint: false,
+    openWorldHint: true,
+};
+
 const TOOLS = [
     {
         name: 'scan_company_hiring_intent',
         description:
-            'Scan a single company career board across 10 ATS platforms (workday, greenhouse, lever, ashby, personio, teamtailor, smartrecruiters, workable, recruitee, pinpoint) via career URL (`url`) or (`platform` + `target`) to extract open jobs, tech stack, disclosed salaries, and B2B buying intent scores.',
+            'Scan a single company career board across 10 ATS platforms (workday, greenhouse, lever, ashby, personio, teamtailor, smartrecruiters, workable, recruitee, pinpoint) via career URL (`url`) or (`platform` + `target`) to extract open jobs, 125+ tech-stack signals, disclosed salaries, and B2B buying intent scores.',
+        annotations: READ_ONLY_ANNOTATIONS,
         inputSchema: {
             type: 'object',
             properties: {
@@ -1171,6 +1616,7 @@ const TOOLS = [
         name: 'compare_companies_hiring_intent',
         description:
             'Scan and rank up to 5 company career URLs or slugs in parallel across all 10 ATS platforms (including Workday Fortune 500 boards), returning prioritized Account Buying Dossiers with maxIntentScore, hotRoleCount, executive hires, aggregated tech stack, and disclosed salary bands.',
+        annotations: READ_ONLY_ANNOTATIONS,
         inputSchema: {
             type: 'object',
             required: ['targets'],
@@ -1197,6 +1643,7 @@ const TOOLS = [
         name: 'detect_company_ats_board',
         description:
             'Identify which of the 10 supported ATS platforms powers a career URL, or probe a company slug live across Workday (55+ Fortune 500 boards), Greenhouse, Lever, Ashby, Workable, Recruitee, Pinpoint, Personio, Teamtailor, and SmartRecruiters to find active job boards and compensation availability.',
+        annotations: READ_ONLY_ANNOTATIONS,
         inputSchema: {
             type: 'object',
             required: ['input'],
@@ -1218,6 +1665,7 @@ const TOOLS = [
         name: 'generate_signal_outreach_sequence',
         description:
             'Convert a detected B2B hiring signal (company name, open role, tech stack, and optional salary band) into a concise 3-touch plain-text outbound sequence (<=75 words per email) tailored to VP Engineering, CFO/Finance, or RevOps/GTM plus a Clay credit-saver filter formula.',
+        annotations: READ_ONLY_ANNOTATIONS,
         inputSchema: {
             type: 'object',
             required: ['companyName', 'roleTitle'],
@@ -1246,7 +1694,8 @@ const TOOLS = [
     {
         name: 'list_cloud_b2b_lead_apis',
         description:
-            'List all 21 hosted Cloud Pay-Per-Event B2B Lead, Ad Spy, App Store, Contact Enrichment & Hiring Intent APIs (10-ATS Unified API, Workday Fortune 500 Jobs & Salary API, LinkedIn Ad Library B2B Ads Spy API, Google Ads Transparency API, Apple App Store & iOS Reviews API, Website Contact/Work Email/DNS MX & 70+ Tech Stack API, dedicated ATS APIs, and US Permit/Contractor/FMCSA/GovCon/NPI/FDA 510k APIs) with streamable-http MCP URLs and REST invocation endpoints.',
+            'List all 19 hosted Cloud Pay-Per-Event B2B Lead, Ad Spy, App Store, Contact Enrichment & Hiring Intent APIs (10-ATS Unified API, Workday Fortune 500 Jobs & Salary API, LinkedIn Ad Library B2B Ads Spy API, Google Ads Transparency API, Apple App Store & iOS Reviews API, Website Contact/Work Email/DNS MX & 70+ Tech Stack API, dedicated ATS APIs, and US FMCSA/GovCon/NPI/FDA 510k APIs) with streamable-http MCP URLs and REST invocation endpoints.',
+        annotations: READ_ONLY_ANNOTATIONS,
         inputSchema: {
             type: 'object',
             properties: {
@@ -1256,7 +1705,6 @@ const TOOLS = [
                         'all',
                         'ats_hiring_intent',
                         'ad_spy_contact_enrichment',
-                        'us_permits_contractors',
                         'us_fleet_govcon',
                         'us_healthcare_fda',
                     ],
@@ -1365,6 +1813,13 @@ async function handleRpc(msg) {
         }
         if (params?.name === 'generate_signal_outreach_sequence') {
             const data = generateSignalOutreachSequence(args);
+            if (data.isError) {
+                return {
+                    jsonrpc: '2.0',
+                    id,
+                    result: { isError: true, content: [{ type: 'text', text: JSON.stringify(data, null, 2) }] },
+                };
+            }
             return {
                 jsonrpc: '2.0',
                 id,
@@ -1399,7 +1854,7 @@ if (isMain) {
                 'Supported ATS Platforms (10):',
                 '  workday (55+ Fortune 500 + *.myworkdayjobs.com), greenhouse, lever (US + EU), ashby, personio, teamtailor, smartrecruiters, workable, recruitee, pinpoint',
                 '',
-                'Hosted Cloud Batch & Remote MCP Gateway (21 PPE APIs — 100-10,000+ targets + LinkedIn/Google Ads Spy + iOS App Store + Contact Finder + US Leads):',
+                'Hosted Cloud Batch & Remote MCP Gateway (19 PPE APIs — 100-10,000+ targets + LinkedIn/Google Ads Spy + iOS App Store + Contact Finder + US Leads):',
                 '  https://mcp.apify.com/?tools=yan0lovesha/multi-ats-jobs-hiring-intent',
                 '  https://apify.com/yan0lovesha',
                 '',
@@ -1425,9 +1880,34 @@ if (isMain) {
         const rl = readline.createInterface({ input: process.stdin, terminal: false });
         for await (const line of rl) {
             const t = line.trim();
-            if (!t.startsWith('{')) continue;
-            const res = await handleRpc(JSON.parse(t));
-            if (res) process.stdout.write(JSON.stringify(res) + '\n');
+            if (!t) continue;
+            let parsed;
+            try {
+                parsed = JSON.parse(t);
+            } catch {
+                process.stdout.write(
+                    JSON.stringify({ jsonrpc: '2.0', id: null, error: { code: -32700, message: 'Parse error' } }) + '\n',
+                );
+                continue;
+            }
+            if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+                process.stdout.write(
+                    JSON.stringify({ jsonrpc: '2.0', id: null, error: { code: -32600, message: 'Invalid Request' } }) + '\n',
+                );
+                continue;
+            }
+            try {
+                const res = await handleRpc(parsed);
+                if (res) process.stdout.write(JSON.stringify(res) + '\n');
+            } catch (err) {
+                process.stdout.write(
+                    JSON.stringify({
+                        jsonrpc: '2.0',
+                        id: parsed.id ?? null,
+                        error: { code: -32603, message: err instanceof Error ? err.message : 'Internal error' },
+                    }) + '\n',
+                );
+            }
         }
     }
 }

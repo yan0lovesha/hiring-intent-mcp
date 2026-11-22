@@ -182,10 +182,14 @@ TECH_STACK_CATALOG: list[tuple[str, str, str]] = [
     # 6. crm_gtm_revops (16)
     ("Salesforce", "crm_gtm_revops", r"\bsalesforce\b|\bsfdc\b"),
     ("HubSpot", "crm_gtm_revops", r"\bhubspot\b"),
-    ("Gong", "crm_gtm_revops", r"\bgong\.io\b|\bgong\b"),
-    ("Outreach", "crm_gtm_revops", r"\boutreach\.io\b"),
+    ("Gong", "crm_gtm_revops", r"\bgong\.io\b|\bgong\s+(?:revenue|call|intelligence|platform|crm)"),
+    (
+        "Outreach",
+        "crm_gtm_revops",
+        r"\boutreach\.io\b|\boutreach\s+(?:sequences?|cadences?)|(?:salesforce|hubspot|gong|salesloft|apollo|clay)[,\s/+&]+outreach\b",
+    ),
     ("Salesloft", "crm_gtm_revops", r"\bsalesloft\b"),
-    ("Clay", "crm_gtm_revops", r"\bclay\.com\b|\bclay\s+tables?\b"),
+    ("Clay", "crm_gtm_revops", r"\bclay\.com\b|\bclay\s+(?:tables?|waterfalls?|enrichment)\b|(?:apollo|hubspot|outreach|instantly)[,\s/+&]+clay\b"),
     ("Apollo", "crm_gtm_revops", r"\bapollo\.io\b"),
     ("ZoomInfo", "crm_gtm_revops", r"\bzoominfo\b"),
     ("Cognism", "crm_gtm_revops", r"\bcognism\b"),
@@ -196,9 +200,10 @@ TECH_STACK_CATALOG: list[tuple[str, str, str]] = [
     ("Amplitude", "crm_gtm_revops", r"\bamplitude\b"),
     ("Mixpanel", "crm_gtm_revops", r"\bmixpanel\b"),
     ("Zendesk / Intercom", "crm_gtm_revops", r"\bzendesk\b|\bintercom\b"),
-    # 7. erp_fintech (11)
+    # 7. erp_fintech (12)
     ("NetSuite", "erp_fintech", r"\bnetsuite\b"),
     ("SAP", "erp_fintech", r"\bsap\b|\bs/4hana\b"),
+    ("ServiceNow", "erp_fintech", r"\bservicenow\b"),
     ("Workday", "erp_fintech", r"\bworkday\b"),
     ("Stripe", "erp_fintech", r"\bstripe\b"),
     ("Adyen", "erp_fintech", r"\badyen\b"),
@@ -274,7 +279,7 @@ BUYING_SIGNAL_RULES = [
 ]
 
 LEADERSHIP_RE = re.compile(
-    r"\b(?:chief|cto|cfo|ciso|cro|cmo|vp\b|vice\s+president|head\s+of|director|principal|staff\s+engineer|founding)\b",
+    r"\b(?:chief|ceo|cto|cfo|ciso|cro|cmo|cpo|vp\b|vice\s+president|svp\b|evp\b|head\s+of|director|managing\s+director)\b",
     re.IGNORECASE,
 )
 
@@ -283,11 +288,34 @@ SALARY_INLINE_RE = re.compile(
     r"(?:\s?(?:-|–|—|to)\s?(?:USD|EUR|GBP|CHF|\$|€|£)?\s?\d{2,3}(?:[.,]\d{3}|\s?[kK]))?"
 )
 
+COMPANY_STOPWORDS = {
+    "inc", "incorporated", "llc", "ltd", "limited", "gmbh", "corp", "corporation",
+    "company", "co", "ag", "se", "plc", "ab", "bv", "sa", "sas", "technologies",
+    "technology", "tech", "software", "systems", "labs", "group", "holdings", "the",
+}
+
+VENDOR_BRAND_ALIASES = {
+    "aws": ("amazon", "aws"),
+    "microsoft azure": ("microsoft", "azure"),
+    "google cloud (gcp)": ("google", "gcp", "alphabet"),
+    "google gemini": ("google", "gemini", "alphabet"),
+    "nvidia cuda / tensorrt": ("nvidia",),
+    "palo alto prisma": ("paloalto", "paloaltonetworks"),
+    "twilio segment": ("twilio", "segment"),
+    "greenhouse ats": ("greenhouse",),
+    "ashby ats": ("ashby",),
+}
+
 CLOUD_PPE_CATALOG = [
     {
         "slug": "multi-ats-jobs-hiring-intent",
         "url": f"{APIFY_PUBLISHER_URL}/multi-ats-jobs-hiring-intent",
-        "useCase": "Flagship 9-ATS Unified Aggregator: scan mixed Greenhouse, Lever, Ashby & EU career URLs in one run",
+        "useCase": "Flagship 10-ATS Unified Aggregator: scan mixed Workday, Greenhouse, Lever, Ashby & EU career URLs in one run",
+    },
+    {
+        "slug": "workday-jobs-scraper",
+        "url": f"{APIFY_PUBLISHER_URL}/workday-jobs-scraper",
+        "useCase": "Fortune 500 & Global 2000 Workday CXS jobs, full JDs, US salary ranges & 125+ tech-stack signals",
     },
     {
         "slug": "greenhouse-jobs-hiring-intent",
@@ -297,7 +325,7 @@ CLOUD_PPE_CATALOG = [
     {
         "slug": "lever-jobs-hiring-intent",
         "url": f"{APIFY_PUBLISHER_URL}/lever-jobs-hiring-intent",
-        "useCase": "Batch Lever scans with structured salaryRange, requirement lists & 0-100 intent scores",
+        "useCase": "Batch US & EU Lever scans with structured salaryRange, requirement lists & 0-100 intent scores",
     },
     {
         "slug": "ashby-jobs-hiring-intent",
@@ -335,14 +363,24 @@ CLOUD_PPE_CATALOG = [
         "useCase": "Enterprise & Digital Health Pinpoint boards with direct Hiring Manager reporting lines",
     },
     {
-        "slug": "us-building-solar-permits-leads",
-        "url": f"{APIFY_PUBLISHER_URL}/us-building-solar-permits-leads",
-        "useCase": "US Municipal Commercial, Solar PV & Roofing Permits with project valuations ($) & contractor phones",
+        "slug": "website-contact-email-finder",
+        "url": f"{APIFY_PUBLISHER_URL}/website-contact-email-finder",
+        "useCase": "Verified work emails, Cloudflare decoding, live DNS MX/SPF mail stack & 70+ web technologies per domain",
     },
     {
-        "slug": "us-contractor-licenses-leads",
-        "url": f"{APIFY_PUBLISHER_URL}/us-contractor-licenses-leads",
-        "useCase": "US Licensed HVAC, Electrical, Plumbing & General Contractors with active state license records & contacts",
+        "slug": "linkedin-ad-library-scraper",
+        "url": f"{APIFY_PUBLISHER_URL}/linkedin-ad-library-scraper",
+        "useCase": "B2B LinkedIn Ad Library sponsored creatives, CTAs, landing URLs, utm_campaign & EU impressions",
+    },
+    {
+        "slug": "google-ads-transparency-scraper",
+        "url": f"{APIFY_PUBLISHER_URL}/google-ads-transparency-scraper",
+        "useCase": "Google Ads Transparency Center advertiser IDs, active creatives, evergreen velocity & YouTube/copy assets",
+    },
+    {
+        "slug": "apple-app-store-scraper",
+        "url": f"{APIFY_PUBLISHER_URL}/apple-app-store-scraper",
+        "useCase": "iOS App Store metadata, multi-country 1-5 star reviews, churn pain-point mining & publisher domains",
     },
     {
         "slug": "us-fmcsa-trucking-fleet-leads",
@@ -374,7 +412,10 @@ def is_allowed_ats_url(url: str) -> bool:
     return any(pattern.match(parsed.hostname) for pattern in ALLOWED_HOST_PATTERNS)
 
 
-def fetch_public_url(url: str, timeout_sec: float = 12.0) -> str | None:
+MAX_HTTP_READ_BYTES = 25 * 1024 * 1024  # 25MB cap so large Ashby boards (e.g. openai ~15MB) parse cleanly
+
+
+def fetch_public_url(url: str, timeout_sec: float = 20.0) -> str | None:
     if not is_allowed_ats_url(url):
         raise ValueError(f"Blocked URL outside official 9-ATS allowlist: {url}")
     req = urllib.request.Request(
@@ -389,7 +430,7 @@ def fetch_public_url(url: str, timeout_sec: float = 12.0) -> str | None:
         with urllib.request.urlopen(req, timeout=timeout_sec) as resp:
             if resp.status < 200 or resp.status >= 300:
                 return None
-            raw = resp.read(4_500_000)
+            raw = resp.read(MAX_HTTP_READ_BYTES)
             return raw.decode("utf-8", errors="replace")
     except (urllib.error.URLError, TimeoutError, ValueError):
         return None
@@ -428,15 +469,49 @@ def normalize_slug(raw_target: str) -> str:
     return cleaned
 
 
+def is_employer_self_brand(tool_name: str, company_name: str, company_slug: str, ats_platform: str) -> bool:
+    tool_lower = (tool_name or "").strip().lower()
+    if not tool_lower:
+        return False
+    host_ats = (ats_platform or "").strip().lower()
+    if host_ats and (tool_lower == host_ats or tool_lower == f"{host_ats} ats"):
+        return True
+
+    raw_tokens = [
+        tok
+        for tok in re.split(r"[^a-z0-9+#]+", f"{company_name or ''} {company_slug or ''}".lower())
+        if len(tok) >= 3 and tok not in COMPANY_STOPWORDS
+    ]
+    if not raw_tokens:
+        return False
+    company_set = set(raw_tokens)
+    compact = "".join(raw_tokens)
+    if len(compact) >= 4:
+        company_set.add(compact)
+
+    tool_tokens = [
+        tok
+        for tok in re.split(r"[^a-z0-9+#]+", tool_lower)
+        if len(tok) >= 3 and tok not in {"ats", "cloud", "ci"}
+    ]
+    alias_tokens = VENDOR_BRAND_ALIASES.get(tool_lower, ())
+    return any(tok in company_set for tok in (*tool_tokens, *alias_tokens))
+
+
 def enrich_job(record: dict) -> dict:
     title = str(record.get("title") or "").strip()
     department = str(record.get("department") or "General").strip()
     description = str(record.get("description") or "").strip()
+    company_name = str(record.get("companyName") or "")
+    company_slug = str(record.get("companySlug") or "")
+    ats_platform = str(record.get("atsPlatform") or "")
     corpus = f"{title}\n{department}\n{description}"
 
     detected_tools: list[str] = []
     tools_by_category: dict[str, list[str]] = {}
     for tool_name, category, regex in COMPILED_TECH_PATTERNS:
+        if is_employer_self_brand(tool_name, company_name, company_slug, ats_platform):
+            continue
         if regex.search(corpus):
             detected_tools.append(tool_name)
             tools_by_category.setdefault(category, []).append(tool_name)
@@ -498,6 +573,21 @@ def route_buyer_persona(all_signals: list[str], category_counts: dict[str, int],
     return "CTO / VP of Engineering"
 
 
+def _role_priority_tuple(title: str, has_comp: bool = False) -> tuple[int, int]:
+    t = title or ""
+    is_exec = bool(LEADERSHIP_RE.search(t))
+    is_tech = bool(
+        re.search(
+            r"\b(?:engineer|engineering|architect|platform|infrastructure|devops|sre|data|analytics|"
+            r"scientist|machine\s+learning|ai\b|ml\b|security|infosec|grc|revops|cloud|systems|developer)\b",
+            t,
+            re.I,
+        )
+    )
+    rank = (4 if (is_exec and is_tech) else 3 if is_tech else 2 if is_exec else 0)
+    return (rank, 1 if has_comp else 0)
+
+
 def fetch_ashby(slug: str, max_jobs: int) -> dict | None:
     url = f"https://api.ashbyhq.com/posting-api/job-board/{urllib.parse.quote(slug)}?includeCompensation=true"
     raw = fetch_public_url(url)
@@ -508,16 +598,16 @@ def fetch_ashby(slug: str, max_jobs: int) -> dict | None:
     if not jobs:
         return None
     jobs.sort(
-        key=lambda j: (
-            2 if LEADERSHIP_RE.search(j.get("title") or "") else 0,
-            2 if re.search(r"\b(?:engineer|platform|data|security|infra|ml|ai|revops)\b", j.get("title") or "", re.I) else 0,
-            1 if (j.get("compensation") or {}).get("compensationTierSummary") else 0,
+        key=lambda j: _role_priority_tuple(
+            j.get("title") or "",
+            bool((j.get("compensation") or {}).get("compensationTierSummary")),
         ),
         reverse=True,
     )
     org_name = data.get("organizationName") or data.get("title") or slug
+    pool = jobs[: max(max_jobs * 3, 12)]
     enriched = []
-    for item in jobs[:max_jobs]:
+    for item in pool:
         comp = item.get("compensation") or {}
         sal = comp.get("compensationTierSummary") or comp.get("scrapeableCompensationSalarySummary")
         enriched.append(
@@ -537,7 +627,8 @@ def fetch_ashby(slug: str, max_jobs: int) -> dict | None:
                 }
             )
         )
-    return {"platform": "ashby", "companyName": org_name, "totalOpenRoles": len(jobs), "jobs": enriched}
+    enriched.sort(key=lambda r: r["intentScore"], reverse=True)
+    return {"platform": "ashby", "companyName": org_name, "totalOpenRoles": len(jobs), "jobs": enriched[:max_jobs]}
 
 
 def fetch_greenhouse(slug: str, max_jobs: int) -> dict | None:
@@ -550,15 +641,7 @@ def fetch_greenhouse(slug: str, max_jobs: int) -> dict | None:
     if not all_jobs:
         return None
 
-    def priority_key(j: dict) -> int:
-        t = j.get("title") or ""
-        if LEADERSHIP_RE.search(t):
-            return 2
-        if re.search(r"\b(?:engineer|data|security|cloud|ai|platform|revops|revenue)\b", t, re.I):
-            return 1
-        return 0
-
-    selected = sorted(all_jobs, key=priority_key, reverse=True)[:max_jobs]
+    selected = sorted(all_jobs, key=lambda j: _role_priority_tuple(j.get("title") or ""), reverse=True)[:max_jobs]
     enriched = []
     for item in selected:
         jid = item.get("id")
@@ -606,18 +689,34 @@ def fetch_greenhouse(slug: str, max_jobs: int) -> dict | None:
 
 
 def fetch_lever(slug: str, max_jobs: int, region: str = "global") -> dict | None:
-    limit = max(max_jobs, 10)
     primary_host = "api.eu.lever.co" if region == "eu" else "api.lever.co"
-    raw = fetch_public_url(f"https://{primary_host}/v0/postings/{urllib.parse.quote(slug)}?mode=json&limit={limit}")
-    if not raw and region != "eu":
-        raw = fetch_public_url(f"https://api.eu.lever.co/v0/postings/{urllib.parse.quote(slug)}?mode=json&limit={limit}")
-    if not raw:
+    fallback_host = "api.lever.co" if region == "eu" else "api.eu.lever.co"
+
+    def _load_postings(host: str) -> list | None:
+        raw_resp = fetch_public_url(f"https://{host}/v0/postings/{urllib.parse.quote(slug)}?mode=json")
+        if not raw_resp:
+            return None
+        parsed_arr = json.loads(raw_resp)
+        return parsed_arr if isinstance(parsed_arr, list) and parsed_arr else None
+
+    arr = _load_postings(primary_host)
+    if not arr:
+        arr = _load_postings(fallback_host)
+    if not arr:
         return None
-    arr = json.loads(raw)
-    if not isinstance(arr, list) or not arr:
-        return None
+
+    total_open_roles = len(arr)
+    arr_sorted = sorted(
+        arr,
+        key=lambda j: _role_priority_tuple(
+            j.get("text") or "",
+            bool((j.get("salaryRange") or {}).get("min")),
+        ),
+        reverse=True,
+    )
+
     enriched = []
-    for item in arr[:max_jobs]:
+    for item in arr_sorted[: max(max_jobs * 3, 12)]:
         sr = item.get("salaryRange") or {}
         sal = None
         has_min = sr.get("min") is not None and sr.get("min") > 0
@@ -640,6 +739,15 @@ def fetch_lever(slug: str, max_jobs: int, region: str = "global") -> dict | None
             if isinstance(created_ms, (int, float))
             else None
         )
+        full_desc = "\n".join(
+            x
+            for x in [
+                item.get("descriptionPlain") or strip_html(item.get("description")),
+                lists_text,
+                item.get("additionalPlain") or strip_html(item.get("additional")),
+            ]
+            if x
+        )
         enriched.append(
             enrich_job(
                 {
@@ -653,11 +761,12 @@ def fetch_lever(slug: str, max_jobs: int, region: str = "global") -> dict | None
                     "disclosedSalary": sal,
                     "publishedAt": pub_iso,
                     "jobUrl": item.get("hostedUrl"),
-                    "description": f"{item.get('descriptionPlain') or strip_html(item.get('description'))}\n{lists_text}",
+                    "description": full_desc,
                 }
             )
         )
-    return {"platform": "lever", "companyName": slug, "totalOpenRoles": len(arr), "jobs": enriched}
+    enriched.sort(key=lambda r: r["intentScore"], reverse=True)
+    return {"platform": "lever", "companyName": slug, "totalOpenRoles": total_open_roles, "jobs": enriched[:max_jobs]}
 
 
 def fetch_workable(slug: str, max_jobs: int) -> dict | None:
@@ -1063,7 +1172,7 @@ def main() -> int:
     parser.add_argument(
         "--cloud-catalog",
         action="store_true",
-        help="Display Cloud Pay-Per-Event & Hosted MCP APIs for 10+ batch scans and US Permit/NPI/FDA leads.",
+        help="Display Cloud Pay-Per-Event & Hosted MCP APIs for 10+ batch scans and US FMCSA/GovCon/NPI/FDA leads.",
     )
     parser.add_argument(
         "--output",
@@ -1077,9 +1186,9 @@ def main() -> int:
             "publisherCatalogUrl": APIFY_PUBLISHER_URL,
             "hostedMcpServerUrl": APIFY_HOSTED_MCP_URL,
             "whenToUseCloudPpe": [
-                "Batch scanning 10 to 10,000+ company career boards in Clay, n8n, Make, or CRM workflows",
-                "Scheduled weekly hiring-velocity monitoring with automatic JSON-LD fallbacks on XML-disabled boards",
-                "High-ticket US public-registry leads: Municipal Solar/Building Permits, NPI Medical/Dental Clinics, FDA 510(k) Cleared Device Manufacturers",
+                "Batch scanning 10 to 10,000+ company career boards (including Fortune 500 Workday CXS) in Clay, n8n, Make, or CRM workflows",
+                "Domain contact email & DNS MX enrichment plus LinkedIn Ad Library, Google Ads Transparency, and iOS App Store intelligence",
+                "High-ticket US federal registries: FMCSA Trucking Fleets, USAspending Federal Contract Awards, NPI Medical/Dental Clinics, FDA 510(k) Cleared Device Manufacturers",
             ],
             "companionProSkill": "https://www.agensi.io/skills/b2b-signal-to-cold-email-autopilot-pro-clay-n8n (B2B Signal-to-Cold-Email Autopilot Pro — turns signals into 3-touch multi-persona outbound sequences, Clay credit-saver formulas & n8n JSON)",
             "apis": CLOUD_PPE_CATALOG,
@@ -1096,8 +1205,8 @@ def main() -> int:
     if len(raw_targets) >= 10:
         batch_warning = (
             f"Interactive local scan capped to first 9 of {len(raw_targets)} targets to avoid rate limits. "
-            f"For 10-10,000+ batch pipelines, scheduled monitoring, or US Permit/NPI/FDA leads, "
-            f"use the Cloud Pay-Per-Event + Hosted MCP APIs at {APIFY_PUBLISHER_URL} (--cloud-catalog)."
+            f"For 10-10,000+ batch pipelines, Workday Fortune 500 boards, domain contact enrichment, or US FMCSA/GovCon/NPI/FDA leads, "
+            f"use the 19 Cloud Pay-Per-Event + Hosted MCP APIs at {APIFY_PUBLISHER_URL} (--cloud-catalog)."
         )
         raw_targets = raw_targets[:9]
 
@@ -1124,7 +1233,7 @@ def main() -> int:
         "unresolvedTargets": unresolved,
         "batchScaleNotice": batch_warning
         or (
-            f"Need 10+ company batch runs, scheduled monitoring, or US Solar Permits / NPI Clinics / FDA 510(k) leads? "
+            f"Need 10+ company batch runs, Fortune 500 Workday boards, domain contact emails, or US FMCSA / GovCon / NPI Clinics / FDA 510(k) leads? "
             f"Run with --cloud-catalog or visit {APIFY_PUBLISHER_URL}"
         ),
         "dossiers": dossiers,

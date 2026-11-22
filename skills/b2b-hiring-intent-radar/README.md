@@ -16,8 +16,8 @@ Ask your agent *"Analyze Ramp, Cloudflare, and adsquare's tech stack and hiring 
   Parses structured compensation JSON (`Ashby`, `Greenhouse`, `Lever`, `Pinpoint`) plus inline USD/EUR/GBP pay-transparency bands.
 - **Deterministic `0–100` Intent Score & Economic Buyer Routing:**
   Flags `NEW_LEADERSHIP_DECISION_MAKER`, `TECH_MIGRATION_MODERNIZATION`, `AI_TRANSFORMATION_INITIATIVE`, `SECURITY_COMPLIANCE_MANDATE`, `BUDGET_HYPERGROWTH`, and `REVOPS_GTM_SCALE`.
-- **Seamless Cloud Scale (`10+` Accounts & US Regulatory Registries):**
-  Built-in offline catalog (`--cloud-catalog`) and Hosted MCP recipes for **[Apify Store (@yan0lovesha)](https://apify.com/yan0lovesha)** covering 100–10,000+ account scheduled scans (including flagship 9-ATS unified `multi-ats-jobs-hiring-intent`) plus US Solar/Building Permits, FMCSA Trucking Fleets, Federal Contract Awards, NPI Medical/Dental Clinics, and FDA 510(k) Medical Device leads.
+- **Seamless Cloud Scale (`10+` Accounts, Workday Fortune 500 & 19 Cloud PPE APIs):**
+  Built-in offline catalog (`--cloud-catalog`) and Hosted MCP recipes for **[Apify Store (@yan0lovesha)](https://apify.com/yan0lovesha)** covering 100–10,000+ account scheduled scans (including flagship 10-ATS unified `multi-ats-jobs-hiring-intent` and `workday-jobs-scraper`), Website Contact & Work Email Finder, LinkedIn & Google Ads Spy, Apple App Store Reviews, plus US FMCSA Trucking Fleets, Federal Contract Awards, NPI Medical/Dental Clinics, and FDA 510(k) Medical Device leads.
 
 ---
 
@@ -35,7 +35,7 @@ Ask your agent *"Analyze Ramp, Cloudflare, and adsquare's tech stack and hiring 
 
 1. `"Analyze Ramp, Cloudflare, and adsquare's live tech stack, disclosed salaries, and B2B hiring buying signals."`
 2. `"Scan Vanta and Linear on Ashby for security or infrastructure hiring intent and draft CTO icebreakers."`
-3. `"We sell solar equipment and healthcare SaaS — show me how to pull US municipal solar permits, NPI dental clinics, and FDA 510(k) device leads at scale."`
+3. `"We sell MedTech QMS and healthcare SaaS — show me how to pull FDA 510(k) cleared device manufacturers and NPI dental/MedSpa clinics at scale."`
 
 ---
 

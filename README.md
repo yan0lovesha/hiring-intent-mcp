@@ -8,7 +8,7 @@
 [![Node >= 20](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen.svg)](./package.json)
 [![Zero Dependencies](https://img.shields.io/badge/dependencies-0-blue.svg)](./package.json)
 
-> **Zero-dependency Model Context Protocol (MCP) Server & CLI (`v1.5.0`)** for real-time **10-ATS career board probing** (**Workday**, **Greenhouse**, **Lever**, **Ashby**, **Personio**, **Teamtailor**, **SmartRecruiters**, **Workable**, **Recruitee**, **Pinpoint**), **multi-account buying dossiers**, **B2B tech-stack footprints**, **disclosed USD/EUR salary & equity bands**, and **signal-driven outbound sequences** — backed by **21 production Cloud Pay-Per-Event APIs** (`https://mcp.apify.com/?tools=yan0lovesha/multi-ats-jobs-hiring-intent`) and **Agensi AI Agent Outbound Skills** for Clay, n8n, Make, and autonomous AI Agents.
+> **Zero-dependency Model Context Protocol (MCP) Server & CLI (`v1.6.0`)** for real-time **10-ATS career board probing** (**Workday**, **Greenhouse**, **Lever**, **Ashby**, **Personio**, **Teamtailor**, **SmartRecruiters**, **Workable**, **Recruitee**, **Pinpoint**), **multi-account buying dossiers**, **125+ B2B tech-stack footprints**, **disclosed USD/EUR salary & equity bands**, and **signal-driven outbound sequences** — backed by **19 production Cloud Pay-Per-Event APIs** (`https://mcp.apify.com/?tools=yan0lovesha/multi-ats-jobs-hiring-intent`) and **Agensi AI Agent Outbound Skills** for Clay, n8n, Make, and autonomous AI Agents.
 
 ---
 
@@ -98,9 +98,9 @@ Open [`demo/index.html`](./demo/index.html) in any browser to filter 50+ real sc
 
 ---
 
-## Need Scheduled Batch Scale (100–10,000+ Targets), LinkedIn/Google Ad Spy, iOS App Reviews, Contact Enrichment, or US Permit/FDA/Clinic Leads?
+## Need Scheduled Batch Scale (100–10,000+ Targets), LinkedIn/Google Ad Spy, iOS App Reviews, Contact Enrichment, or US FMCSA/GovCon/FDA/Clinic Leads?
 
-The local open-core MCP server is ideal for inspecting 1–5 companies interactively. For **Clay.com waterfalls**, **scheduled n8n / Make outbound pipelines**, **Fortune 500 Workday batch jobs**, **LinkedIn Ad Library & Google Ads Transparency competitor ad spy**, **Apple App Store reviews & publisher churn mining**, **website verified work emails & DNS/tech enrichment**, and **US Federal/Municipal High-Ticket Lead Registries**, use our **21 Cloud Pay-Per-Event + Hosted MCP APIs on Apify Store** (`LIMITED_PERMISSIONS` native, `256 MB` RAM, pennies per run, x402 agentic payment ready):
+The local open-core MCP server is ideal for inspecting 1–5 companies interactively. For **Clay.com waterfalls**, **scheduled n8n / Make outbound pipelines**, **Fortune 500 Workday batch jobs**, **LinkedIn Ad Library & Google Ads Transparency competitor ad spy**, **Apple App Store reviews & publisher churn mining**, **website verified work emails & DNS/tech enrichment**, and **US Federal High-Ticket Lead Registries**, use our **19 Cloud Pay-Per-Event + Hosted MCP APIs on Apify Store** (`LIMITED_PERMISSIONS` native, `256 MB` RAM, pennies per run, x402 agentic payment ready):
 
 👉 **Full Publisher Catalog**: **[https://apify.com/yan0lovesha](https://apify.com/yan0lovesha)**
 
@@ -128,14 +128,12 @@ The local open-core MCP server is ideal for inspecting 1–5 companies interacti
 | 12 | [**Workable Jobs Scraper & Career API (B2B Hiring Signals)**](https://apify.com/yan0lovesha/workable-jobs-hiring-intent) | Global Mid-Market & SaaS (27,000+ companies) | Sub-second single-request full JD extraction + v3/v2 fallback + Account Dossiers |
 | 13 | [**Recruitee Jobs Scraper & Career API (B2B Hiring Signals)**](https://apify.com/yan0lovesha/recruitee-jobs-hiring-intent) | Benelux, DACH & EU Scaleups (5,000+ companies) | Full `/api/offers` structured salary, hybrid/remote flags & 125+ tech-stack extractor |
 | 14 | [**Pinpoint Jobs Scraper & Salary API (B2B Hiring Signals)**](https://apify.com/yan0lovesha/pinpoint-jobs-hiring-intent) | Enterprise & Digital Health (`SmartThings`, `Digital Science`, `Article`) | Direct Hiring Manager reporting line (`reportingTo`) + placeholder-board protection |
-| 15 | [**US Building, Solar & Roofing Permits Scraper & Leads API**](https://apify.com/yan0lovesha/us-building-solar-permits-leads) | US Municipal Socrata Open Data (`Seattle`, `Austin`, `Chicago`) | Commercial construction, Solar PV/Battery & Roofing permits with **Contractor Phones & Project Valuations ($)** |
-| 16 | [**US FMCSA Trucking Fleet & DOT Carrier Scraper & Leads API**](https://apify.com/yan0lovesha/us-fmcsa-trucking-fleet-leads) | US DOT FMCSA Motor Carrier Census | Commercial fleet power units, safety status, **Named DOT Principals & Insurance Leads** |
-| 17 | [**US Federal Contracts & USAspending Scraper & Leads API**](https://apify.com/yan0lovesha/us-federal-contracts-awards-leads) | Official US Federal USAspending Awards Feed | Newly awarded federal prime contractors, **Award Amounts ($), NAICS & Agency Buyers** |
-| 18 | [**US NPI Medical & Dental Clinics Scraper & Leads API**](https://apify.com/yan0lovesha/us-npi-medical-dental-clinics-leads) | US Federal HHS CMS NPPES NPI-2 Registry (All 50 States) | Private Dental, MedSpa/Derm, Chiropractic & Mental Health **Clinic Owners + Direct Phone Numbers** |
-| 19 | [**FDA 510(k) Medical Device Clearance Scraper & Leads API**](https://apify.com/yan0lovesha/fda-510k-medical-device-leads) | Official US FDA openFDA 510(k) `SESE` Clearances | Newly cleared MedTech manufacturers, **Named Regulatory Contacts**, addresses & SaMD/AI flags |
-| 20 | [**US HVAC, Electrical & Contractor License Scraper & Leads API**](https://apify.com/yan0lovesha/us-contractor-licenses-leads) | US State Contractor Licensing Boards | Active licensed commercial HVAC, electrical, plumbing & general contractors with direct contacts |
+| 15 | [**US FMCSA Trucking Fleet & DOT Carrier Scraper & Leads API**](https://apify.com/yan0lovesha/us-fmcsa-trucking-fleet-leads) | US DOT FMCSA Motor Carrier Census | Commercial fleet power units, safety status, **Named DOT Principals & Insurance Leads** |
+| 16 | [**US Federal Contracts & USAspending Scraper & Leads API**](https://apify.com/yan0lovesha/us-federal-contracts-awards-leads) | Official US Federal USAspending Awards Feed | Newly awarded federal prime contractors, **Award Amounts ($), NAICS & Agency Buyers** |
+| 17 | [**US NPI Medical & Dental Clinics Scraper & Leads API**](https://apify.com/yan0lovesha/us-npi-medical-dental-clinics-leads) | US Federal HHS CMS NPPES NPI-2 Registry (All 50 States) | Private Dental, MedSpa/Derm, Chiropractic & Mental Health **Clinic Owners + Direct Phone Numbers** |
+| 18 | [**FDA 510(k) Medical Device Clearance Scraper & Leads API**](https://apify.com/yan0lovesha/fda-510k-medical-device-leads) | Official US FDA openFDA 510(k) `SESE` Clearances | Newly cleared MedTech manufacturers, **Named Regulatory Contacts**, addresses & SaMD/AI flags |
 
-*(Table above lists Flagship `multi-ats-jobs-hiring-intent` ⭐ + all 20 specialized PPE APIs = **21 live Apify Store Actors**.)*
+*(Table above lists Flagship `multi-ats-jobs-hiring-intent` ⭐ + all 18 specialized PPE APIs = **19 live Apify Store Actors**.)*
 
 ---
 
@@ -147,8 +145,8 @@ Using **Claude Code, Cursor, GitHub Copilot, Codex CLI, Windsurf, or OpenClaw**?
    npx skills add yan0lovesha/hiring-intent-mcp
    ```
 2. **Pro Outbound Execution Engine & Turnkey Automation Kits:**
-   - **[Hiring-Intent Cold Email Autopilot Kit ($39 One-Time on Polar)](https://buy.polar.sh/polar_cl_0QfhhrBCOodgewSKM54hZocWIncYifIlj59fg1UOqXV)** — Complete downloadable bundle: 14-node multi-ATS **`n8n` outbound workflow JSON**, **Clay.com 70% credit-saver HTTP API recipe**, zero-dependency **local MCP server**, and standalone interactive Signal Radar dashboard.
-   - **[B2B Signal-to-Cold-Email Autopilot Pro ($15 Skill on Agensi)](https://www.agensi.io/skills/b2b-signal-to-cold-email-autopilot-pro-clay-n8n)** — Converts raw ATS, permit, NPI clinic, and FDA 510(k) signals into **CFO / VP Eng / RevOps 3-touch plain-text sequences** (verified by a 16-rule `<=75w` anti-AI-slop linter), **Clay `intentScore >= 60` 70% credit-saver formulas**, and **import-ready `n8n` workflow JSON**.
+   - **[Hiring-Intent Cold Email Autopilot Kit ($29 One-Time on Polar)](https://buy.polar.sh/polar_cl_0QfhhrBCOodgewSKM54hZocWIncYifIlj59fg1UOqXV)** — Complete downloadable `v2.0.0` bundle: n8n Cloud/2.x **`n8n` outbound workflow JSONs** (Instantly v2, Smartlead, HubSpot v3 + Domain Contact & Hunter waterfall), **Clay.com 10-ATS 70% credit-saver HTTP API recipe**, zero-dependency **10-ATS local MCP server (`v1.6.0`)**, 150+ real hiring-intent leads CSV/JSON, and standalone interactive Signal Radar dashboard.
+   - **[B2B Signal-to-Cold-Email Autopilot Pro ($15 Skill on Agensi)](https://www.agensi.io/skills/b2b-signal-to-cold-email-autopilot-pro-clay-n8n)** — Converts raw 10-ATS, FMCSA, GovCon, NPI clinic, and FDA 510(k) signals into **CFO / VP Eng / RevOps 3-touch plain-text sequences** (verified by a deterministic `<=75w` anti-AI-slop linter), **Clay `intentScore >= 60` 70% credit-saver + contact waterfall formulas**, and **import-ready `n8n` workflow JSON**.
 
 ---
 
@@ -167,7 +165,7 @@ Using **Claude Code, Cursor, GitHub Copilot, Codex CLI, Windsurf, or OpenClaw**?
    - Parameters: `companyName`, `roleTitle`, `techStack` *(optional array)*, `disclosedSalary` *(optional)*, `buyerPersona` (`vp_engineering` | `cfo_finance` | `revops_gtm`), `valueProposition` *(optional)*.
    - Returns: Concise 3-touch plain-text B2B outbound email sequence (`<= 75` words per email) plus a ready-to-paste Clay credit-saver filter formula.
 5. **`list_cloud_b2b_lead_apis`**:
-   - Parameters: `category` (`all` | `ats_hiring_intent` | `ad_spy_contact_enrichment` | `us_permits_contractors` | `us_fleet_govcon` | `us_healthcare_fda`).
+   - Parameters: `category` (`all` | `ats_hiring_intent` | `ad_spy_contact_enrichment` | `us_fleet_govcon` | `us_healthcare_fda`).
    - Returns: All 19 hosted Pay-Per-Event Apify Store Actors with `https://mcp.apify.com` `streamable-http` URLs, synchronous REST endpoints, Official MCP Registry & Glama links, and Agensi AI Agent Skill links.
 
 ---

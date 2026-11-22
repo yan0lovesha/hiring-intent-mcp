@@ -4,9 +4,9 @@ Use this rubric to explain every score and route outreach to the right economic 
 
 ---
 
-## 1. 8-Category Enterprise Tech-Stack Taxonomy (132 Tags)
+## 1. 8-Category Enterprise Tech-Stack Taxonomy (133 Tags)
 
-`scripts/ats_intent_radar.py` scans job titles, department labels, and full descriptions against word-boundary regexes across 8 commercial software categories:
+`scripts/ats_intent_radar.py` scans job titles, department labels, and full descriptions against word-boundary regexes across 8 commercial software categories (automatically excluding the employer's own brand and host ATS platform to eliminate self-brand noise):
 
 1. **`cloud_infra` (20 tags):** AWS, Microsoft Azure, Google Cloud (GCP), Kubernetes, Docker, Terraform, OpenTofu, Pulumi, Ansible, Helm, ArgoCD, Cloudflare, Fastly, Vercel, Datadog, Grafana, Prometheus, OpenTelemetry, Splunk, New Relic.
 2. **`data_analytics` (20 tags):** Snowflake, Databricks, BigQuery, Amazon Redshift, ClickHouse, dbt, Apache Airflow, Dagster, Prefect, Apache Kafka, Redpanda, Apache Spark, Apache Flink, Fivetran, Airbyte, Looker, Tableau, Power BI, PostgreSQL, Redis.
@@ -14,7 +14,7 @@ Use this rubric to explain every score and route outreach to the right economic 
 4. **`devtools_engineering` (24 tags):** Python, TypeScript, JavaScript, Go (Golang), Rust, Java, Kotlin, C++, C# / .NET, Ruby on Rails, PHP / Laravel, Swift / iOS, React, Next.js, Vue.js, Angular, Node.js, FastAPI / Django, Spring Boot, GraphQL, gRPC, GitHub Actions, GitLab CI, Sentry.
 5. **`security_compliance` (16 tags):** Okta, Auth0, CrowdStrike, Wiz, Snyk, Vanta, Drata, HashiCorp Vault, Palo Alto Prisma, SentinelOne, SOC 2, ISO 27001, HIPAA, FedRAMP, GDPR, NIS2 / DORA.
 6. **`crm_gtm_revops` (16 tags):** Salesforce, HubSpot, Gong, Outreach, Salesloft, Clay, Apollo, ZoomInfo, Cognism, 6sense, Marketo, Braze, Twilio Segment, Amplitude, Mixpanel, Zendesk / Intercom.
-7. **`erp_fintech` (11 tags):** NetSuite, SAP, Workday, Stripe, Adyen, Chargebee / Zuora, Coupa / Zip, DATEV, QuickBooks / Xero, Anaplan / Pigment, Plaid.
+7. **`erp_fintech` (12 tags):** NetSuite, SAP, ServiceNow, Workday, Stripe, Adyen, Chargebee / Zuora, Coupa / Zip, DATEV, QuickBooks / Xero, Anaplan / Pigment, Plaid.
 8. **`hr_collaboration` (9 tags):** Jira / Confluence, Linear, Notion, Slack, Figma, Rippling / Deel, BambooHR / HiBob, Greenhouse ATS, Ashby ATS.
 
 ---
@@ -24,7 +24,7 @@ Use this rubric to explain every score and route outreach to the right economic 
 ### Role-Level Score (`0–100`)
 - **Base Verified Requisition:** `+16` points (funded headcount exists today)
 - **Tech-Stack Density:** `+4` points per detected tool (capped at `+28`)
-- **`NEW_LEADERSHIP_DECISION_MAKER`** (`Chief`, `CTO`, `CFO`, `CISO`, `CRO`, `VP`, `Head of`, `Director`, `Principal`, `Staff`, `Founding`): `+22` points (new executives audit and replace tooling within 60–90 days)
+- **`NEW_LEADERSHIP_DECISION_MAKER`** (`Chief`, `CTO`, `CFO`, `CISO`, `CRO`, `VP`, `Head of`, `Director`): `+22` points (new executives audit and replace tooling within 60–90 days; IC Staff/Principal roles are excluded from executive buyer flags)
 - **`TECH_MIGRATION_MODERNIZATION`** (`greenfield`, `0 to 1`, `cloud migration`, `modernizing`, `re-architect`, `re-platform`, `legacy replacement`): `+24` points
 - **`AI_TRANSFORMATION_INITIATIVE`** (`genai`, `agentic`, `llm infrastructure`, `mlops`, `rag pipeline`, `foundation model`): `+20` points
 - **`BUDGET_HYPERGROWTH`** (`newly created role`, `hyper-growth`, `founding engineer`, `first hire`, `Series A–E`): `+18` points

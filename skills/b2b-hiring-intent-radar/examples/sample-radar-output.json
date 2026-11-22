@@ -1,16 +1,16 @@
 {
-  "generatedAt": "2026-11-17T04:37:30.700234+00:00",
-  "taxonomySize": 132,
+  "generatedAt": "2026-11-22T03:30:26.781134+00:00",
+  "taxonomySize": 133,
   "accountsMatched": 4,
   "unresolvedTargets": [],
-  "batchScaleNotice": "Need 10+ company batch runs, scheduled monitoring, or US Solar Permits / NPI Clinics / FDA 510(k) leads? Run with --cloud-catalog or visit https://apify.com/yan0lovesha",
+  "batchScaleNotice": "Need 10+ company batch runs, Fortune 500 Workday boards, domain contact emails, or US FMCSA / GovCon / NPI Clinics / FDA 510(k) leads? Run with --cloud-catalog or visit https://apify.com/yan0lovesha",
   "dossiers": [
     {
       "companyName": "Puzzel",
       "atsPlatform": "teamtailor",
-      "totalOpenRolesOnBoard": 11,
+      "totalOpenRolesOnBoard": 8,
       "rolesAnalyzed": 4,
-      "accountIntentScore": 100,
+      "accountIntentScore": 98,
       "accountIntentTier": "HOT",
       "recommendedBuyerPersona": "VP of Revenue Operations / CRO / Head of Growth",
       "activeSignals": [
@@ -21,21 +21,19 @@
       ],
       "leadershipOpenings": [],
       "verifiedTechStack": [
-        "Salesforce",
-        "Gong"
+        "Salesforce"
       ],
       "techStackByCategory": {
         "crm_gtm_revops": [
-          "Salesforce",
-          "Gong"
+          "Salesforce"
         ]
       },
       "disclosedSalarySamples": [
         "Senior FP&A Business Analyst, Revenue: €37,000 - €45,000"
       ],
       "icebreakers": {
-        "executiveAngle": "Saw Puzzel has 11 open roles right now, led by \"Account Executive - Denmark\" across Salesforce, Gong.",
-        "hiringManagerAngle": "Noticed the open \"Account Executive - Denmark\" req on your Commercial team working with Salesforce, Gong — teams scaling that stack usually hit tooling bottlenecks 3-4 months before the new hire fully ramps."
+        "executiveAngle": "Saw Puzzel has 8 open roles right now, led by \"Account Executive - Denmark\" across Salesforce.",
+        "hiringManagerAngle": "Noticed the open \"Account Executive - Denmark\" req on your Commercial team working with Salesforce — teams scaling that stack usually hit tooling bottlenecks 3-4 months before the new hire fully ramps."
       },
       "topRoles": [
         {
@@ -135,7 +133,7 @@
           "disclosedSalary": null,
           "publishedAt": "Fri, 30 Oct 2026 15:31:37 +0100",
           "jobUrl": "https://puzzel.teamtailor.com/jobs/8644282-partner-account-manager-netherlands",
-          "intentScore": 78,
+          "intentScore": 74,
           "intentTier": "HOT",
           "signals": [
             "AI_TRANSFORMATION_INITIATIVE",
@@ -143,13 +141,11 @@
             "REVOPS_GTM_SCALE"
           ],
           "techStack": [
-            "Salesforce",
-            "Gong"
+            "Salesforce"
           ],
           "techByCategory": {
             "crm_gtm_revops": [
-              "Salesforce",
-              "Gong"
+              "Salesforce"
             ]
           },
           "excerpt": "Partner Account Manager Amsterdam Area About Puzzel 🔍 We're the AI-native customer experience platform built in Norway, trusted across Europe, and growing fast. For 25 years we've helped contact centres deliver faster, more human service — without the clutter or complexity. Today we're #1 in the Nordics, scaling rapidly in the UK and the "
@@ -157,212 +153,422 @@
       ]
     },
     {
-      "companyName": "Cloudflare",
+      "companyName": "Figma",
       "atsPlatform": "greenhouse",
-      "totalOpenRolesOnBoard": 471,
+      "totalOpenRolesOnBoard": 147,
       "rolesAnalyzed": 4,
-      "accountIntentScore": 94,
+      "accountIntentScore": 78,
       "accountIntentTier": "HOT",
-      "recommendedBuyerPersona": "VP of Revenue Operations / CRO / Head of Growth",
+      "recommendedBuyerPersona": "VP of Infrastructure / Head of Platform Engineering",
       "activeSignals": [
         "NEW_LEADERSHIP_DECISION_MAKER",
-        "AI_TRANSFORMATION_INITIATIVE",
-        "REVOPS_GTM_SCALE"
+        "TECH_MIGRATION_MODERNIZATION",
+        "AI_TRANSFORMATION_INITIATIVE"
       ],
       "leadershipOpenings": [
-        "Chief of Staff to Chief Strategy Officer",
-        "Commercial Sales Director, West",
-        "Director, Growth Sales (AI & Digital Natives)"
+        "Director, Data Science",
+        "Director, Product Design - AI & Context",
+        "Director, People Partners - Product, Design & Engineering",
+        "Director, Product Design - Systems & Infrastructure"
       ],
-      "verifiedTechStack": [
-        "Cloudflare"
-      ],
-      "techStackByCategory": {
-        "cloud_infra": [
-          "Cloudflare"
-        ]
-      },
+      "verifiedTechStack": [],
+      "techStackByCategory": {},
       "disclosedSalarySamples": [
-        "Chief of Staff to Chief Strategy Officer: $221,000- $304,000",
-        "Commercial Sales Director, West: $328,000 - $451,000",
-        "Director, Growth Sales (AI & Digital Natives): $378,000 - $496,000"
+        "Director, Data Science: USD 290,000 - 376,000",
+        "Director, Product Design - AI & Context: USD 290,000 - 376,000",
+        "Director, People Partners - Product, Design & Engineering: USD 235,000 - 317,000",
+        "Director, Product Design - Systems & Infrastructure: USD 290,000 - 376,000"
       ],
       "icebreakers": {
-        "executiveAngle": "Saw Cloudflare has 471 open roles right now, led by \"Chief of Staff to Chief Strategy Officer\" ($221,000- $304,000) across Cloudflare.",
-        "hiringManagerAngle": "Noticed the open \"Chief of Staff to Chief Strategy Officer\" req on your Strategy team working with Cloudflare — teams scaling that stack usually hit tooling bottlenecks 3-4 months before the new hire fully ramps."
+        "executiveAngle": "Saw Figma has 147 open roles right now, led by \"Director, Data Science\" (USD 290,000 - 376,000) across Engineering.",
+        "hiringManagerAngle": "Noticed the open \"Director, Data Science\" req on your Engineering team working with Engineering — teams scaling that stack usually hit tooling bottlenecks 3-4 months before the new hire fully ramps."
       },
       "topRoles": [
         {
           "atsPlatform": "greenhouse",
-          "companyName": "Cloudflare",
-          "companySlug": "cloudflare",
-          "title": "Chief of Staff to Chief Strategy Officer",
-          "department": "Strategy",
-          "location": "Hybrid",
+          "companyName": "Figma",
+          "companySlug": "figma",
+          "title": "Director, Data Science",
+          "department": "Engineering",
+          "location": "San Francisco, CA • New York, NY • United States",
           "workplaceType": "onsite",
-          "disclosedSalary": "$221,000- $304,000",
-          "publishedAt": "2026-11-09T19:03:42-05:00",
-          "jobUrl": "https://boards.greenhouse.io/cloudflare/jobs/8076815?gh_jid=8076815",
-          "intentScore": 86,
-          "intentTier": "HOT",
-          "signals": [
-            "NEW_LEADERSHIP_DECISION_MAKER",
-            "AI_TRANSFORMATION_INITIATIVE",
-            "REVOPS_GTM_SCALE"
-          ],
-          "techStack": [
-            "Cloudflare"
-          ],
-          "techByCategory": {
-            "cloud_infra": [
-              "Cloudflare"
-            ]
-          },
-          "excerpt": "About Us At Cloudflare, we are on a mission to help build a better Internet. Today the company runs one of the world’s largest networks that powers millions of websites and other Internet properties for customers ranging from individual bloggers to SMBs to Fortune 500 companies. Cloudflare protects and accelerates any Internet application"
-        },
-        {
-          "atsPlatform": "greenhouse",
-          "companyName": "Cloudflare",
-          "companySlug": "cloudflare",
-          "title": "Commercial Sales Director, West",
-          "department": "Field Sales",
-          "location": "Hybrid",
-          "workplaceType": "onsite",
-          "disclosedSalary": "$328,000 - $451,000",
-          "publishedAt": "2026-11-09T19:03:42-05:00",
-          "jobUrl": "https://boards.greenhouse.io/cloudflare/jobs/8324315?gh_jid=8324315",
+          "disclosedSalary": "USD 290,000 - 376,000",
+          "publishedAt": "2026-10-27T13:40:12-04:00",
+          "jobUrl": "https://boards.greenhouse.io/figma/jobs/6130865004?gh_jid=6130865004",
           "intentScore": 70,
           "intentTier": "HOT",
           "signals": [
             "NEW_LEADERSHIP_DECISION_MAKER",
-            "AI_TRANSFORMATION_INITIATIVE"
+            "TECH_MIGRATION_MODERNIZATION"
           ],
-          "techStack": [
-            "Cloudflare"
-          ],
-          "techByCategory": {
-            "cloud_infra": [
-              "Cloudflare"
-            ]
-          },
-          "excerpt": "About Us At Cloudflare, we are on a mission to help build a better Internet. Today the company runs one of the world’s largest networks that powers millions of websites and other Internet properties for customers ranging from individual bloggers to SMBs to Fortune 500 companies. Cloudflare protects and accelerates any Internet application"
+          "techStack": [],
+          "techByCategory": {},
+          "excerpt": "Figma is growing our team of passionate creatives and builders on a mission to make design accessible to all. Figma’s platform helps teams bring ideas to life—whether you're brainstorming, creating a prototype, translating designs into code, or iterating with AI. From idea to product, Figma empowers teams to streamline workflows, move fas"
         },
         {
           "atsPlatform": "greenhouse",
-          "companyName": "Cloudflare",
-          "companySlug": "cloudflare",
-          "title": "Director, Growth Sales (AI & Digital Natives)",
-          "department": "Mid Market",
-          "location": "Hybrid",
+          "companyName": "Figma",
+          "companySlug": "figma",
+          "title": "Director, Product Design - AI & Context",
+          "department": "Design",
+          "location": "San Francisco, CA • New York, NY • United States",
           "workplaceType": "onsite",
-          "disclosedSalary": "$378,000 - $496,000",
-          "publishedAt": "2026-11-13T18:08:31-05:00",
-          "jobUrl": "https://boards.greenhouse.io/cloudflare/jobs/8383781?gh_jid=8383781",
-          "intentScore": 70,
-          "intentTier": "HOT",
-          "signals": [
-            "NEW_LEADERSHIP_DECISION_MAKER",
-            "AI_TRANSFORMATION_INITIATIVE"
-          ],
-          "techStack": [
-            "Cloudflare"
-          ],
-          "techByCategory": {
-            "cloud_infra": [
-              "Cloudflare"
-            ]
-          },
-          "excerpt": "About Us At Cloudflare, we are on a mission to help build a better Internet. Today the company runs one of the world’s largest networks that powers millions of websites and other Internet properties for customers ranging from individual bloggers to SMBs to Fortune 500 companies. Cloudflare protects and accelerates any Internet application"
-        },
-        {
-          "atsPlatform": "greenhouse",
-          "companyName": "Cloudflare",
-          "companySlug": "cloudflare",
-          "title": "Director, Growth Sales (AI & Digital Natives)",
-          "department": "Mid Market",
-          "location": "Distributed",
-          "workplaceType": "onsite",
-          "disclosedSalary": null,
-          "publishedAt": "2026-11-09T19:03:42-05:00",
-          "jobUrl": "https://boards.greenhouse.io/cloudflare/jobs/8243255?gh_jid=8243255",
-          "intentScore": 62,
+          "disclosedSalary": "USD 290,000 - 376,000",
+          "publishedAt": "2026-10-27T13:40:12-04:00",
+          "jobUrl": "https://boards.greenhouse.io/figma/jobs/6201114004?gh_jid=6201114004",
+          "intentScore": 66,
           "intentTier": "WARM",
           "signals": [
             "NEW_LEADERSHIP_DECISION_MAKER",
             "AI_TRANSFORMATION_INITIATIVE"
           ],
+          "techStack": [],
+          "techByCategory": {},
+          "excerpt": "Figma is growing our team of passionate creatives and builders on a mission to make design accessible to all. Figma’s platform helps teams bring ideas to life—whether you're brainstorming, creating a prototype, translating designs into code, or iterating with AI. From idea to product, Figma empowers teams to streamline workflows, move fas"
+        },
+        {
+          "atsPlatform": "greenhouse",
+          "companyName": "Figma",
+          "companySlug": "figma",
+          "title": "Director, People Partners - Product, Design & Engineering",
+          "department": "People",
+          "location": "San Francisco, CA; San Francisco, CA • United States",
+          "workplaceType": "onsite",
+          "disclosedSalary": "USD 235,000 - 317,000",
+          "publishedAt": "2026-10-27T13:40:12-04:00",
+          "jobUrl": "https://boards.greenhouse.io/figma/jobs/6150563004?gh_jid=6150563004",
+          "intentScore": 46,
+          "intentTier": "WARM",
+          "signals": [
+            "NEW_LEADERSHIP_DECISION_MAKER"
+          ],
+          "techStack": [],
+          "techByCategory": {},
+          "excerpt": "Figma is growing our team of passionate creatives and builders on a mission to make design accessible to all. Figma’s platform helps teams bring ideas to life—whether you're brainstorming, creating a prototype, translating designs into code, or iterating with AI. From idea to product, Figma empowers teams to streamline workflows, move fas"
+        },
+        {
+          "atsPlatform": "greenhouse",
+          "companyName": "Figma",
+          "companySlug": "figma",
+          "title": "Director, Product Design - Systems & Infrastructure",
+          "department": "Design",
+          "location": "San Francisco, CA • New York, NY • United States",
+          "workplaceType": "onsite",
+          "disclosedSalary": "USD 290,000 - 376,000",
+          "publishedAt": "2026-11-16T11:08:09-05:00",
+          "jobUrl": "https://boards.greenhouse.io/figma/jobs/6251950004?gh_jid=6251950004",
+          "intentScore": 46,
+          "intentTier": "WARM",
+          "signals": [
+            "NEW_LEADERSHIP_DECISION_MAKER"
+          ],
+          "techStack": [],
+          "techByCategory": {},
+          "excerpt": "Figma is growing our team of passionate creatives and builders on a mission to make design accessible to all. Figma’s platform helps teams bring ideas to life—whether you're brainstorming, creating a prototype, translating designs into code, or iterating with AI. From idea to product, Figma empowers teams to streamline workflows, move fas"
+        }
+      ]
+    },
+    {
+      "companyName": "zoox",
+      "atsPlatform": "lever",
+      "totalOpenRolesOnBoard": 244,
+      "rolesAnalyzed": 4,
+      "accountIntentScore": 68,
+      "accountIntentTier": "WARM",
+      "recommendedBuyerPersona": "CTO / VP of Engineering",
+      "activeSignals": [
+        "AI_TRANSFORMATION_INITIATIVE",
+        "BUDGET_HYPERGROWTH",
+        "NEW_LEADERSHIP_DECISION_MAKER"
+      ],
+      "leadershipOpenings": [
+        "Director, Corporate Security",
+        "Senior Director of Engineering, Product Software"
+      ],
+      "verifiedTechStack": [
+        "Databricks",
+        "Looker",
+        "Python",
+        "GitHub Actions",
+        "Rust"
+      ],
+      "techStackByCategory": {
+        "data_analytics": [
+          "Databricks",
+          "Looker"
+        ],
+        "devtools_engineering": [
+          "Python",
+          "GitHub Actions",
+          "Rust"
+        ]
+      },
+      "disclosedSalarySamples": [
+        "Automation Engineer - Compute Software Performance: USD 196,000 - 242,000 (per-year-salary)",
+        "Data Scientist, Fleet Orchestration Algorithms: USD 177,000 - 217,000 (per-year-salary)",
+        "Director, Corporate Security: USD 198,000 - 282,000 (per-year-salary)",
+        "Senior Director of Engineering, Product Software: USD 354,000 - 470,000 (per-year-salary)"
+      ],
+      "icebreakers": {
+        "executiveAngle": "Saw zoox has 244 open roles right now, led by \"Automation Engineer - Compute Software Performance\" (USD 196,000 - 242,000 (per-year-salary)) across Databricks, Looker, Python.",
+        "hiringManagerAngle": "Noticed the open \"Automation Engineer - Compute Software Performance\" req on your Software team working with Databricks, Looker, Python — teams scaling that stack usually hit tooling bottlenecks 3-4 months before the new hire fully ramps."
+      },
+      "topRoles": [
+        {
+          "atsPlatform": "lever",
+          "companyName": "zoox",
+          "companySlug": "zoox",
+          "title": "Automation Engineer - Compute Software Performance",
+          "department": "Software",
+          "location": "Foster City, CA",
+          "workplaceType": "hybrid",
+          "disclosedSalary": "USD 196,000 - 242,000 (per-year-salary)",
+          "publishedAt": "2026-11-13T22:09:55.192000+00:00",
+          "jobUrl": "https://jobs.lever.co/zoox/1825c7df-ea96-4a2d-b57b-609a61300382",
+          "intentScore": 60,
+          "intentTier": "WARM",
+          "signals": [
+            "AI_TRANSFORMATION_INITIATIVE"
+          ],
           "techStack": [
-            "Cloudflare"
+            "Databricks",
+            "Looker",
+            "Python",
+            "GitHub Actions"
           ],
           "techByCategory": {
-            "cloud_infra": [
-              "Cloudflare"
+            "data_analytics": [
+              "Databricks",
+              "Looker"
+            ],
+            "devtools_engineering": [
+              "Python",
+              "GitHub Actions"
             ]
           },
-          "excerpt": "About Us At Cloudflare, we are on a mission to help build a better Internet. Today the company runs one of the world’s largest networks that powers millions of websites and other Internet properties for customers ranging from individual bloggers to SMBs to Fortune 500 companies. Cloudflare protects and accelerates any Internet application"
+          "excerpt": "Zoox is building advanced self-driving hardware and software solutions. To attain the utmost efficiency that the system demands, we need you - an expert who understands both compute hardware architecture as well as the algorithms and middleware that run on it. Your contributions will be instrumental in finding & detecting performance-rela"
+        },
+        {
+          "atsPlatform": "lever",
+          "companyName": "zoox",
+          "companySlug": "zoox",
+          "title": "Data Scientist, Fleet Orchestration Algorithms",
+          "department": "Data Science",
+          "location": "Foster City, CA",
+          "workplaceType": "onsite",
+          "disclosedSalary": "USD 177,000 - 217,000 (per-year-salary)",
+          "publishedAt": "2026-10-21T16:43:36.098000+00:00",
+          "jobUrl": "https://jobs.lever.co/zoox/254559af-8372-403b-8220-9b49af400361",
+          "intentScore": 50,
+          "intentTier": "WARM",
+          "signals": [
+            "BUDGET_HYPERGROWTH"
+          ],
+          "techStack": [
+            "Python",
+            "Rust"
+          ],
+          "techByCategory": {
+            "devtools_engineering": [
+              "Python",
+              "Rust"
+            ]
+          },
+          "excerpt": "The Core Data Science team builds the products and data assets that let teams across Zoox measure and improve the autonomy and operational performance of our fleet. In this role, you'll focus on fleet simulation — the environment our data teams use to develop, test, and evaluate the algorithms that orchestrate our autonomous fleet (dispat"
+        },
+        {
+          "atsPlatform": "lever",
+          "companyName": "zoox",
+          "companySlug": "zoox",
+          "title": "Director, Corporate Security",
+          "department": "Legal, EHS, & Security",
+          "location": "Foster City, CA",
+          "workplaceType": "onsite",
+          "disclosedSalary": "USD 198,000 - 282,000 (per-year-salary)",
+          "publishedAt": "2026-02-17T20:12:02.548000+00:00",
+          "jobUrl": "https://jobs.lever.co/zoox/8af192a0-9ee4-45de-a241-f373cb2ef71c",
+          "intentScore": 46,
+          "intentTier": "WARM",
+          "signals": [
+            "NEW_LEADERSHIP_DECISION_MAKER"
+          ],
+          "techStack": [],
+          "techByCategory": {},
+          "excerpt": "The Director, Corporate Security is a leadership role responsible for the development and implementation of physical security programs to help the company keep all Zoox personnel and property safe and secure.  This leader will serve as the primary point of contact for all physical security programs for the company, including physical secu"
+        },
+        {
+          "atsPlatform": "lever",
+          "companyName": "zoox",
+          "companySlug": "zoox",
+          "title": "Senior Director of Engineering, Product Software",
+          "department": "Software",
+          "location": "Foster City, CA",
+          "workplaceType": "hybrid",
+          "disclosedSalary": "USD 354,000 - 470,000 (per-year-salary)",
+          "publishedAt": "2024-09-19T15:54:30.950000+00:00",
+          "jobUrl": "https://jobs.lever.co/zoox/6e83599a-480e-4fe8-bac7-3b9da512558d",
+          "intentScore": 46,
+          "intentTier": "WARM",
+          "signals": [
+            "NEW_LEADERSHIP_DECISION_MAKER"
+          ],
+          "techStack": [],
+          "techByCategory": {},
+          "excerpt": "Join us at Zoox, where cutting-edge technology meets the open road. We are revolutionizing transportation and shaping the future of mobility, and as the leader of the Product Software organization, you’ll be at the forefront of our mission to redefine the way we live and travel.\n \nWe’re seeking a dynamic and visionary leader to lead the d"
         }
       ]
     },
     {
       "companyName": "ramp",
       "atsPlatform": "ashby",
-      "totalOpenRolesOnBoard": 179,
+      "totalOpenRolesOnBoard": 187,
       "rolesAnalyzed": 4,
-      "accountIntentScore": 74,
-      "accountIntentTier": "HOT",
-      "recommendedBuyerPersona": "VP of Revenue Operations / CRO / Head of Growth",
+      "accountIntentScore": 66,
+      "accountIntentTier": "WARM",
+      "recommendedBuyerPersona": "CISO / VP of Security & GRC",
       "activeSignals": [
-        "NEW_LEADERSHIP_DECISION_MAKER",
-        "REVOPS_GTM_SCALE",
-        "AI_TRANSFORMATION_INITIATIVE"
+        "BUDGET_HYPERGROWTH",
+        "SECURITY_COMPLIANCE_MANDATE"
       ],
-      "leadershipOpenings": [
-        "Head of Brand",
-        "Director, Product Design",
-        "Director, Brand Operations",
-        "Chief Compliance Officer, Ramp Advisory LLC"
-      ],
+      "leadershipOpenings": [],
       "verifiedTechStack": [
+        "Python",
+        "TypeScript",
+        "Kotlin",
+        "React",
+        "Swift / iOS",
+        "AWS",
+        "Microsoft Azure",
+        "Google Cloud (GCP)",
+        "Terraform",
+        "Java",
         "Ruby on Rails"
       ],
       "techStackByCategory": {
         "devtools_engineering": [
+          "Python",
+          "TypeScript",
+          "Kotlin",
+          "React",
+          "Swift / iOS",
+          "Java",
           "Ruby on Rails"
+        ],
+        "cloud_infra": [
+          "AWS",
+          "Microsoft Azure",
+          "Google Cloud (GCP)",
+          "Terraform"
         ]
       },
       "disclosedSalarySamples": [
-        "Head of Brand: $309K – $424K • Offers Equity",
-        "Director, Product Design: $320K – $440K • Offers Equity",
-        "Director, Brand Operations: $200K – $352K • Offers Equity",
-        "Chief Compliance Officer, Ramp Advisory LLC: $170K – $300K • Offers Equity • Multiple Ranges"
+        "Software Engineer, Android: $189K – $330K • Offers Equity",
+        "Software Engineer, iOS: $189K – $330K • Offers Equity",
+        "Software Engineer, Security, Stablecoin: $189K – $330K • Offers Equity",
+        "Software Engineer, Security, Product: $257,800 – $354,550 • Offers Equity"
       ],
       "icebreakers": {
-        "executiveAngle": "Saw ramp has 179 open roles right now, led by \"Head of Brand\" ($309K – $424K • Offers Equity) across Ruby on Rails.",
-        "hiringManagerAngle": "Noticed the open \"Head of Brand\" req on your Design team working with Ruby on Rails — teams scaling that stack usually hit tooling bottlenecks 3-4 months before the new hire fully ramps."
+        "executiveAngle": "Saw ramp has 187 open roles right now, led by \"Software Engineer, Android\" ($189K – $330K • Offers Equity) across Python, TypeScript, Kotlin.",
+        "hiringManagerAngle": "Noticed the open \"Software Engineer, Android\" req on your Engineering team working with Python, TypeScript, Kotlin — teams scaling that stack usually hit tooling bottlenecks 3-4 months before the new hire fully ramps."
       },
       "topRoles": [
         {
           "atsPlatform": "ashby",
           "companyName": "ramp",
           "companySlug": "ramp",
-          "title": "Head of Brand",
-          "department": "Design",
+          "title": "Software Engineer, Android",
+          "department": "Engineering",
           "location": "New York, NY (HQ)",
           "workplaceType": "remote",
-          "disclosedSalary": "$309K – $424K • Offers Equity",
-          "publishedAt": "2026-07-01T18:00:02.705+00:00",
-          "jobUrl": "https://jobs.ashbyhq.com/ramp/30323399-3039-499d-a0b6-a891ced89e1e",
-          "intentScore": 66,
+          "disclosedSalary": "$189K – $330K • Offers Equity",
+          "publishedAt": "2025-07-31T21:58:34.674+00:00",
+          "jobUrl": "https://jobs.ashbyhq.com/ramp/f564dcf9-9390-4a3f-896f-8047a5086040",
+          "intentScore": 58,
           "intentTier": "WARM",
           "signals": [
-            "NEW_LEADERSHIP_DECISION_MAKER",
-            "REVOPS_GTM_SCALE"
+            "BUDGET_HYPERGROWTH"
           ],
           "techStack": [
-            "Ruby on Rails"
+            "Python",
+            "TypeScript",
+            "Kotlin",
+            "React"
           ],
           "techByCategory": {
             "devtools_engineering": [
+              "Python",
+              "TypeScript",
+              "Kotlin",
+              "React"
+            ]
+          },
+          "excerpt": "ABOUT RAMP\n\nRamp is building the smart infrastructure for finance teams, embedded in the transaction flow of every dollar a business spends. We automate how over $275B in annualized spend flows in and out of 85,000+ companies: authorizing payments, flagging risk, categorizing spend, and closing books.\n\nThe problems are high-stakes, data-d"
+        },
+        {
+          "atsPlatform": "ashby",
+          "companyName": "ramp",
+          "companySlug": "ramp",
+          "title": "Software Engineer, iOS",
+          "department": "Engineering",
+          "location": "New York, NY (HQ)",
+          "workplaceType": "remote",
+          "disclosedSalary": "$189K – $330K • Offers Equity",
+          "publishedAt": "2025-07-31T21:50:51.242+00:00",
+          "jobUrl": "https://jobs.ashbyhq.com/ramp/4859cd5e-f2a9-44d7-81f7-8bfc0e62369f",
+          "intentScore": 58,
+          "intentTier": "WARM",
+          "signals": [
+            "BUDGET_HYPERGROWTH"
+          ],
+          "techStack": [
+            "Python",
+            "TypeScript",
+            "Swift / iOS",
+            "React"
+          ],
+          "techByCategory": {
+            "devtools_engineering": [
+              "Python",
+              "TypeScript",
+              "Swift / iOS",
+              "React"
+            ]
+          },
+          "excerpt": "ABOUT RAMP\n\nRamp is building the smart infrastructure for finance teams, embedded in the transaction flow of every dollar a business spends. We automate how over $275B in annualized spend flows in and out of 85,000+ companies: authorizing payments, flagging risk, categorizing spend, and closing books.\n\nThe problems are high-stakes, data-d"
+        },
+        {
+          "atsPlatform": "ashby",
+          "companyName": "ramp",
+          "companySlug": "ramp",
+          "title": "Software Engineer, Security, Stablecoin",
+          "department": "Engineering",
+          "location": "New York, NY (HQ)",
+          "workplaceType": "remote",
+          "disclosedSalary": "$189K – $330K • Offers Equity",
+          "publishedAt": "2026-11-09T22:11:13.205+00:00",
+          "jobUrl": "https://jobs.ashbyhq.com/ramp/d1183b00-6590-4fe4-a585-28d84e578fe3",
+          "intentScore": 52,
+          "intentTier": "WARM",
+          "signals": [],
+          "techStack": [
+            "AWS",
+            "Microsoft Azure",
+            "Google Cloud (GCP)",
+            "Terraform",
+            "Python",
+            "Java",
+            "Ruby on Rails"
+          ],
+          "techByCategory": {
+            "cloud_infra": [
+              "AWS",
+              "Microsoft Azure",
+              "Google Cloud (GCP)",
+              "Terraform"
+            ],
+            "devtools_engineering": [
+              "Python",
+              "Java",
               "Ruby on Rails"
             ]
           },
@@ -372,180 +578,31 @@
           "atsPlatform": "ashby",
           "companyName": "ramp",
           "companySlug": "ramp",
-          "title": "Director, Product Design",
-          "department": "Design",
+          "title": "Software Engineer, Security, Product",
+          "department": "Engineering",
           "location": "New York, NY (HQ)",
           "workplaceType": "remote",
-          "disclosedSalary": "$320K – $440K • Offers Equity",
-          "publishedAt": "2026-06-08T20:49:17.168+00:00",
-          "jobUrl": "https://jobs.ashbyhq.com/ramp/78b98c66-af59-4fa8-a5ae-d8af8d737976",
-          "intentScore": 66,
+          "disclosedSalary": "$257,800 – $354,550 • Offers Equity",
+          "publishedAt": "2026-01-20T21:47:15.308+00:00",
+          "jobUrl": "https://jobs.ashbyhq.com/ramp/7c26780b-7923-42d5-8111-9825ff996966",
+          "intentScore": 50,
           "intentTier": "WARM",
           "signals": [
-            "NEW_LEADERSHIP_DECISION_MAKER",
-            "AI_TRANSFORMATION_INITIATIVE"
-          ],
-          "techStack": [],
-          "techByCategory": {},
-          "excerpt": "ABOUT RAMP\n\nRamp is building the smart infrastructure for finance teams, embedded in the transaction flow of every dollar a business spends. We automate how over $275B in annualized spend flows in and out of 85,000+ companies: authorizing payments, flagging risk, categorizing spend, and closing books.\n\nThe problems are high-stakes, data-d"
-        },
-        {
-          "atsPlatform": "ashby",
-          "companyName": "ramp",
-          "companySlug": "ramp",
-          "title": "Director, Brand Operations",
-          "department": "Marketing",
-          "location": "New York, NY (HQ)",
-          "workplaceType": "remote",
-          "disclosedSalary": "$200K – $352K • Offers Equity",
-          "publishedAt": "2026-08-13T20:39:51.629+00:00",
-          "jobUrl": "https://jobs.ashbyhq.com/ramp/2c101be9-f4b8-4a63-a634-9798d9a09eaa",
-          "intentScore": 46,
-          "intentTier": "WARM",
-          "signals": [
-            "NEW_LEADERSHIP_DECISION_MAKER"
-          ],
-          "techStack": [],
-          "techByCategory": {},
-          "excerpt": "ABOUT RAMP\n\nRamp is building the smart infrastructure for finance teams, embedded in the transaction flow of every dollar a business spends. We automate how over $275B in annualized spend flows in and out of 85,000+ companies: authorizing payments, flagging risk, categorizing spend, and closing books.\n\nThe problems are high-stakes, data-d"
-        },
-        {
-          "atsPlatform": "ashby",
-          "companyName": "ramp",
-          "companySlug": "ramp",
-          "title": "Chief Compliance Officer, Ramp Advisory LLC",
-          "department": "Compliance",
-          "location": "New York, NY (HQ)",
-          "workplaceType": "remote",
-          "disclosedSalary": "$170K – $300K • Offers Equity • Multiple Ranges",
-          "publishedAt": "2026-10-16T21:05:12.511+00:00",
-          "jobUrl": "https://jobs.ashbyhq.com/ramp/abd1360f-bd9d-4649-ac02-9af2a437ff98",
-          "intentScore": 46,
-          "intentTier": "WARM",
-          "signals": [
-            "NEW_LEADERSHIP_DECISION_MAKER"
-          ],
-          "techStack": [],
-          "techByCategory": {},
-          "excerpt": "ABOUT RAMP\n\nRamp is building the smart infrastructure for finance teams, embedded in the transaction flow of every dollar a business spends. We automate how over $275B in annualized spend flows in and out of 85,000+ companies: authorizing payments, flagging risk, categorizing spend, and closing books.\n\nThe problems are high-stakes, data-d"
-        }
-      ]
-    },
-    {
-      "companyName": "adsquare GmbH",
-      "atsPlatform": "personio",
-      "totalOpenRolesOnBoard": 7,
-      "rolesAnalyzed": 4,
-      "accountIntentScore": 58,
-      "accountIntentTier": "WARM",
-      "recommendedBuyerPersona": "CISO / VP of Security & GRC",
-      "activeSignals": [
-        "NEW_LEADERSHIP_DECISION_MAKER",
-        "REVOPS_GTM_SCALE"
-      ],
-      "leadershipOpenings": [
-        "Chief Revenue Officer (m/f/d)"
-      ],
-      "verifiedTechStack": [
-        "GDPR"
-      ],
-      "techStackByCategory": {
-        "security_compliance": [
-          "GDPR"
-        ]
-      },
-      "disclosedSalarySamples": [],
-      "icebreakers": {
-        "executiveAngle": "Saw adsquare GmbH has 7 open roles right now, led by \"Chief Revenue Officer (m/f/d)\" across GDPR.",
-        "hiringManagerAngle": "Noticed the open \"Chief Revenue Officer (m/f/d)\" req on your Sales team working with GDPR — teams scaling that stack usually hit tooling bottlenecks 3-4 months before the new hire fully ramps."
-      },
-      "topRoles": [
-        {
-          "atsPlatform": "personio",
-          "companyName": "adsquare GmbH",
-          "companySlug": "adsquare",
-          "title": "Chief Revenue Officer (m/f/d)",
-          "department": "Sales",
-          "location": "London",
-          "workplaceType": "unspecified",
-          "disclosedSalary": null,
-          "publishedAt": "2026-10-15T17:44:44+00:00",
-          "jobUrl": "https://adsquare.jobs.personio.de/job/2845189?language=en",
-          "intentScore": 58,
-          "intentTier": "WARM",
-          "signals": [
-            "NEW_LEADERSHIP_DECISION_MAKER",
-            "REVOPS_GTM_SCALE"
+            "SECURITY_COMPLIANCE_MANDATE"
           ],
           "techStack": [
-            "GDPR"
+            "AWS",
+            "Python"
           ],
           "techByCategory": {
-            "security_compliance": [
-              "GDPR"
+            "cloud_infra": [
+              "AWS"
+            ],
+            "devtools_engineering": [
+              "Python"
             ]
           },
-          "excerpt": "Adsquare's mission is centered on: Passion: Solving complex challenges with exceptional people, technology, and data. Niche: Specializing in Real-World Intelligence that drives Outcomes. Our work is guided by our core values, and we look for candidates who embody them: Drive: Turning ambition into action that brings valuable outcomes. Res"
-        },
-        {
-          "atsPlatform": "personio",
-          "companyName": "adsquare GmbH",
-          "companySlug": "adsquare",
-          "title": "Account Manager Platform Partnerships (m/f/d)",
-          "department": "Partnerships",
-          "location": "Berlin",
-          "workplaceType": "unspecified",
-          "disclosedSalary": null,
-          "publishedAt": "2026-10-28T14:01:39+00:00",
-          "jobUrl": "https://adsquare.jobs.personio.de/job/2865194?language=en",
-          "intentScore": 20,
-          "intentTier": "MONITOR",
-          "signals": [],
-          "techStack": [
-            "GDPR"
-          ],
-          "techByCategory": {
-            "security_compliance": [
-              "GDPR"
-            ]
-          },
-          "excerpt": "Adsquare’s mission is centered on: Passion: Solving complex challenges with exceptional people, technology, and data. Niche: Specializing in Location Intelligence for Programmatic Advertisers. Our work is guided by our core values, and we look for candidates who embody them: Drive: Turning ambition into action that brings valuable outcome"
-        },
-        {
-          "atsPlatform": "personio",
-          "companyName": "adsquare GmbH",
-          "companySlug": "adsquare",
-          "title": "Sales Manager France & Benelux (f/m/d)",
-          "department": "Sales",
-          "location": "Paris",
-          "workplaceType": "unspecified",
-          "disclosedSalary": null,
-          "publishedAt": "2026-02-13T14:46:08+00:00",
-          "jobUrl": "https://adsquare.jobs.personio.de/job/2529546?language=en",
-          "intentScore": 16,
-          "intentTier": "MONITOR",
-          "signals": [],
-          "techStack": [],
-          "techByCategory": {},
-          "excerpt": "Adsquare is a leading data provider within the programmatic and digital advertising ecosystem, with a strong focus on geolocation intelligence. We enable brands and agencies to activate smarter, privacy-first, location-based campaigns powered by high-quality audience data. With a solid European presence, we are now accelerating our expans"
-        },
-        {
-          "atsPlatform": "personio",
-          "companyName": "adsquare GmbH",
-          "companySlug": "adsquare",
-          "title": "Senior Sales Manager - DACH (m/f/d)",
-          "department": "Sales",
-          "location": "Berlin",
-          "workplaceType": "unspecified",
-          "disclosedSalary": null,
-          "publishedAt": "2025-11-03T14:49:10+00:00",
-          "jobUrl": "https://adsquare.jobs.personio.de/job/2413882?language=en",
-          "intentScore": 16,
-          "intentTier": "MONITOR",
-          "signals": [],
-          "techStack": [],
-          "techByCategory": {},
-          "excerpt": "Adsquare's mission is centered on: Passion: Solving complex challenges with exceptional people, technology, and data. Niche: Specializing in Location Intelligence for Programmatic Advertisers. Our work is guided by our core values, and we look for candidates who embody them: Drive: Turning ambition into action that brings valuable outcome"
+          "excerpt": "ABOUT RAMP\n\nRamp is building the smart infrastructure for finance teams, embedded in the transaction flow of every dollar a business spends. We automate how over $275B in annualized spend flows in and out of 85,000+ companies: authorizing payments, flagging risk, categorizing spend, and closing books.\n\nThe problems are high-stakes, data-d"
         }
       ]
     }
