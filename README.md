@@ -2,7 +2,7 @@
 
 [![CI](https://github.com/yan0lovesha/hiring-intent-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/yan0lovesha/hiring-intent-mcp/actions/workflows/ci.yml)
 [![MCP Registry](https://img.shields.io/badge/MCP_Registry-io.github.yan0lovesha%2Fhiring--intent--mcp-purple.svg)](https://registry.modelcontextprotocol.io/v0.1/servers?search=io.github.yan0lovesha%2Fhiring-intent-mcp)
-[![Glama MCP](https://glama.ai/mcp/servers/yan0lovesha/hiring-intent-mcp/badges/score.svg)](https://glama.ai/mcp/servers/yan0lovesha/hiring-intent-mcp)
+[![yan0lovesha/hiring-intent-mcp MCP server](https://glama.ai/mcp/servers/yan0lovesha/hiring-intent-mcp/badges/score.svg)](https://glama.ai/mcp/servers/yan0lovesha/hiring-intent-mcp)
 [![TensorBlock Awesome MCP](https://img.shields.io/badge/TensorBlock-Awesome_MCP_Indexed-orange.svg)](https://github.com/TensorBlock/awesome-mcp-servers/blob/main/docs/marketing-sales--crm.md)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](./LICENSE)
 [![Node >= 20](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen.svg)](./package.json)

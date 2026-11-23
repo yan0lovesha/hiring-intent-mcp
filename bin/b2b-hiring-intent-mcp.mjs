@@ -175,7 +175,12 @@ export const TECH_RULES = [
     { name: 'Oracle NetSuite', category: 'erp_finance', pattern: /\bnetsuite\b/i },
     { name: 'ServiceNow', category: 'erp_finance', pattern: /\bservicenow\b/i },
     { name: 'DATEV', category: 'erp_finance', pattern: /\bdatev\b/i },
-    { name: 'Workday', category: 'erp_finance', pattern: /\bworkday\b/i },
+    {
+        name: 'Workday',
+        category: 'erp_finance',
+        pattern:
+            /\b[Ww]orkday\s+(?:HCM|hcm|HRIS|hris|ERP|erp|[Ff]inancials|[Aa]daptive|[Pp]rism|[Ss]tudio|[Ee]xtend|[Rr]ecruiting|[Pp]ayroll|PECI|peci|EIB|eib|[Ii]ntegrations?|[Tt]enant|[Cc]ompensation|[Ll]earning|[Aa]dmin(?:istrator)?|[Aa]nalyst|[Cc]onsultant|[Ss]pecialist|[Dd]eveloper|[Aa]rchitect|[Ii]mplementation|[Cc]onfiguration)\b|(?:SAP|sap|[Nn]et[Ss]uite|[Oo]racle|UKG|ukg|ADP|adp|[Ss]uccess[Ff]actors|[Dd]ayforce|[Bb]amboo(?:HR|hr)|[Hh]i[Bb]ob|[Pp]ersonio|[Gg]reenhouse|[Ll]ever|[Aa]shby|iCIMS|icims|[Tt]aleo|[Pp]eople[Ss]oft|[Cc]oncur|[Cc]oupa)[,\s/+&-]+[Ww]orkday\b|\b[Ww]orkday[,\s/+&-]+(?:SAP|sap|[Nn]et[Ss]uite|[Oo]racle|UKG|ukg|ADP|adp|[Ss]uccess[Ff]actors|[Dd]ayforce|[Bb]amboo(?:HR|hr)|[Hh]i[Bb]ob|[Pp]ersonio|[Gg]reenhouse|[Ll]ever|[Aa]shby|iCIMS|icims|[Tt]aleo|[Pp]eople[Ss]oft|[Cc]oncur|[Cc]oupa)\b|(?<!\b(?:[Aa]|[Aa]n|[Tt]he|[Ee]very|[Ee]ach|[Yy]our|[Oo]ur|[Mm]y|[Tt]heir|[Tt]ypical|[Nn]ormal|[Ss]tandard|[Aa]verage|[Rr]egular|[Ff]ull|[Hh]alf|[Ff]lexible|[Hh]ybrid|[Rr]emote|[Mm]odern|[Dd]aily|[Bb]usy|[Ee]ntire|[Ww]hole|[Pp]roductive|[Hh]our)\s)\b(?:Workday|WORKDAY)\b(?!\s+(?:[Hh]ours?|[Ss]chedule|[Ll]unch|[Mm]eals?|[Pp]erks?|[Ss]tarts?|[Ee]nds?|[Bb]egins?))/,
+    },
     { name: 'Stripe', category: 'erp_finance', pattern: /\bstripe\b/i },
     { name: 'Adyen', category: 'erp_finance', pattern: /\badyen\b/i },
     { name: 'Chargebee / Zuora', category: 'erp_finance', pattern: /\bchargebee\b|\bzuora\b/i },
